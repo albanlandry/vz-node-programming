@@ -6,6 +6,9 @@ A powerful TypeScript/Node.js framework for building programs using a visual nod
 
 - **Async Execution**: Full support for asynchronous operations with Promise-based execution
 - **Parallel Execution**: Automatic parallel execution of independent nodes for optimal performance
+- **Node Registry**: Central registry with discovery, search, and metadata management
+- **Graph Serialization**: Export/import workflows as JSON or YAML
+- **Error Handling**: Enterprise-grade error handling with retry, circuit breaker, fallback, and DLQ
 - **Error Propagation**: Comprehensive error handling and propagation system
 - **Modular Design**: Highly modular architecture with pluggable nodes
 - **Mixed Paradigms**: Support for Functional, Object-Oriented, and Async programming paradigms
@@ -99,6 +102,8 @@ npm run example              # All basic examples
 npm run example:http         # HTTP request examples
 npm run example:simple-http  # Simple HTTP example
 npm run example:parallel     # Parallel execution examples
+npm run example:registry     # Node registry and serialization
+npm run example:errors       # Error handling (retry, circuit breaker, fallback, DLQ)
 ```
 
 Or individually:
@@ -176,6 +181,153 @@ await executor.executeParallel(initialInputs);  // Takes ~400ms (3x faster!)
 - Circular dependencies are automatically detected
 
 See `examples/parallel-execution.ts` for detailed examples showing 3x speedup!
+
+### Node Registry & Discovery
+
+Discover and create nodes dynamically using the registry:
+
+```typescript
+import { NodeRegistry, registerBuiltInNodes, createNode } from './src/index';
+
+// Register all built-in nodes
+registerBuiltInNodes();
+
+const registry = NodeRegistry.getInstance();
+
+// Browse by category
+const asyncNodes = registry.getByCategory('Async');
+asyncNodes.forEach(node => {
+  console.log(`${node.icon} ${node.displayName} - ${node.description}`);
+});
+
+// Search for nodes
+const results = registry.search('http');
+
+// Create nodes by type
+const httpNode = createNode('async.http-request');
+const mathNode = createNode('utility.math');
+
+// Get node metadata
+const metadata = registry.getMetadata('async.http-request');
+console.log(metadata.inputs, metadata.outputs);
+```
+
+**Features:**
+- 17 built-in nodes organized in 4 categories
+- Rich metadata (icons, colors, tags, examples)
+- Search and filter capabilities
+- Type-safe node creation
+- Decorator-based registration (@RegisterNode)
+
+See `docs/NODE-REGISTRY.md` for complete documentation!
+
+### Graph Serialization
+
+Export and import complete workflows:
+
+```typescript
+import { GraphSerializer } from './src/index';
+
+const serializer = new GraphSerializer();
+
+// Export workflow to JSON
+const definition = serializer.serializeExecutor(executor, {
+  name: 'My Workflow',
+  description: 'Data processing pipeline',
+  author: 'Your Name'
+});
+
+const json = serializer.toJSON(definition);
+fs.writeFileSync('workflow.json', json);
+
+// Import workflow
+const loaded = serializer.fromJSON(
+  fs.readFileSync('workflow.json', 'utf-8')
+);
+
+const newExecutor = serializer.deserializeToExecutor(loaded);
+```
+
+**Supports:**
+- JSON and YAML formats
+- Complete workflow preservation
+- Metadata (name, author, timestamps)
+- Node positions for visual editors
+- Graph cloning and merging
+
+See `examples/registry-example.ts` for detailed examples!
+
+### Error Handling
+
+Enterprise-grade error handling with multiple resilience patterns:
+
+```typescript
+import {
+  ErrorHandlingNode,
+  RetryPolicies,
+  CircuitBreaker,
+  DeadLetterQueue
+} from './src/index';
+
+// Create resilient node
+const resilientNode = new ErrorHandlingNode(config, {
+  // Retry with exponential backoff
+  retryPolicy: RetryPolicies.Standard,
+  
+  // Circuit breaker protection
+  circuitBreaker: new CircuitBreaker({
+    failureThreshold: 5,
+    resetTimeout: 60000
+  }),
+  
+  // Fallback strategy
+  fallbackFn: async (error, context) => {
+    return await cache.get(context.executionId);
+  },
+  
+  // Track failures
+  enableDLQ: true
+});
+
+// Check dead letter queue
+const dlq = DeadLetterQueue.getInstance();
+const stats = dlq.getStats();
+console.log(`Failures: ${stats.total}, Unprocessed: ${stats.unprocessed}`);
+```
+
+**Features:**
+- **Retry Policies** - Exponential backoff with jitter (5 predefined policies)
+- **Circuit Breaker** - Prevent cascading failures (CLOSED/OPEN/HALF_OPEN states)
+- **Fallback Paths** - Alternative execution strategies
+- **Error Boundaries** - Catch and contain errors from upstream nodes
+- **Dead Letter Queue** - Track and analyze failures
+
+**Predefined Retry Policies:**
+```typescript
+RetryPolicies.None        // No retry
+RetryPolicies.Quick       // 3 attempts, short delays
+RetryPolicies.Standard    // 3 attempts, balanced delays
+RetryPolicies.Aggressive  // 5 attempts, longer delays
+RetryPolicies.Network     // Optimized for network errors
+```
+
+**Circuit Breaker States:**
+```
+CLOSED (normal) → OPEN (failing) → HALF_OPEN (testing) → CLOSED
+```
+
+**Error Boundary & Fallback Nodes:**
+```typescript
+import { ErrorBoundaryNode, FallbackNode } from './src/index';
+
+// Catch errors and provide defaults
+const boundary = new ErrorBoundaryNode();
+const fallback = new FallbackNode();
+
+// Chain: Unreliable → Boundary → Fallback → Safe Output
+```
+
+See `docs/ERROR-HANDLING.md` for complete documentation!
 
 ## Creating Custom Nodes
 

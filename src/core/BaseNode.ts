@@ -116,7 +116,7 @@ export abstract class BaseNode implements INode {
   /**
    * Validates input values against port definitions
    */
-  private validateInputs(inputs: Map<PortId, any>): void {
+  protected validateInputs(inputs: Map<PortId, any>): void {
     for (const input of this.inputs) {
       if (input.required && !inputs.has(input.id)) {
         throw new NodeError(
@@ -142,7 +142,7 @@ export abstract class BaseNode implements INode {
   /**
    * Validates output values against port definitions
    */
-  private validateOutputs(outputs: Map<PortId, any>): void {
+  protected validateOutputs(outputs: Map<PortId, any>): void {
     for (const output of this.outputs) {
       const value = outputs.get(output.id);
       if (value !== undefined && output.dataType.validator) {
