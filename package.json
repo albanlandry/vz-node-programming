@@ -1,0 +1,33 @@
+{
+  "name": "vz-programming",
+  "version": "1.0.0",
+  "description": "A Node-based programming system with TypeScript support",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "example": "npm run build && node dist/examples/usage-examples.js",
+    "example:http": "npm run build && node dist/examples/http-example.js",
+    "example:simple-http": "npm run build && node dist/examples/simple-http.js",
+    "example:parallel": "npm run build && node dist/examples/parallel-execution.js",
+    "example:build": "tsc",
+    "example:run": "node dist/examples/usage-examples.js",
+    "test": "jest",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["node-based", "programming", "typescript", "async", "functional", "oop"],
+  "author": "VZ Programming",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "ts-jest": "^29.0.0"
+  },
+  "dependencies": {
+    "uuid": "^9.0.0",
+    "@types/uuid": "^9.0.0"
+  }
+}
