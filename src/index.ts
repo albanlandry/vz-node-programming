@@ -29,14 +29,14 @@ export {
   DeadLetterQueue,
   ErrorHandlingNode,
   ErrorBoundaryNode,
-  FallbackNode
+  FallbackNode,
 } from './error-handling';
 export type {
   RetryConfig,
   CircuitBreakerConfig,
   DeadLetterEntry,
   DLQConfig,
-  ErrorHandlingConfig
+  ErrorHandlingConfig,
 } from './error-handling';
 
 // Utilities
@@ -56,17 +56,17 @@ export { DelayNode, HttpRequestNode, PromiseAllNode, PromiseRaceNode, RetryNode 
 export { ConditionalNode, MathNode, StringNode, TransformNode, LoggerNode } from './nodes/utility/UtilityNodes';
 
 // Re-export commonly used types for convenience
-export type { 
-  INode, 
-  NodeId, 
-  PortId, 
-  ExecutionId, 
-  ExecutionContext, 
-  ExecutionResult, 
-  Connection, 
-  Port, 
+export type {
+  INode,
+  NodeId,
+  PortId,
+  ExecutionId,
+  ExecutionContext,
+  ExecutionResult,
+  Connection,
+  Port,
   DataType,
   NodeError,
   NodeEvent,
-  NodeEventType
+  NodeEventType,
 } from './types';

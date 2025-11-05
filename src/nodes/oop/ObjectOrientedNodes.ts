@@ -21,49 +21,49 @@ export class CalculatorNode extends BaseNode {
           name: 'Operation',
           dataType: DataTypes.STRING,
           required: true,
-          description: 'Operation to perform: add, subtract, multiply, divide, clear'
+          description: 'Operation to perform: add, subtract, multiply, divide, clear',
         },
         {
           id: 'value',
           name: 'Value',
           dataType: DataTypes.NUMBER,
           required: false,
-          description: 'Value to use in operation'
+          description: 'Value to use in operation',
         },
         {
           id: 'variable',
           name: 'Variable',
           dataType: DataTypes.STRING,
           required: false,
-          description: 'Variable name for storing/retrieving values'
-        }
+          description: 'Variable name for storing/retrieving values',
+        },
       ],
       outputs: [
         {
           id: 'result',
           name: 'Result',
           dataType: DataTypes.NUMBER,
-          description: 'Calculation result'
+          description: 'Calculation result',
         },
         {
           id: 'state',
           name: 'State',
           dataType: DataTypes.OBJECT,
-          description: 'Current calculator state'
-        }
-      ]
+          description: 'Current calculator state',
+        },
+      ],
     });
   }
 
   protected async executeInternal(context: ExecutionContext): Promise<Map<PortId, any>> {
     const outputs = new Map<PortId, any>();
-    
+
     const operation = this.getInput<string>(context, 'operation');
     const value = this.getInput<number>(context, 'value');
     const variable = this.getInput<string>(context, 'variable');
-    
+
     let result: number = 0;
-    
+
     switch (operation) {
       case 'add':
         result = this.add(value || 0);
@@ -95,10 +95,10 @@ export class CalculatorNode extends BaseNode {
       default:
         throw new Error(`Unknown operation: ${operation}`);
     }
-    
+
     this.setOutput(outputs, 'result', result);
     this.setOutput(outputs, 'state', Object.fromEntries(this.state));
-    
+
     return outputs;
   }
 
@@ -163,39 +163,39 @@ export class CounterNode extends BaseNode {
           name: 'Action',
           dataType: DataTypes.STRING,
           required: true,
-          description: 'Action: increment, decrement, reset, setStep'
+          description: 'Action: increment, decrement, reset, setStep',
         },
         {
           id: 'value',
           name: 'Value',
           dataType: DataTypes.NUMBER,
           required: false,
-          description: 'Value for setStep action'
-        }
+          description: 'Value for setStep action',
+        },
       ],
       outputs: [
         {
           id: 'count',
           name: 'Count',
           dataType: DataTypes.NUMBER,
-          description: 'Current count value'
+          description: 'Current count value',
         },
         {
           id: 'step',
           name: 'Step',
           dataType: DataTypes.NUMBER,
-          description: 'Current step value'
-        }
-      ]
+          description: 'Current step value',
+        },
+      ],
     });
   }
 
   protected async executeInternal(context: ExecutionContext): Promise<Map<PortId, any>> {
     const outputs = new Map<PortId, any>();
-    
+
     const action = this.getInput<string>(context, 'action');
     const value = this.getInput<number>(context, 'value');
-    
+
     switch (action) {
       case 'increment':
         this.increment();
@@ -214,10 +214,10 @@ export class CounterNode extends BaseNode {
       default:
         throw new Error(`Unknown action: ${action}`);
     }
-    
+
     this.setOutput(outputs, 'count', this.count);
     this.setOutput(outputs, 'step', this.step);
-    
+
     return outputs;
   }
 
@@ -255,47 +255,47 @@ export class BankAccountNode extends BaseNode {
           name: 'Action',
           dataType: DataTypes.STRING,
           required: true,
-          description: 'Action: deposit, withdraw, balance, history'
+          description: 'Action: deposit, withdraw, balance, history',
         },
         {
           id: 'amount',
           name: 'Amount',
           dataType: DataTypes.NUMBER,
           required: false,
-          description: 'Amount for deposit/withdraw'
-        }
+          description: 'Amount for deposit/withdraw',
+        },
       ],
       outputs: [
         {
           id: 'balance',
           name: 'Balance',
           dataType: DataTypes.NUMBER,
-          description: 'Current account balance'
+          description: 'Current account balance',
         },
         {
           id: 'transaction',
           name: 'Transaction',
           dataType: DataTypes.OBJECT,
-          description: 'Last transaction details'
+          description: 'Last transaction details',
         },
         {
           id: 'history',
           name: 'History',
           dataType: DataTypes.ARRAY,
-          description: 'Transaction history'
-        }
-      ]
+          description: 'Transaction history',
+        },
+      ],
     });
   }
 
   protected async executeInternal(context: ExecutionContext): Promise<Map<PortId, any>> {
     const outputs = new Map<PortId, any>();
-    
+
     const action = this.getInput<string>(context, 'action');
     const amount = this.getInput<number>(context, 'amount');
-    
+
     let transaction: any = null;
-    
+
     switch (action) {
       case 'deposit':
         if (amount === undefined || amount <= 0) {
@@ -318,11 +318,11 @@ export class BankAccountNode extends BaseNode {
       default:
         throw new Error(`Unknown action: ${action}`);
     }
-    
+
     this.setOutput(outputs, 'balance', this.balance);
     this.setOutput(outputs, 'transaction', transaction);
     this.setOutput(outputs, 'history', this.transactions);
-    
+
     return outputs;
   }
 
@@ -331,7 +331,7 @@ export class BankAccountNode extends BaseNode {
     const transaction = {
       type: 'deposit',
       amount,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
     this.transactions.push(transaction);
     return transaction;
@@ -345,7 +345,7 @@ export class BankAccountNode extends BaseNode {
     const transaction = {
       type: 'withdraw',
       amount,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
     this.transactions.push(transaction);
     return transaction;

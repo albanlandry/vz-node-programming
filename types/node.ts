@@ -8,7 +8,7 @@ export interface Port {
   name: string;
   dataType: {
     name: string;
-    validator?: (value: any) => boolean;
+    validator?: (value: unknown) => boolean;
   };
   required?: boolean;
   description?: string;

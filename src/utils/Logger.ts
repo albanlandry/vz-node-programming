@@ -17,32 +17,32 @@ export interface Logger {
    * Log a debug message (most verbose)
    */
   debug(message: string, ...args: any[]): void;
-  
+
   /**
    * Log an info message
    */
   info(message: string, ...args: any[]): void;
-  
+
   /**
    * Log a warning message
    */
   warn(message: string, ...args: any[]): void;
-  
+
   /**
    * Log an error message
    */
   error(message: string, ...args: any[]): void;
-  
+
   /**
    * Get current log level
    */
   getLevel(): LogLevel;
-  
+
   /**
    * Set log level
    */
   setLevel(level: LogLevel): void;
-  
+
   /**
    * Check if a log level is enabled
    */
@@ -106,9 +106,13 @@ export class SilentLogger implements Logger {
   info(_message: string, ..._args: any[]): void {}
   warn(_message: string, ..._args: any[]): void {}
   error(_message: string, ..._args: any[]): void {}
-  getLevel(): LogLevel { return LogLevel.NONE; }
+  getLevel(): LogLevel {
+    return LogLevel.NONE;
+  }
   setLevel(_level: LogLevel): void {}
-  isEnabled(_level: LogLevel): boolean { return false; }
+  isEnabled(_level: LogLevel): boolean {
+    return false;
+  }
 }
 
 /**
@@ -133,7 +137,7 @@ export class JsonLogger implements Logger {
       timestamp: new Date().toISOString(),
       level: level.toUpperCase(),
       message,
-      ...this.extractArgs(args)
+      ...this.extractArgs(args),
     };
 
     if (this.includeStack && level === 'ERROR') {
@@ -144,13 +148,15 @@ export class JsonLogger implements Logger {
   }
 
   private extractArgs(args: any[]): Record<string, any> {
-    if (args.length === 0) return {};
-    
+    if (args.length === 0) {
+      return {};
+    }
+
     // If single object argument, merge its properties
     if (args.length === 1 && typeof args[0] === 'object' && args[0] !== null && !Array.isArray(args[0])) {
       return args[0];
     }
-    
+
     // Otherwise, create a data field with the args
     return { data: args };
   }
@@ -189,11 +195,11 @@ export class JsonLogger implements Logger {
  */
 function getLogLevelFromEnv(): LogLevel {
   const envLevel = process.env.LOG_LEVEL?.toUpperCase();
-  
+
   if (envLevel && envLevel in LogLevel) {
     return LogLevel[envLevel as keyof typeof LogLevel] as LogLevel;
   }
-  
+
   // Default to INFO in production, DEBUG in development
   return process.env.NODE_ENV === 'production' ? LogLevel.INFO : LogLevel.DEBUG;
 }
@@ -203,9 +209,13 @@ function getLogLevelFromEnv(): LogLevel {
  */
 function getLoggerFormat(): 'console' | 'json' | 'silent' {
   const format = process.env.LOG_FORMAT?.toLowerCase();
-  
-  if (format === 'json') return 'json';
-  if (format === 'silent') return 'silent';
+
+  if (format === 'json') {
+    return 'json';
+  }
+  if (format === 'silent') {
+    return 'silent';
+  }
   return 'console';
 }
 
@@ -215,7 +225,7 @@ function getLoggerFormat(): 'console' | 'json' | 'silent' {
 function createLogger(): Logger {
   const level = getLogLevelFromEnv();
   const format = getLoggerFormat();
-  
+
   switch (format) {
     case 'json':
       return new JsonLogger(level, process.env.LOG_INCLUDE_STACK === 'true');
@@ -242,19 +252,19 @@ export const logger: Logger = createLogger();
  */
 export function createChildLogger(prefix: string): Logger {
   const parentLogger = logger;
-  
+
   return {
-    debug: (message: string, ...args: any[]) => 
+    debug: (message: string, ...args: any[]) =>
       parentLogger.debug(`[${prefix}] ${message}`, ...args),
-    info: (message: string, ...args: any[]) => 
+    info: (message: string, ...args: any[]) =>
       parentLogger.info(`[${prefix}] ${message}`, ...args),
-    warn: (message: string, ...args: any[]) => 
+    warn: (message: string, ...args: any[]) =>
       parentLogger.warn(`[${prefix}] ${message}`, ...args),
-    error: (message: string, ...args: any[]) => 
+    error: (message: string, ...args: any[]) =>
       parentLogger.error(`[${prefix}] ${message}`, ...args),
     getLevel: () => parentLogger.getLevel(),
     setLevel: (level: LogLevel) => parentLogger.setLevel(level),
-    isEnabled: (level: LogLevel) => parentLogger.isEnabled(level)
+    isEnabled: (level: LogLevel) => parentLogger.isEnabled(level),
   };
 }
 

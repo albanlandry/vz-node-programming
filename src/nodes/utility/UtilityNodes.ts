@@ -1,6 +1,6 @@
 import { BaseNode } from '../../core/BaseNode';
 import { ExecutionContext, PortId, DataTypes } from '../../types';
-import { logger, LogLevel } from '../../utils/Logger';
+import { logger } from '../../utils/Logger';
 
 /**
  * Utility and Mixed Paradigm Examples
@@ -20,44 +20,44 @@ export class ConditionalNode extends BaseNode {
           name: 'Condition',
           dataType: DataTypes.BOOLEAN,
           required: true,
-          description: 'Boolean condition to evaluate'
+          description: 'Boolean condition to evaluate',
         },
         {
           id: 'trueValue',
           name: 'True Value',
           dataType: DataTypes.ANY,
           required: true,
-          description: 'Value to return if condition is true'
+          description: 'Value to return if condition is true',
         },
         {
           id: 'falseValue',
           name: 'False Value',
           dataType: DataTypes.ANY,
           required: true,
-          description: 'Value to return if condition is false'
-        }
+          description: 'Value to return if condition is false',
+        },
       ],
       outputs: [
         {
           id: 'result',
           name: 'Result',
           dataType: DataTypes.ANY,
-          description: 'Selected value based on condition'
-        }
-      ]
+          description: 'Selected value based on condition',
+        },
+      ],
     });
   }
 
   protected async executeInternal(context: ExecutionContext): Promise<Map<PortId, any>> {
     const outputs = new Map<PortId, any>();
-    
+
     const condition = this.getInput<boolean>(context, 'condition');
     const trueValue = this.getInput<any>(context, 'trueValue');
     const falseValue = this.getInput<any>(context, 'falseValue');
-    
+
     const result = condition ? trueValue : falseValue;
     this.setOutput(outputs, 'result', result);
-    
+
     return outputs;
   }
 }
@@ -76,77 +76,91 @@ export class MathNode extends BaseNode {
           name: 'Operation',
           dataType: DataTypes.STRING,
           required: true,
-          description: 'Math operation: add, subtract, multiply, divide, power, sqrt'
+          description: 'Math operation: add, subtract, multiply, divide, power, sqrt',
         },
         {
           id: 'a',
           name: 'A',
           dataType: DataTypes.NUMBER,
           required: true,
-          description: 'First number'
+          description: 'First number',
         },
         {
           id: 'b',
           name: 'B',
           dataType: DataTypes.NUMBER,
           required: false,
-          description: 'Second number (not needed for sqrt)'
-        }
+          description: 'Second number (not needed for sqrt)',
+        },
       ],
       outputs: [
         {
           id: 'result',
           name: 'Result',
           dataType: DataTypes.NUMBER,
-          description: 'Mathematical result'
-        }
-      ]
+          description: 'Mathematical result',
+        },
+      ],
     });
   }
 
   protected async executeInternal(context: ExecutionContext): Promise<Map<PortId, any>> {
     const outputs = new Map<PortId, any>();
-    
+
     const operation = this.getInput<string>(context, 'operation');
     const a = this.getInput<number>(context, 'a');
     const b = this.getInput<number>(context, 'b');
-    
+
     if (typeof a !== 'number') {
       throw new Error('A must be a number');
     }
-    
+
     let result: number;
-    
+
     switch (operation) {
       case 'add':
-        if (typeof b !== 'number') throw new Error('B must be a number for addition');
+        if (typeof b !== 'number') {
+          throw new Error('B must be a number for addition');
+        }
         result = a + b;
         break;
       case 'subtract':
-        if (typeof b !== 'number') throw new Error('B must be a number for subtraction');
+        if (typeof b !== 'number') {
+          throw new Error('B must be a number for subtraction');
+        }
         result = a - b;
         break;
       case 'multiply':
-        if (typeof b !== 'number') throw new Error('B must be a number for multiplication');
+        if (typeof b !== 'number') {
+          throw new Error('B must be a number for multiplication');
+        }
         result = a * b;
         break;
       case 'divide':
-        if (typeof b !== 'number') throw new Error('B must be a number for division');
-        if (b === 0) throw new Error('Division by zero');
+        if (typeof b !== 'number') {
+          throw new Error('B must be a number for division');
+        }
+        if (b === 0) {
+          throw new Error('Division by zero');
+        }
         result = a / b;
         break;
       case 'power':
-        if (typeof b !== 'number') throw new Error('B must be a number for power');
+        if (typeof b !== 'number') {
+          throw new Error('B must be a number for power');
+        }
         result = Math.pow(a, b);
         break;
       case 'sqrt':
-        if (a < 0) throw new Error('Cannot take square root of negative number');
+        if (a < 0) {
+          throw new Error('Cannot take square root of negative number');
+        }
         result = Math.sqrt(a);
         break;
       default:
         throw new Error(`Unknown operation: ${operation}`);
     }
-    
+
     this.setOutput(outputs, 'result', result);
     return outputs;
   }
@@ -166,50 +180,52 @@ export class StringNode extends BaseNode {
           name: 'Operation',
           dataType: DataTypes.STRING,
           required: true,
-          description: 'String operation: concat, split, replace, toUpperCase, toLowerCase, length'
+          description: 'String operation: concat, split, replace, toUpperCase, toLowerCase, length',
         },
         {
           id: 'input',
           name: 'Input',
           dataType: DataTypes.STRING,
           required: true,
-          description: 'Input string'
+          description: 'Input string',
         },
         {
           id: 'parameter',
           name: 'Parameter',
           dataType: DataTypes.ANY,
           required: false,
-          description: 'Additional parameter for operation'
-        }
+          description: 'Additional parameter for operation',
+        },
       ],
       outputs: [
         {
           id: 'result',
           name: 'Result',
           dataType: DataTypes.ANY,
-          description: 'String operation result'
-        }
-      ]
+          description: 'String operation result',
+        },
+      ],
     });
   }
 
   protected async executeInternal(context: ExecutionContext): Promise<Map<PortId, any>> {
     const outputs = new Map<PortId, any>();
-    
+
     const operation = this.getInput<string>(context, 'operation');
     const input = this.getInput<string>(context, 'input');
     const parameter = this.getInput<any>(context, 'parameter');
-    
+
     if (typeof input !== 'string') {
       throw new Error('Input must be a string');
     }
-    
+
     let result: any;
-    
+
     switch (operation) {
       case 'concat':
-        if (typeof parameter !== 'string') throw new Error('Parameter must be a string for concat');
+        if (typeof parameter !== 'string') {
+          throw new Error('Parameter must be a string for concat');
+        }
         result = input + parameter;
         break;
       case 'split':
@@ -234,7 +250,7 @@ export class StringNode extends BaseNode {
       default:
         throw new Error(`Unknown operation: ${operation}`);
     }
-    
+
     this.setOutput(outputs, 'result', result);
     return outputs;
   }
@@ -254,44 +270,44 @@ export class TransformNode extends BaseNode {
           name: 'Data',
           dataType: DataTypes.ANY,
           required: true,
-          description: 'Data to transform'
+          description: 'Data to transform',
         },
         {
           id: 'transformer',
           name: 'Transformer',
           dataType: DataTypes.FUNCTION,
           required: true,
-          description: 'Transformation function'
-        }
+          description: 'Transformation function',
+        },
       ],
       outputs: [
         {
           id: 'result',
           name: 'Result',
           dataType: DataTypes.ANY,
-          description: 'Transformed data'
-        }
-      ]
+          description: 'Transformed data',
+        },
+      ],
     });
   }
 
   protected async executeInternal(context: ExecutionContext): Promise<Map<PortId, any>> {
     const outputs = new Map<PortId, any>();
-    
+
     const data = this.getInput<any>(context, 'data');
     const transformer = this.getInput<Function>(context, 'transformer');
-    
+
     if (typeof transformer !== 'function') {
       throw new Error('Transformer must be a function');
     }
-    
+
     try {
       const result = transformer(data);
       this.setOutput(outputs, 'result', result);
     } catch (error) {
       throw new Error(`Transformation failed: ${error instanceof Error ? error.message : String(error)}`);
     }
-    
+
     return outputs;
   }
 }
@@ -310,45 +326,45 @@ export class LoggerNode extends BaseNode {
           name: 'Level',
           dataType: DataTypes.STRING,
           required: true,
-          description: 'Log level: info, warn, error, debug'
+          description: 'Log level: info, warn, error, debug',
         },
         {
           id: 'message',
           name: 'Message',
           dataType: DataTypes.ANY,
           required: true,
-          description: 'Message to log'
+          description: 'Message to log',
         },
         {
           id: 'data',
           name: 'Data',
           dataType: DataTypes.ANY,
           required: false,
-          description: 'Additional data to log'
-        }
+          description: 'Additional data to log',
+        },
       ],
       outputs: [
         {
           id: 'logged',
           name: 'Logged',
           dataType: DataTypes.BOOLEAN,
-          description: 'Whether logging was successful'
-        }
-      ]
+          description: 'Whether logging was successful',
+        },
+      ],
     });
   }
 
   protected async executeInternal(context: ExecutionContext): Promise<Map<PortId, any>> {
     const outputs = new Map<PortId, any>();
-    
+
     const level = this.getInput<string>(context, 'level');
     const message = this.getInput<any>(context, 'message');
     const data = this.getInput<any>(context, 'data');
-    
+
     // Map string level to LogLevel enum and use logger
     const logLevel = level?.toLowerCase();
     const logMessage = typeof message === 'string' ? message : JSON.stringify(message);
-    
+
     // Log using the logger abstraction
     switch (logLevel) {
       case 'info':
@@ -366,7 +382,7 @@ export class LoggerNode extends BaseNode {
       default:
         logger.info(logMessage, data !== undefined ? { data } : {});
     }
-    
+
     this.setOutput(outputs, 'logged', true);
     return outputs;
   }

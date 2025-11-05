@@ -1,6 +1,6 @@
-import { INode, NodeId, Connection, PortId } from '../types';
-import { NodeRegistry } from '../registry/NodeRegistry';
 import { NodeExecutor } from '../core/NodeExecutor';
+import { NodeRegistry } from '../registry/NodeRegistry';
+import { INode, NodeId, Connection, PortId } from '../types';
 import { logger } from '../utils/Logger';
 
 /**
@@ -79,24 +79,24 @@ export class GraphSerializer {
       name?: string;
       description?: string;
       author?: string;
-    }
+    },
   ): GraphDefinition {
     const serializedNodes: SerializedNode[] = nodes.map(node => {
       const nodeMetadata = this.registry.getMetadata(this.getNodeType(node));
-      
+
       return {
         id: node.id,
         type: this.getNodeType(node),
         name: node.name,
         config: {
-          description: node.description
+          description: node.description,
         },
         position: { x: 0, y: 0 }, // Default position, can be updated by UI
         metadata: nodeMetadata ? {
           category: nodeMetadata.category,
           icon: nodeMetadata.icon,
-          color: nodeMetadata.color
-        } : undefined
+          color: nodeMetadata.color,
+        } : undefined,
       };
     });
 
@@ -104,12 +104,12 @@ export class GraphSerializer {
       id: conn.id,
       from: {
         nodeId: conn.fromNode,
-        portId: conn.fromPort
+        portId: conn.fromPort,
       },
       to: {
         nodeId: conn.toNode,
-        portId: conn.toPort
-      }
+        portId: conn.toPort,
+      },
     }));
 
     return {
@@ -121,7 +121,7 @@ export class GraphSerializer {
       modified: new Date().toISOString(),
       nodes: serializedNodes,
       connections: serializedConnections,
-      metadata: {}
+      metadata: {},
     };
   }
 
@@ -169,7 +169,7 @@ export class GraphSerializer {
         const node = this.registry.create(serializedNode.type, {
           id: serializedNode.id,
           name: serializedNode.name,
-          description: serializedNode.config?.description
+          description: serializedNode.config?.description,
         });
 
         executor.addNode(node);
@@ -187,7 +187,7 @@ export class GraphSerializer {
           fromNode: serializedConn.from.nodeId,
           fromPort: serializedConn.from.portId,
           toNode: serializedConn.to.nodeId,
-          toPort: serializedConn.to.portId
+          toPort: serializedConn.to.portId,
         };
 
         executor.addConnection(connection);
@@ -219,7 +219,7 @@ export class GraphSerializer {
       modified: new Date().toISOString(),
       nodes: [...def1.nodes, ...def2.nodes],
       connections: [...def1.connections, ...def2.connections],
-      metadata: { ...def1.metadata, ...def2.metadata }
+      metadata: { ...def1.metadata, ...def2.metadata },
     };
   }
 
@@ -272,7 +272,7 @@ export class GraphSerializer {
   private getNodeType(node: INode): string {
     // Try to find matching type in registry
     const allTypes = this.registry.getAllTypes();
-    
+
     for (const type of allTypes) {
       const metadata = this.registry.getMetadata(type);
       if (metadata && metadata.displayName === node.name) {

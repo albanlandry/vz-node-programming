@@ -1,5 +1,4 @@
-import { INode, NodeConfig, Port, DataType } from '../types';
-import { BaseNode } from '../core/BaseNode';
+import { INode, NodeConfig, Port } from '../types';
 
 /**
  * Metadata for a registered node type
@@ -78,7 +77,7 @@ export class NodeRegistry {
    */
   public register(
     nodeClass: new (config?: Partial<NodeConfig>) => INode,
-    metadata: NodeMetadata
+    metadata: NodeMetadata,
   ): void {
     if (this.nodes.has(metadata.type)) {
       throw new Error(`Node type '${metadata.type}' is already registered`);
@@ -96,7 +95,7 @@ export class NodeRegistry {
     this.nodes.set(metadata.type, {
       metadata,
       factory,
-      nodeClass
+      nodeClass,
     });
 
     // Update categories and tags
@@ -163,11 +162,11 @@ export class NodeRegistry {
    */
   public search(keyword: string): NodeMetadata[] {
     const lowerKeyword = keyword.toLowerCase();
-    return this.getAllNodes().filter(n => 
+    return this.getAllNodes().filter(n =>
       n.displayName.toLowerCase().includes(lowerKeyword) ||
       n.description.toLowerCase().includes(lowerKeyword) ||
       n.tags.some(tag => tag.toLowerCase().includes(lowerKeyword)) ||
-      n.type.toLowerCase().includes(lowerKeyword)
+      n.type.toLowerCase().includes(lowerKeyword),
     );
   }
 
@@ -200,13 +199,13 @@ export class NodeRegistry {
     categories: number;
     tags: number;
     deprecated: number;
-  } {
+    } {
     const allNodes = this.getAllNodes();
     return {
       totalNodes: allNodes.length,
       categories: this.categories.size,
       tags: this.tags.size,
-      deprecated: allNodes.filter(n => n.deprecated).length
+      deprecated: allNodes.filter(n => n.deprecated).length,
     };
   }
 
@@ -219,7 +218,7 @@ export class NodeRegistry {
       timestamp: new Date().toISOString(),
       nodes: this.getAllNodes(),
       categories: this.getCategories(),
-      tags: this.getTags()
+      tags: this.getTags(),
     };
     return JSON.stringify(data, null, 2);
   }
@@ -280,7 +279,7 @@ export function RegisterNode(metadata: NodeMetadata) {
  */
 export function registerNode(
   nodeClass: new (config?: Partial<NodeConfig>) => INode,
-  metadata: NodeMetadata
+  metadata: NodeMetadata,
 ): void {
   const registry = NodeRegistry.getInstance();
   registry.register(nodeClass, metadata);

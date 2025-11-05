@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import NodeList from '../components/NodeList';
+
 import NodeFilters from '../components/NodeFilters';
+import NodeList from '../components/NodeList';
 import NodeStats from '../components/NodeStats';
 import { NodeMetadata } from '../types/node';
 
@@ -25,7 +26,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetchNodes();
+    void fetchNodes();
   }, []);
 
   const fetchNodes = async () => {
@@ -35,7 +36,7 @@ export default function Home() {
       if (!response.ok) {
         throw new Error('Failed to fetch nodes');
       }
-      const result = await response.json();
+      const result = await response.json() as NodeRegistryData;
       setData(result);
       setError(null);
     } catch (err) {
@@ -59,7 +60,7 @@ export default function Home() {
       );
     }
     return true;
-  }) || [];
+  }) ?? [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -105,7 +106,9 @@ export default function Home() {
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
             <strong>Error:</strong> {error}
             <button
-              onClick={fetchNodes}
+              onClick={() => {
+                void fetchNodes();
+              }}
               className="ml-4 text-red-800 underline hover:text-red-900"
             >
               Retry

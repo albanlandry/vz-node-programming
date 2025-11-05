@@ -1,16 +1,18 @@
-import { v4 as uuidv4 } from 'uuid';
 import { EventEmitter } from 'events';
-import { 
-  INode, 
-  NodeId, 
-  PortId, 
-  ExecutionId, 
-  ExecutionContext, 
-  ExecutionResult, 
-  Connection, 
-  NodeEvent, 
+
+import { v4 as uuidv4 } from 'uuid';
+
+import {
+  INode,
+  NodeId,
+  PortId,
+  ExecutionId,
+  ExecutionContext,
+  ExecutionResult,
+  Connection,
+  NodeEvent,
   NodeEventType,
-  NodeError
+  NodeError,
 } from '../types';
 import { logger } from '../utils/Logger';
 
@@ -36,7 +38,7 @@ export class NodeExecutor extends EventEmitter {
     if (!node.validate()) {
       throw new Error(`Node ${node.id} failed validation`);
     }
-    
+
     this.nodes.set(node.id, node);
     this.emitEvent(NodeEventType.NODE_ADDED, { node });
   }
@@ -53,7 +55,7 @@ export class NodeExecutor extends EventEmitter {
     // Remove all connections involving this node
     const connectionsToRemove = Array.from(this.connections.values())
       .filter(conn => conn.fromNode === nodeId || conn.toNode === nodeId);
-    
+
     connectionsToRemove.forEach(conn => this.removeConnection(conn.id));
 
     this.nodes.delete(nodeId);
@@ -66,7 +68,7 @@ export class NodeExecutor extends EventEmitter {
   public addConnection(connection: Connection): void {
     // Validate connection
     this.validateConnection(connection);
-    
+
     this.connections.set(connection.id, connection);
     this.emitEvent(NodeEventType.CONNECTION_ADDED, { connection });
   }
@@ -87,25 +89,25 @@ export class NodeExecutor extends EventEmitter {
   /**
    * Execute all nodes in the correct order based on dependencies (sequential)
    */
-  public async execute(initialInputs: Map<NodeId, Map<PortId, any>> = new Map()): Promise<Map<NodeId, ExecutionResult>> {
+  public async execute(initialInputs: Map<NodeId, Map<PortId, unknown>> = new Map()): Promise<Map<NodeId, ExecutionResult>> {
     const executionId = uuidv4();
     this.executionResults.clear();
     this.executingNodes.clear();
-    
+
     try {
       // Build execution order based on dependencies
       const executionOrder = this.buildExecutionOrder();
-      
+
       // Execute nodes in order
       for (const nodeId of executionOrder) {
         await this.executeNode(nodeId, executionId, initialInputs);
       }
-      
+
       return new Map(this.executionResults);
     } catch (error) {
-      this.emitEvent(NodeEventType.EXECUTION_FAILED, { 
-        executionId, 
-        error: error instanceof Error ? error.message : String(error)
+      this.emitEvent(NodeEventType.EXECUTION_FAILED, {
+        executionId,
+        error: error instanceof Error ? error.message : String(error),
       });
       throw error;
     }
@@ -116,31 +118,31 @@ export class NodeExecutor extends EventEmitter {
    * Groups nodes into execution levels based on dependencies
    * Nodes in the same level have no dependencies on each other and can run in parallel
    */
-  public async executeParallel(initialInputs: Map<NodeId, Map<PortId, any>> = new Map()): Promise<Map<NodeId, ExecutionResult>> {
+  public async executeParallel(initialInputs: Map<NodeId, Map<PortId, unknown>> = new Map()): Promise<Map<NodeId, ExecutionResult>> {
     const executionId = uuidv4();
     this.executionResults.clear();
     this.executingNodes.clear();
-    
+
     try {
       // Build execution levels for parallel execution
       const executionLevels = this.buildExecutionLevels();
-      
+
       // Execute each level in parallel
       for (const level of executionLevels) {
         // Execute all nodes in this level concurrently
-        const levelPromises = level.map(nodeId => 
-          this.executeNode(nodeId, executionId, initialInputs)
+        const levelPromises = level.map(nodeId =>
+          this.executeNode(nodeId, executionId, initialInputs),
         );
-        
+
         // Wait for all nodes in this level to complete
         await Promise.all(levelPromises);
       }
-      
+
       return new Map(this.executionResults);
     } catch (error) {
-      this.emitEvent(NodeEventType.EXECUTION_FAILED, { 
-        executionId, 
-        error: error instanceof Error ? error.message : String(error)
+      this.emitEvent(NodeEventType.EXECUTION_FAILED, {
+        executionId,
+        error: error instanceof Error ? error.message : String(error),
       });
       throw error;
     }
@@ -150,9 +152,9 @@ export class NodeExecutor extends EventEmitter {
    * Execute a single node
    */
   private async executeNode(
-    nodeId: NodeId, 
-    executionId: ExecutionId, 
-    initialInputs: Map<NodeId, Map<PortId, any>>
+    nodeId: NodeId,
+    executionId: ExecutionId,
+    initialInputs: Map<NodeId, Map<PortId, unknown>>,
   ): Promise<void> {
     const node = this.nodes.get(nodeId);
     if (!node) {
@@ -165,7 +167,7 @@ export class NodeExecutor extends EventEmitter {
     try {
       // Gather inputs from connected nodes
       const inputs = this.gatherNodeInputs(nodeId, initialInputs);
-      
+
       // Create execution context
       const context: ExecutionContext = {
         executionId,
@@ -174,26 +176,26 @@ export class NodeExecutor extends EventEmitter {
         metadata: new Map(),
         errorHandler: (error: NodeError) => {
           this.handleNodeError(error, nodeId);
-        }
+        },
       };
 
       // Execute the node
       const result = await node.execute(context);
-      
+
       // Store the result
       this.executionResults.set(nodeId, result);
-      
+
       if (result.success) {
-        this.emitEvent(NodeEventType.EXECUTION_COMPLETED, { 
-          nodeId, 
-          executionId, 
-          result 
+        this.emitEvent(NodeEventType.EXECUTION_COMPLETED, {
+          nodeId,
+          executionId,
+          result,
         });
       } else {
-        this.emitEvent(NodeEventType.EXECUTION_FAILED, { 
-          nodeId, 
-          executionId, 
-          error: result.error 
+        this.emitEvent(NodeEventType.EXECUTION_FAILED, {
+          nodeId,
+          executionId,
+          error: result.error,
         });
       }
     } finally {
@@ -205,12 +207,12 @@ export class NodeExecutor extends EventEmitter {
    * Gather inputs for a node from connected nodes
    */
   private gatherNodeInputs(
-    nodeId: NodeId, 
-    initialInputs: Map<NodeId, Map<PortId, any>>
-  ): Map<PortId, any> {
-    const inputs = new Map<PortId, any>();
+    nodeId: NodeId,
+    initialInputs: Map<NodeId, Map<PortId, unknown>>,
+  ): Map<PortId, unknown> {
+    const inputs = new Map<PortId, unknown>();
     const node = this.nodes.get(nodeId);
-    
+
     if (!node) {
       return inputs;
     }
@@ -252,7 +254,7 @@ export class NodeExecutor extends EventEmitter {
       if (visiting.has(nodeId)) {
         throw new Error(`Circular dependency detected involving node ${nodeId}`);
       }
-      
+
       if (visited.has(nodeId)) {
         return;
       }
@@ -288,53 +290,53 @@ export class NodeExecutor extends EventEmitter {
     const levels: NodeId[][] = [];
     const nodeLevels = new Map<NodeId, number>();
     const visited = new Set<NodeId>();
-    
+
     // Calculate the level for each node
     const calculateLevel = (nodeId: NodeId): number => {
       if (nodeLevels.has(nodeId)) {
         return nodeLevels.get(nodeId)!;
       }
-      
+
       if (visited.has(nodeId)) {
         throw new Error(`Circular dependency detected involving node ${nodeId}`);
       }
-      
+
       visited.add(nodeId);
-      
+
       const dependencies = this.getNodeDependencies(nodeId);
-      
+
       if (dependencies.length === 0) {
         // No dependencies, can execute at level 0
         nodeLevels.set(nodeId, 0);
         return 0;
       }
-      
+
       // Node's level is 1 + max level of its dependencies
       const maxDepLevel = Math.max(...dependencies.map(dep => calculateLevel(dep)));
       const level = maxDepLevel + 1;
       nodeLevels.set(nodeId, level);
-      
+
       visited.delete(nodeId);
       return level;
     };
-    
+
     // Calculate levels for all nodes
     for (const nodeId of this.nodes.keys()) {
       calculateLevel(nodeId);
     }
-    
+
     // Group nodes by level
     const maxLevel = Math.max(...Array.from(nodeLevels.values()));
     for (let i = 0; i <= maxLevel; i++) {
       const nodesAtLevel = Array.from(nodeLevels.entries())
-        .filter(([_, level]) => level === i)
-        .map(([nodeId, _]) => nodeId);
-      
+        .filter(([, level]) => level === i)
+        .map(([nodeId]) => nodeId);
+
       if (nodesAtLevel.length > 0) {
         levels.push(nodesAtLevel);
       }
     }
-    
+
     return levels;
   }
 
@@ -374,11 +376,11 @@ export class NodeExecutor extends EventEmitter {
     }
 
     // Check for type compatibility
-    if (fromPort.dataType.name !== toPort.dataType.name && 
-        fromPort.dataType.name !== 'any' && 
+    if (fromPort.dataType.name !== toPort.dataType.name &&
+        fromPort.dataType.name !== 'any' &&
         toPort.dataType.name !== 'any') {
       throw new Error(
-        `Type mismatch: cannot connect ${fromPort.dataType.name} to ${toPort.dataType.name}`
+        `Type mismatch: cannot connect ${fromPort.dataType.name} to ${toPort.dataType.name}`,
       );
     }
   }
@@ -394,11 +396,11 @@ export class NodeExecutor extends EventEmitter {
   /**
    * Emit a node event
    */
-  private emitEvent(type: NodeEventType, data: any): void {
+  private emitEvent(type: NodeEventType, data: unknown): void {
     const event: NodeEvent = {
       type,
       timestamp: new Date(),
-      data
+      data,
     };
     this.emit(type, event);
   }

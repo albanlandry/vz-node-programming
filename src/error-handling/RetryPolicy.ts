@@ -1,4 +1,4 @@
-import { NodeId, ExecutionContext, ExecutionResult } from '../types';
+import { NodeId } from '../types';
 import { logger } from '../utils/Logger';
 
 /**
@@ -29,7 +29,7 @@ export const DEFAULT_RETRY_CONFIG: RetryConfig = {
   initialDelay: 1000,
   maxDelay: 30000,
   backoffMultiplier: 2,
-  useJitter: true
+  useJitter: true,
 };
 
 /**
@@ -47,52 +47,52 @@ export class RetryPolicy {
    */
   async execute<T>(
     fn: () => Promise<T>,
-    context?: { nodeId?: NodeId; nodeName?: string }
+    context?: { nodeId?: NodeId; nodeName?: string },
   ): Promise<T> {
     let lastError: Error | undefined;
-    
+
     for (let attempt = 0; attempt < this.config.maxAttempts; attempt++) {
       try {
         // Execute the function
         const result = await fn();
-        
+
         // Success - return immediately
         if (attempt > 0) {
           logger.info(`✓ Retry succeeded on attempt ${attempt + 1}${context?.nodeName ? ` for ${context.nodeName}` : ''}`);
         }
         return result;
-        
+
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
-        
+
         // Check if we should retry
         const shouldRetry = this.shouldRetry(lastError, attempt);
-        
+
         if (!shouldRetry || attempt === this.config.maxAttempts - 1) {
           // No more retries - throw the error
           throw new Error(
-            `Failed after ${attempt + 1} attempt(s)${context?.nodeName ? ` for ${context.nodeName}` : ''}: ${lastError.message}`
+            `Failed after ${attempt + 1} attempt(s)${context?.nodeName ? ` for ${context.nodeName}` : ''}: ${lastError.message}`,
           );
         }
-        
+
         // Calculate delay for next attempt
         const delay = this.calculateDelay(attempt);
-        
+
         // Call retry callback if provided
         if (this.config.onRetry) {
           this.config.onRetry(lastError, attempt + 1, delay);
         } else {
           logger.warn(
             `⚠️  Retry attempt ${attempt + 1}/${this.config.maxAttempts}${context?.nodeName ? ` for ${context.nodeName}` : ''} ` +
-            `after ${delay}ms - ${lastError.message}`
+            `after ${delay}ms - ${lastError.message}`,
           );
         }
-        
+
         // Wait before retrying
         await this.delay(delay);
       }
     }
-    
+
     // Should never reach here, but TypeScript needs it
     throw lastError!;
   }
@@ -103,16 +103,16 @@ export class RetryPolicy {
   private calculateDelay(attempt: number): number {
     // Base delay with exponential backoff
     let delay = this.config.initialDelay * Math.pow(this.config.backoffMultiplier, attempt);
-    
+
     // Cap at max delay
     delay = Math.min(delay, this.config.maxDelay);
-    
+
     // Add jitter if enabled (randomize ±25%)
     if (this.config.useJitter) {
       const jitter = delay * 0.25;
       delay = delay - jitter + (Math.random() * jitter * 2);
     }
-    
+
     return Math.floor(delay);
   }
 
@@ -124,14 +124,14 @@ export class RetryPolicy {
     if (this.config.retryCondition) {
       return this.config.retryCondition(error, attempt);
     }
-    
+
     // Default: retry on most errors except specific ones
     const nonRetryableErrors = [
       'ValidationError',
       'AuthenticationError',
-      'AuthorizationError'
+      'AuthorizationError',
     ];
-    
+
     return !nonRetryableErrors.includes(error.name);
   }
 
@@ -165,7 +165,7 @@ export const RetryPolicies = {
    * No retry - fail immediately
    */
   None: new RetryPolicy({
-    maxAttempts: 1
+    maxAttempts: 1,
   }),
 
   /**
@@ -175,7 +175,7 @@ export const RetryPolicies = {
     maxAttempts: 3,
     initialDelay: 500,
     maxDelay: 2000,
-    backoffMultiplier: 1.5
+    backoffMultiplier: 1.5,
   }),
 
   /**
@@ -190,7 +190,7 @@ export const RetryPolicies = {
     maxAttempts: 5,
     initialDelay: 2000,
     maxDelay: 60000,
-    backoffMultiplier: 2.5
+    backoffMultiplier: 2.5,
   }),
 
   /**
@@ -205,9 +205,9 @@ export const RetryPolicies = {
     retryCondition: (error: Error) => {
       // Retry on network-related errors
       const networkErrors = ['ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', 'NetworkError'];
-      return networkErrors.some(errType => 
-        error.message.includes(errType) || error.name.includes(errType)
+      return networkErrors.some(errType =>
+        error.message.includes(errType) || error.name.includes(errType),
       );
-    }
-  })
+    },
+  }),
 };

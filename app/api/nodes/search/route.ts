@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import { NodeRegistry, registerBuiltInNodes } from '../../../../src/index';
 
 /**
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     // Register built-in nodes if not already registered
     const registry = NodeRegistry.getInstance();
-    
+
     if (registry.getAllTypes().length === 0) {
       registerBuiltInNodes();
     }
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
     // Search by keyword
     if (q) {
       results = registry.search(q);
-      
+
       // Apply category/tag filters if provided
       if (category) {
         results = results.filter(node => node.category === category);
@@ -48,16 +49,16 @@ export async function GET(request: NextRequest) {
       results,
       count: results.length,
       query: { q, category, tag },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('Error searching nodes:', error);
     return NextResponse.json(
       {
         error: 'Failed to search nodes',
-        message: error instanceof Error ? error.message : String(error)
+        message: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

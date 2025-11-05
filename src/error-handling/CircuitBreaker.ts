@@ -37,7 +37,7 @@ export const DEFAULT_CIRCUIT_CONFIG: CircuitBreakerConfig = {
   failureThreshold: 5,
   successThreshold: 2,
   resetTimeout: 60000, // 1 minute
-  failureWindow: 10000  // 10 seconds
+  failureWindow: 10000,  // 10 seconds
 };
 
 /**
@@ -62,7 +62,7 @@ export class CircuitBreaker {
 
   constructor(
     config: Partial<CircuitBreakerConfig> = {},
-    context?: { nodeId?: NodeId; nodeName?: string }
+    context?: { nodeId?: NodeId; nodeName?: string },
   ) {
     this.config = { ...DEFAULT_CIRCUIT_CONFIG, ...config };
     this.nodeId = context?.nodeId;
@@ -81,7 +81,7 @@ export class CircuitBreaker {
       } else {
         throw new Error(
           `Circuit breaker is OPEN${this.nodeName ? ` for ${this.nodeName}` : ''}. ` +
-          `Next attempt in ${Math.ceil((this.nextAttemptTime - Date.now()) / 1000)}s`
+          `Next attempt in ${Math.ceil((this.nextAttemptTime - Date.now()) / 1000)}s`,
         );
       }
     }
@@ -89,16 +89,16 @@ export class CircuitBreaker {
     try {
       // Execute the function
       const result = await fn();
-      
+
       // Record success
       this.onSuccess();
-      
+
       return result;
-      
+
     } catch (error) {
       // Record failure
       this.onFailure(error instanceof Error ? error : new Error(String(error)));
-      
+
       throw error;
     }
   }
@@ -109,13 +109,13 @@ export class CircuitBreaker {
   private onSuccess(): void {
     if (this.state === CircuitState.HALF_OPEN) {
       this.successes++;
-      
+
       if (this.successes >= this.config.successThreshold) {
         // Enough successes - close the circuit
         this.transitionTo(CircuitState.CLOSED);
         this.failures = [];
         this.successes = 0;
-        
+
         if (this.config.onClose) {
           this.config.onClose();
         }
@@ -131,25 +131,25 @@ export class CircuitBreaker {
    */
   private onFailure(error: Error): void {
     const now = Date.now();
-    
+
     // Add failure record
     this.failures.push({
       timestamp: now,
-      error
+      error,
     });
-    
+
     // Remove old failures outside the window
     this.failures = this.failures.filter(
-      f => now - f.timestamp < this.config.failureWindow
+      f => now - f.timestamp < this.config.failureWindow,
     );
-    
+
     // Check if we should open the circuit
     if (this.state === CircuitState.CLOSED || this.state === CircuitState.HALF_OPEN) {
       if (this.failures.length >= this.config.failureThreshold) {
         this.transitionTo(CircuitState.OPEN);
         this.nextAttemptTime = now + this.config.resetTimeout;
         this.successes = 0;
-        
+
         if (this.config.onOpen) {
           this.config.onOpen(this.failures.length);
         }
@@ -162,15 +162,15 @@ export class CircuitBreaker {
    */
   private transitionTo(newState: CircuitState): void {
     const oldState = this.state;
-    
+
     if (oldState !== newState) {
       this.state = newState;
-      
+
       logger.info(
         `🔌 Circuit breaker${this.nodeName ? ` for ${this.nodeName}` : ''}: ` +
-        `${oldState} → ${newState}`
+        `${oldState} → ${newState}`,
       );
-      
+
       if (this.config.onStateChange) {
         this.config.onStateChange(oldState, newState);
       }
@@ -190,7 +190,7 @@ export class CircuitBreaker {
   getFailureCount(): number {
     const now = Date.now();
     return this.failures.filter(
-      f => now - f.timestamp < this.config.failureWindow
+      f => now - f.timestamp < this.config.failureWindow,
     ).length;
   }
 
@@ -202,12 +202,12 @@ export class CircuitBreaker {
     failures: number;
     successes: number;
     nextAttemptTime?: number;
-  } {
+    } {
     return {
       state: this.state,
       failures: this.getFailureCount(),
       successes: this.successes,
-      nextAttemptTime: this.state === CircuitState.OPEN ? this.nextAttemptTime : undefined
+      nextAttemptTime: this.state === CircuitState.OPEN ? this.nextAttemptTime : undefined,
     };
   }
 
@@ -252,12 +252,12 @@ export class CircuitBreakerRegistry {
   getOrCreate(
     nodeId: NodeId,
     config?: Partial<CircuitBreakerConfig>,
-    nodeName?: string
+    nodeName?: string,
   ): CircuitBreaker {
     if (!this.breakers.has(nodeId)) {
       this.breakers.set(
         nodeId,
-        new CircuitBreaker(config, { nodeId, nodeName })
+        new CircuitBreaker(config, { nodeId, nodeName }),
       );
     }
     return this.breakers.get(nodeId)!;

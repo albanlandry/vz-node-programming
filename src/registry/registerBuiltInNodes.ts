@@ -1,11 +1,12 @@
-import { NodeRegistry } from './NodeRegistry';
-import { DataTypes } from '../types';
 
 // Import all built-in nodes
+import { DelayNode, HttpRequestNode, PromiseAllNode, PromiseRaceNode, RetryNode } from '../nodes/async/AsyncNodes';
 import { MapNode, FilterNode, ReduceNode, ComposeNode } from '../nodes/functional/FunctionalNodes';
 import { CalculatorNode, CounterNode, BankAccountNode } from '../nodes/oop/ObjectOrientedNodes';
-import { DelayNode, HttpRequestNode, PromiseAllNode, PromiseRaceNode, RetryNode } from '../nodes/async/AsyncNodes';
 import { ConditionalNode, MathNode, StringNode, TransformNode, LoggerNode } from '../nodes/utility/UtilityNodes';
+import { DataTypes } from '../types';
+
+import { NodeRegistry } from './NodeRegistry';
 
 /**
  * Register all built-in nodes with the registry
@@ -30,28 +31,28 @@ export function registerBuiltInNodes(): void {
         name: 'Array',
         dataType: DataTypes.ARRAY,
         required: true,
-        description: 'Input array to map over'
+        description: 'Input array to map over',
       },
       {
         id: 'function',
         name: 'Function',
         dataType: DataTypes.FUNCTION,
         required: true,
-        description: 'Function to apply to each element'
-      }
+        description: 'Function to apply to each element',
+      },
     ],
     outputs: [
       {
         id: 'result',
         name: 'Result',
         dataType: DataTypes.ARRAY,
-        description: 'Mapped array result'
-      }
+        description: 'Mapped array result',
+      },
     ],
     examples: [
       'Map numbers to their squares: [1,2,3] → [1,4,9]',
-      'Transform objects in array'
-    ]
+      'Transform objects in array',
+    ],
   });
 
   registry.register(FilterNode, {
@@ -70,28 +71,28 @@ export function registerBuiltInNodes(): void {
         name: 'Array',
         dataType: DataTypes.ARRAY,
         required: true,
-        description: 'Input array to filter'
+        description: 'Input array to filter',
       },
       {
         id: 'predicate',
         name: 'Predicate',
         dataType: DataTypes.FUNCTION,
         required: true,
-        description: 'Predicate function to test each element'
-      }
+        description: 'Predicate function to test each element',
+      },
     ],
     outputs: [
       {
         id: 'result',
         name: 'Result',
         dataType: DataTypes.ARRAY,
-        description: 'Filtered array result'
-      }
+        description: 'Filtered array result',
+      },
     ],
     examples: [
       'Filter even numbers: [1,2,3,4] → [2,4]',
-      'Filter by property value'
-    ]
+      'Filter by property value',
+    ],
   });
 
   registry.register(ReduceNode, {
@@ -110,35 +111,35 @@ export function registerBuiltInNodes(): void {
         name: 'Array',
         dataType: DataTypes.ARRAY,
         required: true,
-        description: 'Input array to reduce'
+        description: 'Input array to reduce',
       },
       {
         id: 'reducer',
         name: 'Reducer',
         dataType: DataTypes.FUNCTION,
         required: true,
-        description: 'Reducer function'
+        description: 'Reducer function',
       },
       {
         id: 'initial',
         name: 'Initial Value',
         dataType: DataTypes.ANY,
         required: false,
-        description: 'Initial value for reduction'
-      }
+        description: 'Initial value for reduction',
+      },
     ],
     outputs: [
       {
         id: 'result',
         name: 'Result',
         dataType: DataTypes.ANY,
-        description: 'Reduced result'
-      }
+        description: 'Reduced result',
+      },
     ],
     examples: [
       'Sum array: [1,2,3,4] → 10',
-      'Concatenate strings'
-    ]
+      'Concatenate strings',
+    ],
   });
 
   registry.register(ComposeNode, {
@@ -157,24 +158,24 @@ export function registerBuiltInNodes(): void {
         name: 'Functions',
         dataType: DataTypes.ARRAY,
         required: true,
-        description: 'Array of functions to compose'
+        description: 'Array of functions to compose',
       },
       {
         id: 'value',
         name: 'Value',
         dataType: DataTypes.ANY,
         required: true,
-        description: 'Value to apply composed functions to'
-      }
+        description: 'Value to apply composed functions to',
+      },
     ],
     outputs: [
       {
         id: 'result',
         name: 'Result',
         dataType: DataTypes.ANY,
-        description: 'Result of composed function application'
-      }
-    ]
+        description: 'Result of composed function application',
+      },
+    ],
   });
 
   // Object-Oriented Programming Nodes
@@ -194,41 +195,41 @@ export function registerBuiltInNodes(): void {
         name: 'Operation',
         dataType: DataTypes.STRING,
         required: true,
-        description: 'Operation: add, subtract, multiply, divide, clear, store, retrieve'
+        description: 'Operation: add, subtract, multiply, divide, clear, store, retrieve',
       },
       {
         id: 'value',
         name: 'Value',
         dataType: DataTypes.NUMBER,
         required: false,
-        description: 'Value to use in operation'
+        description: 'Value to use in operation',
       },
       {
         id: 'variable',
         name: 'Variable',
         dataType: DataTypes.STRING,
         required: false,
-        description: 'Variable name for storing/retrieving values'
-      }
+        description: 'Variable name for storing/retrieving values',
+      },
     ],
     outputs: [
       {
         id: 'result',
         name: 'Result',
         dataType: DataTypes.NUMBER,
-        description: 'Calculation result'
+        description: 'Calculation result',
       },
       {
         id: 'state',
         name: 'State',
         dataType: DataTypes.OBJECT,
-        description: 'Current calculator state'
-      }
+        description: 'Current calculator state',
+      },
     ],
     examples: [
       'Add 10: result += 10',
-      'Multiply by 2: result *= 2'
-    ]
+      'Multiply by 2: result *= 2',
+    ],
   });
 
   registry.register(CounterNode, {
@@ -247,30 +248,30 @@ export function registerBuiltInNodes(): void {
         name: 'Action',
         dataType: DataTypes.STRING,
         required: true,
-        description: 'Action: increment, decrement, reset, setStep'
+        description: 'Action: increment, decrement, reset, setStep',
       },
       {
         id: 'value',
         name: 'Value',
         dataType: DataTypes.NUMBER,
         required: false,
-        description: 'Value for setStep action'
-      }
+        description: 'Value for setStep action',
+      },
     ],
     outputs: [
       {
         id: 'count',
         name: 'Count',
         dataType: DataTypes.NUMBER,
-        description: 'Current count value'
+        description: 'Current count value',
       },
       {
         id: 'step',
         name: 'Step',
         dataType: DataTypes.NUMBER,
-        description: 'Current step value'
-      }
-    ]
+        description: 'Current step value',
+      },
+    ],
   });
 
   registry.register(BankAccountNode, {
@@ -289,36 +290,36 @@ export function registerBuiltInNodes(): void {
         name: 'Action',
         dataType: DataTypes.STRING,
         required: true,
-        description: 'Action: deposit, withdraw, balance, history'
+        description: 'Action: deposit, withdraw, balance, history',
       },
       {
         id: 'amount',
         name: 'Amount',
         dataType: DataTypes.NUMBER,
         required: false,
-        description: 'Amount for deposit/withdraw'
-      }
+        description: 'Amount for deposit/withdraw',
+      },
     ],
     outputs: [
       {
         id: 'balance',
         name: 'Balance',
         dataType: DataTypes.NUMBER,
-        description: 'Current account balance'
+        description: 'Current account balance',
       },
       {
         id: 'transaction',
         name: 'Transaction',
         dataType: DataTypes.OBJECT,
-        description: 'Last transaction details'
+        description: 'Last transaction details',
       },
       {
         id: 'history',
         name: 'History',
         dataType: DataTypes.ARRAY,
-        description: 'Transaction history'
-      }
-    ]
+        description: 'Transaction history',
+      },
+    ],
   });
 
   // Async Programming Nodes
@@ -338,28 +339,28 @@ export function registerBuiltInNodes(): void {
         name: 'Value',
         dataType: DataTypes.ANY,
         required: true,
-        description: 'Value to pass through after delay'
+        description: 'Value to pass through after delay',
       },
       {
         id: 'delay',
         name: 'Delay (ms)',
         dataType: DataTypes.NUMBER,
         required: true,
-        description: 'Delay in milliseconds'
-      }
+        description: 'Delay in milliseconds',
+      },
     ],
     outputs: [
       {
         id: 'result',
         name: 'Result',
         dataType: DataTypes.ANY,
-        description: 'Value passed through after delay'
-      }
+        description: 'Value passed through after delay',
+      },
     ],
     examples: [
       'Delay 1 second: delay=1000',
-      'Rate limiting'
-    ]
+      'Rate limiting',
+    ],
   });
 
   registry.register(HttpRequestNode, {
@@ -378,54 +379,54 @@ export function registerBuiltInNodes(): void {
         name: 'URL',
         dataType: DataTypes.STRING,
         required: true,
-        description: 'URL to make request to'
+        description: 'URL to make request to',
       },
       {
         id: 'method',
         name: 'Method',
         dataType: DataTypes.STRING,
         required: false,
-        description: 'HTTP method (GET, POST, PUT, DELETE)'
+        description: 'HTTP method (GET, POST, PUT, DELETE)',
       },
       {
         id: 'headers',
         name: 'Headers',
         dataType: DataTypes.OBJECT,
         required: false,
-        description: 'Request headers'
+        description: 'Request headers',
       },
       {
         id: 'body',
         name: 'Body',
         dataType: DataTypes.ANY,
         required: false,
-        description: 'Request body'
-      }
+        description: 'Request body',
+      },
     ],
     outputs: [
       {
         id: 'response',
         name: 'Response',
         dataType: DataTypes.OBJECT,
-        description: 'HTTP response'
+        description: 'HTTP response',
       },
       {
         id: 'status',
         name: 'Status',
         dataType: DataTypes.NUMBER,
-        description: 'HTTP status code'
+        description: 'HTTP status code',
       },
       {
         id: 'data',
         name: 'Data',
         dataType: DataTypes.ANY,
-        description: 'Response data'
-      }
+        description: 'Response data',
+      },
     ],
     examples: [
       'GET request to API',
-      'POST data to server'
-    ]
+      'POST data to server',
+    ],
   });
 
   registry.register(PromiseAllNode, {
@@ -444,23 +445,23 @@ export function registerBuiltInNodes(): void {
         name: 'Promises',
         dataType: DataTypes.ARRAY,
         required: true,
-        description: 'Array of promises to execute'
-      }
+        description: 'Array of promises to execute',
+      },
     ],
     outputs: [
       {
         id: 'results',
         name: 'Results',
         dataType: DataTypes.ARRAY,
-        description: 'Results from all promises'
+        description: 'Results from all promises',
       },
       {
         id: 'success',
         name: 'Success',
         dataType: DataTypes.BOOLEAN,
-        description: 'Whether all promises succeeded'
-      }
-    ]
+        description: 'Whether all promises succeeded',
+      },
+    ],
   });
 
   registry.register(PromiseRaceNode, {
@@ -479,23 +480,23 @@ export function registerBuiltInNodes(): void {
         name: 'Promises',
         dataType: DataTypes.ARRAY,
         required: true,
-        description: 'Array of promises to race'
-      }
+        description: 'Array of promises to race',
+      },
     ],
     outputs: [
       {
         id: 'result',
         name: 'Result',
         dataType: DataTypes.ANY,
-        description: 'Result from the first completed promise'
+        description: 'Result from the first completed promise',
       },
       {
         id: 'index',
         name: 'Index',
         dataType: DataTypes.NUMBER,
-        description: 'Index of the winning promise'
-      }
-    ]
+        description: 'Index of the winning promise',
+      },
+    ],
   });
 
   registry.register(RetryNode, {
@@ -514,37 +515,37 @@ export function registerBuiltInNodes(): void {
         name: 'Operation',
         dataType: DataTypes.FUNCTION,
         required: true,
-        description: 'Async operation to retry'
+        description: 'Async operation to retry',
       },
       {
         id: 'maxRetries',
         name: 'Max Retries',
         dataType: DataTypes.NUMBER,
         required: false,
-        description: 'Maximum number of retries (default: 3)'
+        description: 'Maximum number of retries (default: 3)',
       },
       {
         id: 'baseDelay',
         name: 'Base Delay (ms)',
         dataType: DataTypes.NUMBER,
         required: false,
-        description: 'Base delay in milliseconds (default: 1000)'
-      }
+        description: 'Base delay in milliseconds (default: 1000)',
+      },
     ],
     outputs: [
       {
         id: 'result',
         name: 'Result',
         dataType: DataTypes.ANY,
-        description: 'Result from successful operation'
+        description: 'Result from successful operation',
       },
       {
         id: 'attempts',
         name: 'Attempts',
         dataType: DataTypes.NUMBER,
-        description: 'Number of attempts made'
-      }
-    ]
+        description: 'Number of attempts made',
+      },
+    ],
   });
 
   // Utility Nodes
@@ -564,35 +565,35 @@ export function registerBuiltInNodes(): void {
         name: 'Condition',
         dataType: DataTypes.BOOLEAN,
         required: true,
-        description: 'Boolean condition to evaluate'
+        description: 'Boolean condition to evaluate',
       },
       {
         id: 'trueValue',
         name: 'True Value',
         dataType: DataTypes.ANY,
         required: true,
-        description: 'Value to return if condition is true'
+        description: 'Value to return if condition is true',
       },
       {
         id: 'falseValue',
         name: 'False Value',
         dataType: DataTypes.ANY,
         required: true,
-        description: 'Value to return if condition is false'
-      }
+        description: 'Value to return if condition is false',
+      },
     ],
     outputs: [
       {
         id: 'result',
         name: 'Result',
         dataType: DataTypes.ANY,
-        description: 'Selected value based on condition'
-      }
+        description: 'Selected value based on condition',
+      },
     ],
     examples: [
       'If-else logic',
-      'Ternary operation'
-    ]
+      'Ternary operation',
+    ],
   });
 
   registry.register(MathNode, {
@@ -611,35 +612,35 @@ export function registerBuiltInNodes(): void {
         name: 'Operation',
         dataType: DataTypes.STRING,
         required: true,
-        description: 'Math operation: add, subtract, multiply, divide, power, sqrt'
+        description: 'Math operation: add, subtract, multiply, divide, power, sqrt',
       },
       {
         id: 'a',
         name: 'A',
         dataType: DataTypes.NUMBER,
         required: true,
-        description: 'First number'
+        description: 'First number',
       },
       {
         id: 'b',
         name: 'B',
         dataType: DataTypes.NUMBER,
         required: false,
-        description: 'Second number (not needed for sqrt)'
-      }
+        description: 'Second number (not needed for sqrt)',
+      },
     ],
     outputs: [
       {
         id: 'result',
         name: 'Result',
         dataType: DataTypes.NUMBER,
-        description: 'Mathematical result'
-      }
+        description: 'Mathematical result',
+      },
     ],
     examples: [
       'Add: 5 + 3 = 8',
-      'Multiply: 4 * 2 = 8'
-    ]
+      'Multiply: 4 * 2 = 8',
+    ],
   });
 
   registry.register(StringNode, {
@@ -658,31 +659,31 @@ export function registerBuiltInNodes(): void {
         name: 'Operation',
         dataType: DataTypes.STRING,
         required: true,
-        description: 'String operation: concat, split, replace, toUpperCase, toLowerCase, length'
+        description: 'String operation: concat, split, replace, toUpperCase, toLowerCase, length',
       },
       {
         id: 'input',
         name: 'Input',
         dataType: DataTypes.STRING,
         required: true,
-        description: 'Input string'
+        description: 'Input string',
       },
       {
         id: 'parameter',
         name: 'Parameter',
         dataType: DataTypes.ANY,
         required: false,
-        description: 'Additional parameter for operation'
-      }
+        description: 'Additional parameter for operation',
+      },
     ],
     outputs: [
       {
         id: 'result',
         name: 'Result',
         dataType: DataTypes.ANY,
-        description: 'String operation result'
-      }
-    ]
+        description: 'String operation result',
+      },
+    ],
   });
 
   registry.register(TransformNode, {
@@ -701,28 +702,28 @@ export function registerBuiltInNodes(): void {
         name: 'Data',
         dataType: DataTypes.ANY,
         required: true,
-        description: 'Data to transform'
+        description: 'Data to transform',
       },
       {
         id: 'transformer',
         name: 'Transformer',
         dataType: DataTypes.FUNCTION,
         required: true,
-        description: 'Transformation function'
-      }
+        description: 'Transformation function',
+      },
     ],
     outputs: [
       {
         id: 'result',
         name: 'Result',
         dataType: DataTypes.ANY,
-        description: 'Transformed data'
-      }
+        description: 'Transformed data',
+      },
     ],
     examples: [
       'Format JSON',
-      'Convert data structure'
-    ]
+      'Convert data structure',
+    ],
   });
 
   registry.register(LoggerNode, {
@@ -741,30 +742,30 @@ export function registerBuiltInNodes(): void {
         name: 'Level',
         dataType: DataTypes.STRING,
         required: true,
-        description: 'Log level: info, warn, error, debug'
+        description: 'Log level: info, warn, error, debug',
       },
       {
         id: 'message',
         name: 'Message',
         dataType: DataTypes.ANY,
         required: true,
-        description: 'Message to log'
+        description: 'Message to log',
       },
       {
         id: 'data',
         name: 'Data',
         dataType: DataTypes.ANY,
         required: false,
-        description: 'Additional data to log'
-      }
+        description: 'Additional data to log',
+      },
     ],
     outputs: [
       {
         id: 'logged',
         name: 'Logged',
         dataType: DataTypes.BOOLEAN,
-        description: 'Whether logging was successful'
-      }
-    ]
+        description: 'Whether logging was successful',
+      },
+    ],
   });
 }

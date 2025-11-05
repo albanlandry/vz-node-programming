@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface NodeFiltersProps {
   categories: string[];
   selectedCategory: string | null;
@@ -25,7 +27,10 @@ export default function NodeFilters({
             id="search"
             type="text"
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={(e) => {
+              const target = e.target as HTMLInputElement;
+              onSearchChange(target.value);
+            }}
             placeholder="Search by name, description, or tags..."
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
@@ -38,8 +43,11 @@ export default function NodeFilters({
           </label>
           <select
             id="category"
-            value={selectedCategory || ''}
-            onChange={(e) => onCategoryChange(e.target.value || null)}
+            value={selectedCategory ?? ''}
+            onChange={(e) => {
+              const target = e.target as HTMLSelectElement;
+              onCategoryChange(target.value ? target.value : null);
+            }}
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">All Categories</option>

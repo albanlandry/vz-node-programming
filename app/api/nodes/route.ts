@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { NodeRegistry, registerBuiltInNodes } from '../../../src/index';
 
 /**
@@ -9,7 +10,7 @@ export async function GET() {
   try {
     // Register built-in nodes if not already registered
     const registry = NodeRegistry.getInstance();
-    
+
     // Check if nodes are already registered
     if (registry.getAllTypes().length === 0) {
       registerBuiltInNodes();
@@ -24,16 +25,16 @@ export async function GET() {
       nodes,
       categories,
       stats,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('Error fetching nodes:', error);
     return NextResponse.json(
       {
         error: 'Failed to fetch nodes',
-        message: error instanceof Error ? error.message : String(error)
+        message: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

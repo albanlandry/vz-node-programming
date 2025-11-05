@@ -26,7 +26,7 @@ export const DataTypes = {
   OBJECT: { name: 'object', description: 'Object value' },
   ARRAY: { name: 'array', description: 'Array value' },
   FUNCTION: { name: 'function', description: 'Function value' },
-  PROMISE: { name: 'promise', description: 'Promise value' }
+  PROMISE: { name: 'promise', description: 'Promise value' },
 } as const;
 
 /**
@@ -70,7 +70,7 @@ export class NodeError extends Error {
     message: string,
     public nodeId: NodeId,
     public portId?: PortId,
-    public originalError?: Error
+    public originalError?: Error,
   ) {
     super(message);
     this.name = 'NodeError';
@@ -96,7 +96,7 @@ export interface INode {
   readonly description?: string;
   readonly inputs: Port[];
   readonly outputs: Port[];
-  
+
   execute(context: ExecutionContext): Promise<ExecutionResult>;
   validate(): boolean;
 }

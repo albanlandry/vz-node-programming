@@ -24,7 +24,7 @@ export interface DeadLetterEntry {
   /** Number of retry attempts */
   retryAttempts: number;
   /** Custom metadata */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   /** Whether the entry has been processed */
   processed: boolean;
 }
@@ -51,7 +51,7 @@ export interface DLQConfig {
  */
 export const DEFAULT_DLQ_CONFIG: DLQConfig = {
   maxEntries: 1000,
-  retentionPeriod: 7 * 24 * 60 * 60 * 1000 // 7 days
+  retentionPeriod: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
 /**
@@ -89,7 +89,7 @@ export class DeadLetterQueue {
     context: ExecutionContext;
     result: ExecutionResult;
     retryAttempts?: number;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   }): Promise<DeadLetterEntry> {
     const entry: DeadLetterEntry = {
       id: this.generateId(),
@@ -100,9 +100,9 @@ export class DeadLetterQueue {
       context: params.context,
       result: params.result,
       timestamp: new Date(),
-      retryAttempts: params.retryAttempts || 0,
+      retryAttempts: params.retryAttempts ?? 0,
       metadata: params.metadata,
-      processed: false
+      processed: false,
     };
 
     // Add to queue
@@ -125,7 +125,7 @@ export class DeadLetterQueue {
 
     logger.error(
       `💀 Dead Letter Queue: Added entry ${entry.id} for ${params.nodeName} ` +
-      `(Error: ${params.error.message})`
+      `(Error: ${params.error.message})`,
     );
 
     return entry;
@@ -201,12 +201,12 @@ export class DeadLetterQueue {
     byNode: Map<NodeId, number>;
     oldestEntry?: Date;
     newestEntry?: Date;
-  } {
+    } {
     const all = this.getAll();
     const byNode = new Map<NodeId, number>();
 
     all.forEach(entry => {
-      byNode.set(entry.nodeId, (byNode.get(entry.nodeId) || 0) + 1);
+      byNode.set(entry.nodeId, (byNode.get(entry.nodeId) ?? 0) + 1);
     });
 
     const timestamps = all.map(e => e.timestamp.getTime());
@@ -216,7 +216,7 @@ export class DeadLetterQueue {
       unprocessed: this.getUnprocessed().length,
       byNode,
       oldestEntry: timestamps.length > 0 ? new Date(Math.min(...timestamps)) : undefined,
-      newestEntry: timestamps.length > 0 ? new Date(Math.max(...timestamps)) : undefined
+      newestEntry: timestamps.length > 0 ? new Date(Math.max(...timestamps)) : undefined,
     };
   }
 
@@ -229,9 +229,9 @@ export class DeadLetterQueue {
       error: {
         name: entry.error.name,
         message: entry.error.message,
-        stack: entry.error.stack
+        stack: entry.error.stack,
       },
-      timestamp: entry.timestamp.toISOString()
+      timestamp: entry.timestamp.toISOString(),
     }));
 
     return JSON.stringify(entries, null, 2);
@@ -260,8 +260,8 @@ export class DeadLetterQueue {
    * Remove oldest entries to maintain max size
    */
   private removeOldest(): void {
-    const entries = this.getAll().sort((a, b) => 
-      a.timestamp.getTime() - b.timestamp.getTime()
+    const entries = this.getAll().sort((a, b) =>
+      a.timestamp.getTime() - b.timestamp.getTime(),
     );
 
     const toRemove = entries.length - this.config.maxEntries;
