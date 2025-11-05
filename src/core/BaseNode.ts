@@ -12,6 +12,7 @@ import {
   DataType,
   DataTypes
 } from '../types';
+import { logger } from '../utils/Logger';
 
 /**
  * Abstract base class for all nodes
@@ -108,7 +109,7 @@ export abstract class BaseNode implements INode {
       
       return true;
     } catch (error) {
-      console.error(`Node validation failed for ${this.id}:`, error);
+      logger.error(`Node validation failed for ${this.id}:`, error);
       return false;
     }
   }

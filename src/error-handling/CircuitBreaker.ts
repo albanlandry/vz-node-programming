@@ -1,4 +1,5 @@
 import { NodeId } from '../types';
+import { logger } from '../utils/Logger';
 
 /**
  * Circuit breaker states
@@ -165,7 +166,7 @@ export class CircuitBreaker {
     if (oldState !== newState) {
       this.state = newState;
       
-      console.log(
+      logger.info(
         `🔌 Circuit breaker${this.nodeName ? ` for ${this.nodeName}` : ''}: ` +
         `${oldState} → ${newState}`
       );

@@ -1,4 +1,5 @@
 import { NodeId, ExecutionId, ExecutionContext, ExecutionResult } from '../types';
+import { logger } from '../utils/Logger';
 
 /**
  * Dead letter entry
@@ -122,7 +123,7 @@ export class DeadLetterQueue {
       this.config.onEntryAdded(entry);
     }
 
-    console.error(
+    logger.error(
       `💀 Dead Letter Queue: Added entry ${entry.id} for ${params.nodeName} ` +
       `(Error: ${params.error.message})`
     );
@@ -295,7 +296,7 @@ export class DeadLetterQueue {
     });
 
     if (removed > 0) {
-      console.log(`🧹 DLQ cleanup: Removed ${removed} old entries`);
+      logger.debug(`🧹 DLQ cleanup: Removed ${removed} old entries`);
     }
   }
 

@@ -1,6 +1,7 @@
 import { INode, NodeId, Connection, PortId } from '../types';
 import { NodeRegistry } from '../registry/NodeRegistry';
 import { NodeExecutor } from '../core/NodeExecutor';
+import { logger } from '../utils/Logger';
 
 /**
  * Serialized node representation
@@ -174,7 +175,7 @@ export class GraphSerializer {
         executor.addNode(node);
         nodeMap.set(serializedNode.id, node);
       } catch (error) {
-        console.warn(`Failed to create node ${serializedNode.id} of type ${serializedNode.type}:`, error);
+        logger.warn(`Failed to create node ${serializedNode.id} of type ${serializedNode.type}:`, error);
       }
     }
 
@@ -191,7 +192,7 @@ export class GraphSerializer {
 
         executor.addConnection(connection);
       } catch (error) {
-        console.warn(`Failed to create connection ${serializedConn.id}:`, error);
+        logger.warn(`Failed to create connection ${serializedConn.id}:`, error);
       }
     }
 
@@ -248,7 +249,7 @@ export class GraphSerializer {
         throw new Error(`Node ${node.id} missing type`);
       }
       if (!this.registry.isRegistered(node.type)) {
-        console.warn(`Node type ${node.type} is not registered`);
+        logger.warn(`Node type ${node.type} is not registered`);
       }
     }
 

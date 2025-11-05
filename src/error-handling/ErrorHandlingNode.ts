@@ -3,6 +3,7 @@ import { ExecutionContext, ExecutionResult, NodeConfig, PortId, NodeError, DataT
 import { RetryPolicy } from './RetryPolicy';
 import { CircuitBreaker } from './CircuitBreaker';
 import { DeadLetterQueue } from './DeadLetterQueue';
+import { logger } from '../utils/Logger';
 
 /**
  * Error handling configuration for nodes
@@ -135,7 +136,7 @@ export abstract class ErrorHandlingNode extends BaseNode {
     } catch (error) {
       // Try fallback if provided
       if (this.errorConfig.fallbackFn) {
-        console.warn(`⚠️  Using fallback for ${this.name}: ${error instanceof Error ? error.message : String(error)}`);
+        logger.warn(`⚠️  Using fallback for ${this.name}: ${error instanceof Error ? error.message : String(error)}`);
         return await this.errorConfig.fallbackFn(error instanceof Error ? error : new Error(String(error)), context);
       }
       
@@ -234,7 +235,7 @@ export class ErrorBoundaryNode extends BaseNode {
         stack: errorObj.stack
       });
       
-      console.warn(`🛡️  Error Boundary caught error: ${errorObj.message}`);
+      logger.warn(`🛡️  Error Boundary caught error: ${errorObj.message}`);
     }
     
     return outputs;
@@ -311,7 +312,7 @@ export class FallbackNode extends BaseNode {
       // Use fallback
       this.setOutput(outputs, 'result', fallback);
       this.setOutput(outputs, 'usedFallback', true);
-      console.log(`🔄 Fallback node using fallback value`);
+      logger.debug(`🔄 Fallback node using fallback value`);
     }
     
     return outputs;

@@ -12,6 +12,7 @@ import {
   NodeEventType,
   NodeError
 } from '../types';
+import { logger } from '../utils/Logger';
 
 /**
  * Node execution engine that manages the execution of connected nodes
@@ -386,7 +387,7 @@ export class NodeExecutor extends EventEmitter {
    * Handle node execution errors
    */
   private handleNodeError(error: NodeError, nodeId: NodeId): void {
-    console.error(`Node ${nodeId} execution error:`, error);
+    logger.error(`Node ${nodeId} execution error:`, error);
     // Could implement retry logic, circuit breakers, etc. here
   }
 

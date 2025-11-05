@@ -39,6 +39,10 @@ export type {
   ErrorHandlingConfig
 } from './error-handling';
 
+// Utilities
+export { logger, LogLevel, ConsoleLogger, JsonLogger, SilentLogger, createChildLogger } from './utils/Logger';
+export type { Logger } from './utils/Logger';
+
 // Functional programming nodes
 export { MapNode, FilterNode, ReduceNode, ComposeNode } from './nodes/functional/FunctionalNodes';
 

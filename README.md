@@ -9,6 +9,7 @@ A powerful TypeScript/Node.js framework for building programs using a visual nod
 - **Node Registry**: Central registry with discovery, search, and metadata management
 - **Graph Serialization**: Export/import workflows as JSON or YAML
 - **Error Handling**: Enterprise-grade error handling with retry, circuit breaker, fallback, and DLQ
+- **Logging Abstraction**: Configurable logging system with multiple formats (console, JSON, silent)
 - **Error Propagation**: Comprehensive error handling and propagation system
 - **Modular Design**: Highly modular architecture with pluggable nodes
 - **Mixed Paradigms**: Support for Functional, Object-Oriented, and Async programming paradigms
@@ -104,6 +105,7 @@ npm run example:simple-http  # Simple HTTP example
 npm run example:parallel     # Parallel execution examples
 npm run example:registry     # Node registry and serialization
 npm run example:errors       # Error handling (retry, circuit breaker, fallback, DLQ)
+npm run example:logger       # Logging system examples
 ```
 
 Or individually:

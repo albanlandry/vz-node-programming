@@ -1,4 +1,5 @@
 import { NodeId, ExecutionContext, ExecutionResult } from '../types';
+import { logger } from '../utils/Logger';
 
 /**
  * Retry strategy configuration
@@ -57,7 +58,7 @@ export class RetryPolicy {
         
         // Success - return immediately
         if (attempt > 0) {
-          console.log(`✓ Retry succeeded on attempt ${attempt + 1}${context?.nodeName ? ` for ${context.nodeName}` : ''}`);
+          logger.info(`✓ Retry succeeded on attempt ${attempt + 1}${context?.nodeName ? ` for ${context.nodeName}` : ''}`);
         }
         return result;
         
@@ -81,7 +82,7 @@ export class RetryPolicy {
         if (this.config.onRetry) {
           this.config.onRetry(lastError, attempt + 1, delay);
         } else {
-          console.warn(
+          logger.warn(
             `⚠️  Retry attempt ${attempt + 1}/${this.config.maxAttempts}${context?.nodeName ? ` for ${context.nodeName}` : ''} ` +
             `after ${delay}ms - ${lastError.message}`
           );

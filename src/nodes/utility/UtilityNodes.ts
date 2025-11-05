@@ -1,5 +1,6 @@
 import { BaseNode } from '../../core/BaseNode';
 import { ExecutionContext, PortId, DataTypes } from '../../types';
+import { logger, LogLevel } from '../../utils/Logger';
 
 /**
  * Utility and Mixed Paradigm Examples
@@ -344,29 +345,26 @@ export class LoggerNode extends BaseNode {
     const message = this.getInput<any>(context, 'message');
     const data = this.getInput<any>(context, 'data');
     
-    const logEntry = {
-      timestamp: new Date().toISOString(),
-      level,
-      message,
-      data
-    };
+    // Map string level to LogLevel enum and use logger
+    const logLevel = level?.toLowerCase();
+    const logMessage = typeof message === 'string' ? message : JSON.stringify(message);
     
-    // Log to console based on level
-    switch (level) {
+    // Log using the logger abstraction
+    switch (logLevel) {
       case 'info':
-        console.info(logEntry);
+        logger.info(logMessage, data !== undefined ? { data } : {});
         break;
       case 'warn':
-        console.warn(logEntry);
+        logger.warn(logMessage, data !== undefined ? { data } : {});
         break;
       case 'error':
-        console.error(logEntry);
+        logger.error(logMessage, data !== undefined ? { data } : {});
         break;
       case 'debug':
-        console.debug(logEntry);
+        logger.debug(logMessage, data !== undefined ? { data } : {});
         break;
       default:
-        console.log(logEntry);
+        logger.info(logMessage, data !== undefined ? { data } : {});
     }
     
     this.setOutput(outputs, 'logged', true);

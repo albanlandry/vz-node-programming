@@ -13,6 +13,7 @@
     "example:parallel": "npm run build && node dist/examples/parallel-execution.js",
     "example:registry": "npm run build && node dist/examples/registry-example.js",
     "example:errors": "npm run build && node dist/examples/error-handling-example.js",
+    "example:logger": "npm run build && node dist/examples/logger-example.js",
     "example:build": "tsc",
     "example:run": "node dist/examples/usage-examples.js",
     "test": "jest",
