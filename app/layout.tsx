@@ -1,5 +1,9 @@
 import type { Metadata } from 'next';
+
 import '../styles/globals.css';
+
+import Navigation from '../components/Navigation';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 export const metadata: Metadata = {
   title: 'VZ Programming - Node Registry',
@@ -13,7 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="min-h-screen bg-gray-50">
+        <Navigation />
+        <Breadcrumbs />
+        {children}
+      </body>
     </html>
   );
 }
