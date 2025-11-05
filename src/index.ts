@@ -55,6 +55,27 @@ export { DelayNode, HttpRequestNode, PromiseAllNode, PromiseRaceNode, RetryNode 
 // Utility nodes
 export { ConditionalNode, MathNode, StringNode, TransformNode, LoggerNode } from './nodes/utility/UtilityNodes';
 
+// Custom Nodes
+export {
+  CustomNode,
+  CustomNodeManager,
+  CustomNodeStorage,
+  ExpressionValidator,
+  TemplateRegistry,
+  TransformTemplate,
+  FilterTemplate,
+  CalculatorTemplate,
+  ConditionalTemplate,
+  StringOpTemplate,
+} from './custom-nodes';
+export type {
+  TemplateType,
+  CustomNodeConfig,
+  CustomNodeMetadata,
+  ValidationResult,
+  StoredCustomNode,
+} from './custom-nodes';
+
 // Re-export commonly used types for convenience
 export type {
   INode,
