@@ -94,6 +94,35 @@ const results = await executor.execute(initialInputs);
 - **TransformNode**: Data transformation
 - **LoggerNode**: Logging with different levels
 
+## Frontend (Next.js App Router)
+
+Browse and discover nodes with the React-based frontend using Next.js App Router:
+
+```bash
+# Build backend first (required)
+npm run build
+
+# Start frontend development server
+npm run frontend:dev
+
+# Build for production
+npm run frontend:build
+
+# Start production server
+npm run frontend:start
+```
+
+Open [http://localhost:3000](http://localhost:3000) to see the node registry browser.
+
+**Features:**
+- Browse all registered nodes
+- Search and filter by category
+- View node details (inputs, outputs, tags, examples)
+- Statistics dashboard
+- Responsive design
+
+See `README-FRONTEND.md` for detailed frontend documentation.
+
 ## Examples
 
 Run the comprehensive examples:
