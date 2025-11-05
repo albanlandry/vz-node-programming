@@ -16,6 +16,8 @@ A powerful TypeScript/Node.js framework for building programs using a visual nod
 - **Type Safety**: Full TypeScript support with strict typing
 - **Event System**: Built-in event system for monitoring execution
 - **Dependency Resolution**: Automatic dependency resolution and execution ordering
+- **Custom Node Creation**: Web-based UI for creating custom nodes via templates
+- **Graph Editor**: Visual graph editor with drag-and-drop, pan/zoom, and type-safe connections
 
 ## Installation
 

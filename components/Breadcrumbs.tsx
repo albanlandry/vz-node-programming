@@ -33,6 +33,7 @@ export default function Breadcrumbs() {
     const routeLabels: Record<string, string> = {
       'custom-nodes': 'Custom Nodes',
       'create': 'Create Node',
+      'graph-editor': 'Graph Editor',
     };
 
     const segments = pathname.split('/').filter(Boolean);

@@ -1,0 +1,66 @@
+{
+  "id": "node-1762337217863",
+  "type": "custom.to-uppercase",
+  "config": {
+    "name": "To UpperCase",
+    "description": "Turn a String input into uppercase",
+    "template": "string-op",
+    "expression": "inputs.value.toUpperCase()",
+    "inputs": [
+      {
+        "id": "port-1762337104837",
+        "name": "value",
+        "dataType": {
+          "name": "string"
+        },
+        "required": true,
+        "description": "The String value to transform"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "port-1762337136285",
+        "name": "transformed",
+        "dataType": {
+          "name": "string"
+        },
+        "description": "The transformed string value"
+      }
+    ]
+  },
+  "metadata": {
+    "type": "custom.to-uppercase",
+    "displayName": "To UpperCase",
+    "category": "Custom",
+    "description": "Turn a String input into uppercase",
+    "version": "1.0.0",
+    "author": "Alban",
+    "tags": [],
+    "template": "string-op",
+    "expression": "inputs.value.toUpperCase()",
+    "inputs": [
+      {
+        "id": "port-1762337104837",
+        "name": "value",
+        "dataType": {
+          "name": "string"
+        },
+        "required": true,
+        "description": "The String value to transform"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "port-1762337136285",
+        "name": "transformed",
+        "dataType": {
+          "name": "string"
+        },
+        "description": "The transformed string value"
+      }
+    ],
+    "createdAt": "2025-11-05T10:06:57.861Z",
+    "updatedAt": "2025-11-05T10:06:57.865Z",
+    "storageId": "node-1762337217863"
+  }
+}
