@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Edit, Play, Trash2 } from 'lucide-react';
 
 import PageContainer from '../../components/layout/PageContainer';
 import PageHeader from '../../components/layout/PageHeader';
@@ -187,21 +188,24 @@ export default function GraphsPage() {
                   <div className="flex gap-2 pt-4 border-t border-gray-200">
                     <Link
                       href={`/graph-editor?load=${graph.id}`}
-                      className="btn btn-primary btn-sm flex-1"
+                      className="group p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                      title="Edit"
                     >
-                      Edit
+                      <Edit className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
                     </Link>
                     <Link
                       href={`/graphs/${graph.id}/execute`}
-                      className="btn btn-success btn-sm flex-1"
+                      className="group p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                      title="Execute"
                     >
-                      Execute
+                      <Play className="w-5 h-5 text-gray-600 group-hover:text-green-600" />
                     </Link>
                     <button
                       onClick={() => handleDelete(graph.id, graph.name)}
-                      className="btn btn-danger btn-sm"
+                      className="group p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                      title="Delete"
                     >
-                      Delete
+                      <Trash2 className="w-5 h-5 text-gray-600 group-hover:text-red-600" />
                     </button>
                   </div>
                 </ContentCard>

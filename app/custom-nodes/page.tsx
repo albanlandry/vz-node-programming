@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Plus, Trash2, Eye } from 'lucide-react';
 
 import PageContainer from '../../components/layout/PageContainer';
 import PageHeader from '../../components/layout/PageHeader';
@@ -82,8 +83,12 @@ export default function CustomNodesPage() {
         title="Custom Nodes"
         description="Manage your custom-created nodes"
         action={
-          <Link href="/custom-nodes/create" className="btn btn-primary btn-lg">
-            + Create New Node
+          <Link
+            href="/custom-nodes/create"
+            className="group p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            title="Create New Node"
+          >
+            <Plus className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
           </Link>
         }
       />
@@ -100,8 +105,12 @@ export default function CustomNodesPage() {
               description="Create your first custom node to get started"
               icon="🎨"
               action={
-                <Link href="/custom-nodes/create" className="btn btn-primary">
-                  Create Your First Node
+                <Link
+                  href="/custom-nodes/create"
+                  className="group p-2 rounded-lg hover:bg-gray-100 transition-colors inline-block"
+                  title="Create Your First Node"
+                >
+                  <Plus className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
                 </Link>
               }
             />
@@ -143,15 +152,17 @@ export default function CustomNodesPage() {
                   <div className="flex gap-2 pt-4 border-t border-gray-200">
                     <Link
                       href={`/custom-nodes/${node.id}`}
-                      className="btn btn-primary btn-sm flex-1"
+                      className="group p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                      title="View"
                     >
-                      View
+                      <Eye className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
                     </Link>
                     <button
                       onClick={() => handleDelete(node.id)}
-                      className="btn btn-danger btn-sm"
+                      className="group p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                      title="Delete"
                     >
-                      Delete
+                      <Trash2 className="w-5 h-5 text-gray-600 group-hover:text-red-600" />
                     </button>
                   </div>
                 </ContentCard>

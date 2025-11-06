@@ -7,6 +7,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Save, X, ArrowLeft } from 'lucide-react';
 import TemplateSelector from '../../../components/custom-nodes/TemplateSelector';
 import PortEditor, { Port } from '../../../components/custom-nodes/PortEditor';
 import ExpressionEditor from '../../../components/custom-nodes/ExpressionEditor';
@@ -229,16 +230,18 @@ export default function CreateCustomNodePage() {
             <button
               type="submit"
               disabled={loading || !selectedTemplate || !expression}
-              className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title={loading ? 'Creating...' : 'Create Node'}
             >
-              {loading ? 'Creating...' : 'Create Node'}
+              <Save className="w-5 h-5 text-gray-600 group-hover:text-green-600 disabled:text-gray-300" />
             </button>
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="group p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              title="Cancel"
             >
-              Cancel
+              <ArrowLeft className="w-5 h-5 text-gray-600 group-hover:text-gray-800" />
             </button>
           </div>
         </form>

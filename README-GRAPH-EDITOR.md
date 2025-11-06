@@ -1,90 +1,90 @@
-# Graph Editor - 사용 가이드
+# Graph Editor - User Guide
 
-## 개요
+## Overview
 
-웹 기반 그래프 UI 시스템이 성공적으로 구현되었습니다. 노드, 포트, 연결을 시각적으로 생성하고 관리할 수 있습니다.
+A web-based graph UI system has been successfully implemented. You can visually create and manage nodes, ports, and connections.
 
-## 주요 기능
+## Key Features
 
-### ✅ 구현 완료
+### ✅ Implemented Features
 
-1. **노드**
-   - 드래그 앤 드롭으로 이동
-   - 속성 설정 (ID, 이름, 타입, 위치)
-   - 입력/출력 포트 포함
+1. **Nodes**
+   - Drag and drop to move
+   - Property configuration (ID, name, type, position)
+   - Contains input/output ports
 
-2. **포트**
-   - 타입별 색상 코딩
-   - 입력/출력 구분
-   - 필수 포트 표시
+2. **Ports**
+   - Color coding by type
+   - Input/output distinction
+   - Required port indicators
 
-3. **연결**
-   - 포트 간 연결 생성
-   - 타입 검증으로 잘못된 연결 방지
-   - Bezier 곡선으로 시각화
+3. **Connections**
+   - Create connections between ports
+   - Type validation prevents invalid connections
+   - Visualized with Bezier curves
 
 4. **Pan & Zoom**
-   - 마우스 휠로 줌
-   - 중간 버튼 또는 Ctrl+클릭으로 팬
-   - 뷰포트 리셋
+   - Zoom with mouse wheel
+   - Pan with middle button or Ctrl+click
+   - Viewport reset
 
-5. **상태 관리 (Zustand)**
-   - 중앙 집중식 상태 관리
-   - 반응형 업데이트
+5. **State Management (Zustand)**
+   - Centralized state management
+   - Reactive updates
 
-6. **영구 저장**
-   - JSON 파일로 저장/로드
-   - 그래프 상태 보존
+6. **Persistence**
+   - Save/load as JSON files
+   - Preserves graph state
 
-## 빠른 시작
+## Quick Start
 
-### 1. 그래프 에디터 접근
+### 1. Access Graph Editor
 
 ```
 http://localhost:3000/graph-editor
 ```
 
-또는 네비게이션 메뉴에서 "Graph Editor" 클릭
+Or click "Graph Editor" in the navigation menu
 
-### 2. 노드 생성
+### 2. Create Nodes
 
-1. 툴바에서 "Add Node" 버튼 클릭
-2. 노드 이름과 타입 입력
-3. "Add" 클릭
-4. 노드가 캔버스에 나타남
+1. Click "Add Node" button in the toolbar
+2. Enter node name and type
+3. Click "Add"
+4. Node appears on the canvas
 
-### 3. 노드 이동
+### 3. Move Nodes
 
-- 노드의 파란색 헤더를 클릭하고 드래그
-- 위치가 자동으로 저장됨
+- Click and drag the blue header of a node
+- Position is automatically saved
 
-### 4. 연결 생성
+### 4. Create Connections
 
-1. 출력 포트(오른쪽, 색상 점)를 클릭하고 드래그
-2. 입력 포트(왼쪽, 색상 점)로 드래그
-3. 마우스 버튼을 놓으면 연결 생성
-4. 타입이 호환되지 않으면 연결이 거부됨
+1. Click and drag from an output port (right side, colored dot)
+2. Drag to an input port (left side, colored dot)
+3. Release mouse button to create connection
+4. Connection is rejected if types are incompatible
 
-### 5. 삭제
+### 5. Delete
 
-- **노드**: 노드를 선택하고 Delete 키 누르기 또는 ✕ 버튼 클릭
-- **연결**: 연결선을 더블클릭
+- **Node**: Select a node and press Delete key or click ✕ button
+- **Connection**: Double-click the connection line
 
 ### 6. Pan & Zoom
 
-- **줌 인**: 마우스 휠 위로
-- **줌 아웃**: 마우스 휠 아래로
-- **팬**: 중간 마우스 버튼 또는 Ctrl+왼쪽 클릭 드래그
-- **리셋**: "Reset View" 버튼 클릭
+- **Zoom In**: Mouse wheel up
+- **Zoom Out**: Mouse wheel down
+- **Pan**: Middle mouse button or Ctrl+Left click drag
+- **Reset**: Click "Reset View" button
 
-### 7. 저장/로드
+### 7. Save/Load
 
-- **저장**: "Save" 버튼 클릭 → `graph.json` 파일 다운로드
-- **로드**: "Load" 버튼 클릭 → JSON 파일 선택 → 그래프 복원
+- **Save**: Click "Save" button → Downloads `graph.json` file
+- **Load**: Click "Load" button → Select JSON file → Graph is restored
 
-## 타입 시스템
+## Type System
 
-### 포트 타입 색상
+### Port Type Colors
 
 - 🟢 **Green**: String
 - 🔵 **Blue**: Number
@@ -93,84 +93,83 @@ http://localhost:3000/graph-editor
 - 🟣 **Pink**: Array
 - ⚫ **Gray**: Other/Any
 
-### 연결 규칙
+### Connection Rules
 
-- **같은 타입**: ✅ 항상 연결 가능
-- **Any 타입**: ✅ 모든 타입과 연결 가능
-- **Number 타입**: ✅ 서로 호환
-- **호환되지 않는 타입**: ❌ 연결 차단
+- **Same type**: ✅ Always connectable
+- **Any type**: ✅ Connectable with all types
+- **Number type**: ✅ Compatible with each other
+- **Incompatible types**: ❌ Connection blocked
 
-## 키보드 단축키
+## Keyboard Shortcuts
 
-- **Delete / Backspace**: 선택된 노드 삭제
-- **Escape**: 연결 생성 취소
-- **Ctrl + Left Click**: 팬 모드
+- **Delete / Backspace**: Delete selected node
+- **Escape**: Cancel connection creation
+- **Ctrl + Left Click**: Pan mode
 
-## 기술 스택
+## Technology Stack
 
-- **상태 관리**: Zustand
-- **드래그 앤 드롭**: react-draggable
-- **렌더링**: React + SVG
-- **스타일링**: Tailwind CSS
-- **타입 안전성**: TypeScript
+- **State Management**: Zustand
+- **Drag and Drop**: react-draggable
+- **Rendering**: React + SVG
+- **Styling**: Tailwind CSS
+- **Type Safety**: TypeScript
 
-## 파일 구조
+## File Structure
 
 ```
 store/
-└── graphStore.ts              # Zustand 스토어
+└── graphStore.ts              # Zustand store
 
 components/graph/
-├── GraphCanvas.tsx            # 메인 캔버스
-├── GraphNode.tsx              # 노드 컴포넌트
-├── GraphPort.tsx              # 포트 컴포넌트
-├── GraphConnection.tsx        # 연결 컴포넌트
-└── GraphToolbar.tsx           # 툴바
+├── GraphCanvas.tsx            # Main canvas
+├── GraphNode.tsx              # Node component
+├── GraphPort.tsx              # Port component
+├── GraphConnection.tsx        # Connection component
+└── GraphToolbar.tsx           # Toolbar
 
 app/graph-editor/
-└── page.tsx                   # 에디터 페이지
+└── page.tsx                   # Editor page
 ```
 
-## 예제
+## Examples
 
-### 기본 그래프 생성
+### Basic Graph Creation
 
-1. 노드 2개 생성
-2. 첫 번째 노드의 출력 포트에서 두 번째 노드의 입력 포트로 연결
-3. 그래프 저장
+1. Create 2 nodes
+2. Connect output port of first node to input port of second node
+3. Save graph
 
-### 복잡한 그래프
+### Complex Graph
 
-1. 여러 노드 생성
-2. 노드들을 타입에 맞게 연결
-3. Pan & Zoom으로 그래프 탐색
-4. 저장하여 나중에 다시 로드
+1. Create multiple nodes
+2. Connect nodes according to type compatibility
+3. Explore graph with Pan & Zoom
+4. Save to load later
 
-## 문제 해결
+## Troubleshooting
 
-### 연결이 보이지 않음
+### Connections Not Visible
 
-- 포트가 올바르게 렌더링되었는지 확인
-- 타입이 호환되는지 확인
-- 브라우저 콘솔에서 오류 확인
+- Check if ports are rendered correctly
+- Check if types are compatible
+- Check browser console for errors
 
-### 노드를 드래그할 수 없음
+### Cannot Drag Nodes
 
-- 노드의 파란색 헤더를 드래그해야 함
-- 다른 요소가 노드를 가리고 있지 않은지 확인
+- Must drag the blue header of the node
+- Check if other elements are overlapping the node
 
-### 줌이 작동하지 않음
+### Zoom Not Working
 
-- 캔버스 영역에서 마우스 휠을 사용해야 함
-- 브라우저의 기본 줌 동작과 충돌할 수 있음
+- Must use mouse wheel in canvas area
+- May conflict with browser's default zoom behavior
 
-## 다음 단계
+## Next Steps
 
-그래프 에디터는 완전히 작동하며 사용할 준비가 되었습니다!
+The graph editor is fully functional and ready to use!
 
-향후 개선 사항:
-- 레지스트리에서 노드 로드
-- 에디터에서 직접 그래프 실행
-- 노드 속성 편집
-- 실행 시각화
-
+Future improvements:
+- Load nodes from registry
+- Execute graphs directly from editor
+- Edit node properties
+- Execution visualization

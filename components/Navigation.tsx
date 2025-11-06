@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useUIStore } from '../store/uiStore';
 
 interface NavItem {
@@ -18,7 +19,15 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { href: '/', label: 'Node Registry', icon: '📚' },
+  {
+    label: 'Node Registry',
+    icon: '📚',
+    children: [
+      { href: '/', label: 'Browse Nodes', icon: '📚' },
+      { href: '/custom-nodes', label: 'Custom Nodes', icon: '🎨' },
+      { href: '/custom-nodes/create', label: 'Create Node', icon: '➕' },
+    ],
+  },
   {
     label: 'Graphs',
     icon: '📊',
@@ -27,8 +36,6 @@ const navItems: NavItem[] = [
       { href: '/graph-editor', label: 'Graph Editor', icon: '🕸️' },
     ],
   },
-  { href: '/custom-nodes', label: 'Custom Nodes', icon: '🎨' },
-  { href: '/custom-nodes/create', label: 'Create Node', icon: '➕' },
 ];
 
 export default function Navigation() {
@@ -73,7 +80,9 @@ export default function Navigation() {
     const isActive = isItemActive(item);
     const isGraphEditor = pathname === '/graph-editor';
     const isGraphsPage = pathname === '/graphs';
+    const isNodeRegistry = pathname === '/' || pathname === '/custom-nodes' || pathname === '/custom-nodes/create';
     const isGraphsActive = item.label === 'Graphs' && (isGraphEditor || isGraphsPage);
+    const isNodeRegistryActive = item.label === 'Node Registry' && isNodeRegistry;
 
     if (sidebarCollapsed && level > 0) {
       return null; // Hide submenus when collapsed
@@ -85,7 +94,7 @@ export default function Navigation() {
           <button
             onClick={() => toggleSubmenu(item.label)}
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-              isGraphsActive
+              isGraphsActive || isNodeRegistryActive
                 ? 'bg-blue-600 text-white shadow-lg'
                 : 'text-gray-300 hover:bg-gray-800 hover:text-white'
             } ${sidebarCollapsed ? 'justify-center' : ''}`}
@@ -139,12 +148,20 @@ export default function Navigation() {
     );
   };
 
-  // Auto-expand Graphs menu if on graph-editor or graphs page
+  // Auto-expand menus based on current path
   useEffect(() => {
     if (pathname === '/graph-editor' || pathname === '/graphs') {
       setExpandedMenus((prev) => {
         if (!prev.has('Graphs')) {
           return new Set(prev).add('Graphs');
+        }
+        return prev;
+      });
+    }
+    if (pathname === '/' || pathname === '/custom-nodes' || pathname === '/custom-nodes/create') {
+      setExpandedMenus((prev) => {
+        if (!prev.has('Node Registry')) {
+          return new Set(prev).add('Node Registry');
         }
         return prev;
       });
@@ -173,21 +190,15 @@ export default function Navigation() {
         </Link>
         <button
           onClick={toggleSidebar}
-          className="p-1.5 rounded-md hover:bg-gray-800 transition-colors text-gray-400 hover:text-white ml-2"
+          className="group p-1.5 rounded-md hover:bg-gray-800 transition-colors ml-2"
           aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           title={sidebarCollapsed ? 'Expand' : 'Collapse'}
         >
-          <svg
-            className={`w-5 h-5 transition-transform ${sidebarCollapsed ? 'rotate-180' : ''}`}
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-          </svg>
+          {sidebarCollapsed ? (
+            <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-white" />
+          ) : (
+            <ChevronLeft className="w-5 h-5 text-gray-400 group-hover:text-white" />
+          )}
         </button>
       </div>
 

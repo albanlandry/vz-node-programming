@@ -6,6 +6,7 @@
  */
 
 import { useState } from 'react';
+import { Save, FolderOpen, Download, RotateCcw, Trash2 } from 'lucide-react';
 import { useGraphStore } from '../../store/graphStore';
 import type { GraphMetadata } from '../../src/graph-management/types';
 
@@ -776,18 +777,20 @@ export default function GraphToolbar() {
               useGraphStore.getState().clearGraph();
             }}
             disabled={loading}
-            className="btn btn-danger btn-sm"
+            className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Clear"
           >
-            Clear
+            <Trash2 className="w-5 h-5 text-gray-600 group-hover:text-red-600 disabled:text-gray-300" />
           </button>
           <button
             onClick={() => {
               useGraphStore.getState().resetViewport();
             }}
             disabled={loading}
-            className="btn btn-secondary btn-sm"
+            className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Reset View"
           >
-            Reset View
+            <RotateCcw className="w-5 h-5 text-gray-600 group-hover:text-blue-600 disabled:text-gray-300" />
           </button>
         </div>
 
@@ -796,9 +799,10 @@ export default function GraphToolbar() {
             <button
               onClick={() => setSaveDialogOpen(true)}
               disabled={loading || nodes.length === 0}
-              className="btn btn-success btn-sm"
+              className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Save"
             >
-              Save
+              <Save className="w-5 h-5 text-gray-600 group-hover:text-green-600 disabled:text-gray-300" />
             </button>
           </div>
 
@@ -806,9 +810,10 @@ export default function GraphToolbar() {
             <button
               onClick={handleOpenLoadDialog}
               disabled={loading}
-              className="btn btn-primary btn-sm"
+              className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Load"
             >
-              Load
+              <FolderOpen className="w-5 h-5 text-gray-600 group-hover:text-blue-600 disabled:text-gray-300" />
             </button>
           </div>
 
@@ -816,9 +821,10 @@ export default function GraphToolbar() {
             <button
               onClick={() => setExportMenuOpen(!exportMenuOpen)}
               disabled={loading || nodes.length === 0}
-              className="btn btn-secondary btn-sm"
+              className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Export"
             >
-              Export ▼
+              <Download className="w-5 h-5 text-gray-600 group-hover:text-blue-600 disabled:text-gray-300" />
             </button>
             <ExportMenu
               isOpen={exportMenuOpen}
