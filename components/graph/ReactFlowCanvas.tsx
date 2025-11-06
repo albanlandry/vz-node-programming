@@ -90,6 +90,7 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
       type: 'custom',
       position: node.position,
       data: {
+        id: node.id,
         name: node.name,
         type: node.type,
         inputs: node.inputs,
@@ -328,6 +329,7 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
           type: 'custom',
           position,
           data: {
+            id: nodeId,
             name: nodeData.name,
             type: nodeData.type,
             inputs: nodeData.inputs,

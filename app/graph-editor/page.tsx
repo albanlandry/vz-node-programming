@@ -10,8 +10,10 @@
 import { useState, useEffect } from 'react';
 import ReactFlowCanvas from '../../components/graph/ReactFlowCanvas';
 import GraphToolbar from '../../components/graph/GraphToolbar';
+import ExecutionToolbar from '../../components/graph/ExecutionToolbar';
 import NodePalette from '../../components/graph/NodePalette';
 import NodeDetailsPanel from '../../components/graph/NodeDetailsPanel';
+import ExecutionResultsPanel from '../../components/graph/ExecutionResultsPanel';
 import { useGraphStore } from '../../store/graphStore';
 
 export default function GraphEditorPage() {
@@ -33,6 +35,7 @@ export default function GraphEditorPage() {
   return (
     <div className="flex flex-col h-screen bg-gray-50" style={{ height: '100vh' }}>
       <GraphToolbar />
+      <ExecutionToolbar />
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Node Palette */}
         <NodePalette />
@@ -51,6 +54,8 @@ export default function GraphEditorPage() {
           }}
         />
       )}
+      {/* Execution Results Panel */}
+      <ExecutionResultsPanel />
     </div>
   );
 }

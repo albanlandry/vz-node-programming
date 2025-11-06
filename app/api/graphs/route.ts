@@ -5,9 +5,12 @@
  */
 
 import { NextResponse } from 'next/server';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 import { GraphManager } from '../../../src/graph-management';
 import { logger } from '../../../src/utils/Logger';
+import type { GraphDefinition } from '../../../src/graph-management/types';
 
 /**
  * GET /api/graphs
@@ -16,6 +19,31 @@ import { logger } from '../../../src/utils/Logger';
 export async function GET() {
   try {
     const manager = new GraphManager();
+    
+    // Initialize test graph if it doesn't exist
+    try {
+      const graphs = await manager.listGraphs();
+      const testGraphExists = graphs.some(g => g.id === 'test-live-execution-001');
+      
+      if (!testGraphExists) {
+        const testGraphPath = join(process.cwd(), 'data', 'graphs', 'test-live-execution.json');
+        try {
+          const graphData = JSON.parse(readFileSync(testGraphPath, 'utf-8')) as GraphDefinition;
+          // Save directly using storage to preserve the ID
+          const { GraphStorage } = await import('../../../src/graph-management');
+          const storage = new GraphStorage();
+          await storage.save(graphData);
+          logger.info('Test graph initialized');
+        } catch (fileError) {
+          // Test graph file doesn't exist or can't be read - that's okay
+          logger.debug('Test graph file not found, skipping initialization');
+        }
+      }
+    } catch (initError) {
+      // Ignore initialization errors - test graph is optional
+      logger.debug('Test graph initialization skipped:', initError);
+    }
+    
     const graphs = await manager.listGraphs();
     const stats = await manager.getStats();
 

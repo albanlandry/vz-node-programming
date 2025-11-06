@@ -10,7 +10,7 @@
  */
 
 import { create } from 'zustand';
-import type { DataType, Port } from '../src/types';
+import type { DataType, Port, ExecutionResult, NodeError } from '../src/types';
 
 /**
  * Visual position of a node on the canvas
@@ -51,6 +51,37 @@ export interface Viewport {
   x: number;
   y: number;
   zoom: number;
+}
+
+/**
+ * Node execution state
+ */
+export type NodeExecutionStatus = 'idle' | 'queued' | 'executing' | 'completed' | 'failed';
+
+/**
+ * Execution state for a single node
+ */
+export interface NodeExecutionState {
+  status: NodeExecutionStatus;
+  startTime?: number;
+  endTime?: number;
+  executionTime?: number;
+  error?: NodeError;
+}
+
+/**
+ * Graph execution state
+ */
+export interface ExecutionState {
+  isExecuting: boolean;
+  executionId: string | null;
+  nodeStates: Record<string, NodeExecutionState>;
+  results: Record<string, ExecutionResult>;
+  errors: Record<string, NodeError>;
+  executionTime: number;
+  mode: 'sequential' | 'parallel';
+  startTime?: number;
+  endTime?: number;
 }
 
 /**
@@ -104,6 +135,18 @@ interface GraphState {
   saveGraph: () => GraphData;
   loadGraph: (data: GraphData) => void;
   clearGraph: () => void;
+  
+  // Execution state
+  execution: ExecutionState;
+  
+  // Actions - Execution
+  startExecution: (mode: 'sequential' | 'parallel') => void;
+  stopExecution: () => void;
+  updateNodeExecutionState: (nodeId: string, state: Partial<NodeExecutionState>) => void;
+  setExecutionResults: (results: Record<string, ExecutionResult>) => void;
+  setExecutionErrors: (errors: Record<string, NodeError>) => void;
+  setExecutionTime: (time: number) => void;
+  clearExecutionState: () => void;
 }
 
 /**
@@ -166,6 +209,17 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   selectedNodeId: null,
   selectedConnectionId: null,
   connectionStart: null,
+  
+  // Execution state
+  execution: {
+    isExecuting: false,
+    executionId: null,
+    nodeStates: {},
+    results: {},
+    errors: {},
+    executionTime: 0,
+    mode: 'sequential',
+  },
 
   // Node actions
   addNode: (nodeData) => {
@@ -424,6 +478,111 @@ export const useGraphStore = create<GraphState>((set, get) => ({
       selectedNodeId: null,
       selectedConnectionId: null,
       connectionStart: null,
+    });
+  },
+  
+  // Execution actions
+  startExecution: (mode) => {
+    const executionId = generateId();
+    const state = get();
+    
+    // Initialize node states
+    const nodeStates: Record<string, NodeExecutionState> = {};
+    state.nodes.forEach((node) => {
+      nodeStates[node.id] = {
+        status: 'idle',
+      };
+    });
+    
+    set({
+      execution: {
+        isExecuting: true,
+        executionId,
+        nodeStates,
+        results: {},
+        errors: {},
+        executionTime: 0,
+        mode,
+        startTime: Date.now(),
+      },
+    });
+  },
+  
+  stopExecution: () => {
+    set((state) => ({
+      execution: {
+        ...state.execution,
+        isExecuting: false,
+        endTime: Date.now(),
+      },
+    }));
+  },
+  
+  updateNodeExecutionState: (nodeId, stateUpdate) => {
+    set((state) => {
+      const currentState = state.execution.nodeStates[nodeId] || { status: 'idle' };
+      const newState: NodeExecutionState = {
+        ...currentState,
+        ...stateUpdate,
+      };
+      
+      return {
+        execution: {
+          ...state.execution,
+          nodeStates: {
+            ...state.execution.nodeStates,
+            [nodeId]: newState,
+          },
+        },
+      };
+    });
+  },
+  
+  setExecutionResults: (results) => {
+    set((state) => ({
+      execution: {
+        ...state.execution,
+        results: {
+          ...state.execution.results,
+          ...results,
+        },
+      },
+    }));
+  },
+  
+  setExecutionErrors: (errors) => {
+    set((state) => ({
+      execution: {
+        ...state.execution,
+        errors: {
+          ...state.execution.errors,
+          ...errors,
+        },
+      },
+    }));
+  },
+  
+  setExecutionTime: (time) => {
+    set((state) => ({
+      execution: {
+        ...state.execution,
+        executionTime: time,
+        endTime: Date.now(),
+      },
+    }));
+  },
+  
+  clearExecutionState: () => {
+    set({
+      execution: {
+        isExecuting: false,
+        executionId: null,
+        nodeStates: {},
+        results: {},
+        errors: {},
+        executionTime: 0,
+        mode: 'sequential',
+      },
     });
   },
 }));

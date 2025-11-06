@@ -8,11 +8,13 @@
 import { memo } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { Port } from '../../src/types';
+import { useGraphStore, NodeExecutionStatus } from '../../store/graphStore';
 
 /**
  * Custom node data type
  */
 export interface ReactFlowNodeData {
+  id: string;
   name: string;
   type: string;
   inputs: Port[];
@@ -41,24 +43,69 @@ function getTypeColor(typeName: string): string {
 }
 
 /**
+ * Get border color based on execution status
+ */
+function getExecutionBorderColor(status: NodeExecutionStatus, selected: boolean): string {
+  if (selected) {
+    return 'border-blue-500 ring-2 ring-blue-200';
+  }
+  
+  switch (status) {
+    case 'executing':
+      return 'border-yellow-500 ring-2 ring-yellow-200';
+    case 'completed':
+      return 'border-green-500 ring-1 ring-green-200';
+    case 'failed':
+      return 'border-red-500 ring-2 ring-red-200';
+    case 'queued':
+      return 'border-blue-400 ring-1 ring-blue-100';
+    default:
+      return 'border-gray-300';
+  }
+}
+
+/**
  * React Flow Custom Node
  */
 function ReactFlowNode({ data, selected }: NodeProps<ReactFlowNodeData>) {
+  const { execution } = useGraphStore();
+  const nodeState = execution.nodeStates[data.id];
+  const status = nodeState?.status || 'idle';
+  const hasError = execution.errors[data.id] !== undefined;
+
   return (
     <div
-      className={`bg-white rounded-lg shadow-lg border-2 min-w-[200px] ${
-        selected
-          ? 'border-blue-500 ring-2 ring-blue-200'
-          : 'border-gray-300'
-      }`}
+      className={`bg-white rounded-lg shadow-lg border-2 min-w-[200px] transition-all ${
+        getExecutionBorderColor(status, selected)
+      } ${hasError ? 'bg-red-50' : ''}`}
     >
       {/* Node Header */}
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-t-lg">
+      <div className={`bg-gradient-to-r px-4 py-2 rounded-t-lg ${
+        status === 'executing' ? 'from-yellow-500 to-yellow-600' :
+        status === 'completed' ? 'from-green-500 to-green-600' :
+        status === 'failed' ? 'from-red-500 to-red-600' :
+        status === 'queued' ? 'from-blue-400 to-blue-500' :
+        'from-blue-500 to-blue-600'
+      } text-white`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="text-sm font-bold">{data.name}</span>
             <span className="text-xs opacity-75">({data.type})</span>
           </div>
+          {/* Execution Status Badge */}
+          {status !== 'idle' && (
+            <div className={`px-2 py-0.5 rounded text-xs font-semibold ${
+              status === 'executing' ? 'bg-yellow-700' :
+              status === 'completed' ? 'bg-green-700' :
+              status === 'failed' ? 'bg-red-700' :
+              'bg-blue-700'
+            }`}>
+              {status === 'executing' ? '⏳' :
+               status === 'completed' ? '✓' :
+               status === 'failed' ? '✗' :
+               '⏸'}
+            </div>
+          )}
         </div>
       </div>
 

@@ -9,5 +9,37 @@
     "tags": [],
     "nodeCount": 2,
     "connectionCount": 1
+  },
+  {
+    "id": "26aabae5-bdec-4e1c-a7c0-03c7b4deb42b",
+    "name": "Live Execution Test Graph",
+    "description": "Test graph for live execution feature. Demonstrates Constant nodes, Math operations, String operations, and Logger output.",
+    "author": "VZ Programming",
+    "version": "1.0.0",
+    "createdAt": "2025-11-06T10:00:46.178Z",
+    "updatedAt": "2025-11-06T10:00:46.178Z",
+    "tags": [
+      "test",
+      "live-execution",
+      "demo"
+    ],
+    "nodeCount": 8,
+    "connectionCount": 7
+  },
+  {
+    "id": "9a65a0dc-02bc-4ddb-b813-fa88b50e7961",
+    "name": "Live Execution Test Graph",
+    "description": "Test graph for live execution feature. Demonstrates Constant nodes, Math operations, String operations, and Logger output.",
+    "author": "VZ Programming",
+    "version": "1.0.0",
+    "createdAt": "2025-11-06T10:00:46.205Z",
+    "updatedAt": "2025-11-06T10:00:46.205Z",
+    "tags": [
+      "test",
+      "live-execution",
+      "demo"
+    ],
+    "nodeCount": 8,
+    "connectionCount": 7
   }
 ]

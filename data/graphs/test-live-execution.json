@@ -1,0 +1,406 @@
+{
+  "id": "test-live-execution-001",
+  "metadata": {
+    "id": "test-live-execution-001",
+    "name": "Live Execution Test Graph",
+    "description": "Test graph for live execution feature. Demonstrates Constant nodes, Math operations, String operations, and Logger output.",
+    "author": "VZ Programming",
+    "version": "1.0.0",
+    "createdAt": "2024-12-01T00:00:00.000Z",
+    "updatedAt": "2024-12-01T00:00:00.000Z",
+    "tags": ["test", "live-execution", "demo"],
+    "nodeCount": 8,
+    "connectionCount": 7
+  },
+  "data": {
+    "nodes": [
+      {
+        "id": "constant-1",
+        "name": "Constant",
+        "type": "utility.constant",
+        "position": {
+          "x": 100,
+          "y": 100
+        },
+        "inputs": [],
+        "outputs": [
+          {
+            "id": "result",
+            "name": "Result",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "description": "Parsed constant value"
+          }
+        ],
+        "properties": {
+          "type": "number",
+          "value": "42"
+        }
+      },
+      {
+        "id": "constant-2",
+        "name": "Constant",
+        "type": "utility.constant",
+        "position": {
+          "x": 100,
+          "y": 250
+        },
+        "inputs": [],
+        "outputs": [
+          {
+            "id": "result",
+            "name": "Result",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "description": "Parsed constant value"
+          }
+        ],
+        "properties": {
+          "type": "number",
+          "value": "8"
+        }
+      },
+      {
+        "id": "constant-3",
+        "name": "Constant",
+        "type": "utility.constant",
+        "position": {
+          "x": 100,
+          "y": 400
+        },
+        "inputs": [],
+        "outputs": [
+          {
+            "id": "result",
+            "name": "Result",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "description": "Parsed constant value"
+          }
+        ],
+        "properties": {
+          "type": "string",
+          "value": "Hello, World!"
+        }
+      },
+      {
+        "id": "math-add",
+        "name": "Math",
+        "type": "utility.math",
+        "position": {
+          "x": 350,
+          "y": 100
+        },
+        "inputs": [
+          {
+            "id": "operation",
+            "name": "Operation",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "required": true,
+            "description": "Math operation: add, subtract, multiply, divide, power, sqrt"
+          },
+          {
+            "id": "a",
+            "name": "A",
+            "dataType": {
+              "name": "number",
+              "description": "Numeric value"
+            },
+            "required": true,
+            "description": "First number"
+          },
+          {
+            "id": "b",
+            "name": "B",
+            "dataType": {
+              "name": "number",
+              "description": "Numeric value"
+            },
+            "required": false,
+            "description": "Second number (not needed for sqrt)"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "result",
+            "name": "Result",
+            "dataType": {
+              "name": "number",
+              "description": "Numeric value"
+            },
+            "description": "Mathematical result"
+          }
+        ],
+        "properties": {
+          "operation": "add"
+        }
+      },
+      {
+        "id": "math-multiply",
+        "name": "Math",
+        "type": "utility.math",
+        "position": {
+          "x": 350,
+          "y": 250
+        },
+        "inputs": [
+          {
+            "id": "operation",
+            "name": "Operation",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "required": true,
+            "description": "Math operation: add, subtract, multiply, divide, power, sqrt"
+          },
+          {
+            "id": "a",
+            "name": "A",
+            "dataType": {
+              "name": "number",
+              "description": "Numeric value"
+            },
+            "required": true,
+            "description": "First number"
+          },
+          {
+            "id": "b",
+            "name": "B",
+            "dataType": {
+              "name": "number",
+              "description": "Numeric value"
+            },
+            "required": false,
+            "description": "Second number (not needed for sqrt)"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "result",
+            "name": "Result",
+            "dataType": {
+              "name": "number",
+              "description": "Numeric value"
+            },
+            "description": "Mathematical result"
+          }
+        ],
+        "properties": {
+          "operation": "multiply"
+        }
+      },
+      {
+        "id": "string-upper",
+        "name": "String",
+        "type": "utility.string",
+        "position": {
+          "x": 350,
+          "y": 400
+        },
+        "inputs": [
+          {
+            "id": "operation",
+            "name": "Operation",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "required": true,
+            "description": "String operation: uppercase, lowercase, reverse, length, concat, substring"
+          },
+          {
+            "id": "input",
+            "name": "Input",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "required": true,
+            "description": "Input string"
+          },
+          {
+            "id": "parameter",
+            "name": "Parameter",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "required": false,
+            "description": "Additional parameter for operation"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "result",
+            "name": "Result",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "description": "String operation result"
+          }
+        ],
+        "properties": {
+          "operation": "toUpperCase"
+        }
+      },
+      {
+        "id": "logger-1",
+        "name": "Logger",
+        "type": "utility.logger",
+        "position": {
+          "x": 600,
+          "y": 150
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "Data",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "required": true,
+            "description": "Data to log"
+          },
+          {
+            "id": "level",
+            "name": "Level",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "required": false,
+            "description": "Log level: info, warn, error, debug"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "logged",
+            "name": "Logged",
+            "dataType": {
+              "name": "boolean",
+              "description": "Boolean value"
+            },
+            "description": "Whether logging was successful"
+          }
+        ],
+        "properties": {
+          "level": "info"
+        }
+      },
+      {
+        "id": "logger-2",
+        "name": "Logger",
+        "type": "utility.logger",
+        "position": {
+          "x": 600,
+          "y": 400
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "Data",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "required": true,
+            "description": "Data to log"
+          },
+          {
+            "id": "level",
+            "name": "Level",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "required": false,
+            "description": "Log level: info, warn, error, debug"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "logged",
+            "name": "Logged",
+            "dataType": {
+              "name": "boolean",
+              "description": "Boolean value"
+            },
+            "description": "Whether logging was successful"
+          }
+        ],
+        "properties": {
+          "level": "info"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "id": "conn-1",
+        "fromNode": "constant-1",
+        "fromPort": "result",
+        "toNode": "math-add",
+        "toPort": "a"
+      },
+      {
+        "id": "conn-2",
+        "fromNode": "constant-2",
+        "fromPort": "result",
+        "toNode": "math-add",
+        "toPort": "b"
+      },
+      {
+        "id": "conn-3",
+        "fromNode": "constant-1",
+        "fromPort": "result",
+        "toNode": "math-multiply",
+        "toPort": "a"
+      },
+      {
+        "id": "conn-4",
+        "fromNode": "constant-2",
+        "fromPort": "result",
+        "toNode": "math-multiply",
+        "toPort": "b"
+      },
+      {
+        "id": "conn-5",
+        "fromNode": "constant-3",
+        "fromPort": "result",
+        "toNode": "string-upper",
+        "toPort": "input"
+      },
+      {
+        "id": "conn-6",
+        "fromNode": "math-add",
+        "fromPort": "result",
+        "toNode": "logger-1",
+        "toPort": "data"
+      },
+      {
+        "id": "conn-7",
+        "fromNode": "string-upper",
+        "fromPort": "result",
+        "toNode": "logger-2",
+        "toPort": "data"
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  }
+}
+
