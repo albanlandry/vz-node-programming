@@ -5,9 +5,7 @@
  * Provides controls for graph operations
  */
 
-import { useState } from 'react';
 import { useGraphStore } from '../../store/graphStore';
-import { DataTypes } from '../../src/types';
 
 export default function GraphToolbar() {
   const {
@@ -19,40 +17,8 @@ export default function GraphToolbar() {
     nodes,
   } = useGraphStore();
 
-  const [showNodeDialog, setShowNodeDialog] = useState(false);
-  const [nodeName, setNodeName] = useState('');
-  const [nodeType, setNodeType] = useState('custom');
-
-  /**
-   * Handle add node
-   */
-  const handleAddNode = () => {
-    if (!nodeName.trim()) return;
-
-    // Create default ports
-    const defaultInput = {
-      id: `input-${Date.now()}`,
-      name: 'input',
-      dataType: DataTypes.STRING,
-      required: false,
-    };
-    const defaultOutput = {
-      id: `output-${Date.now()}`,
-      name: 'output',
-      dataType: DataTypes.STRING,
-    };
-
-    addNode({
-      name: nodeName,
-      type: nodeType,
-      position: { x: 100, y: 100 },
-      inputs: [defaultInput],
-      outputs: [defaultOutput],
-    });
-
-    setNodeName('');
-    setShowNodeDialog(false);
-  };
+  // Note: Node creation is now done via drag-and-drop from NodePalette
+  // The "+ Add Node" button is kept for backward compatibility but simplified
 
   /**
    * Handle save graph
@@ -98,12 +64,9 @@ export default function GraphToolbar() {
   return (
     <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between shadow-sm">
       <div className="flex items-center space-x-2">
-        <button
-          onClick={() => setShowNodeDialog(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium"
-        >
-          + Add Node
-        </button>
+        <div className="text-xs text-gray-500 italic">
+          💡 Drag nodes from the left sidebar
+        </div>
         <button
           onClick={clearGraph}
           className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-medium"
@@ -136,63 +99,6 @@ export default function GraphToolbar() {
         </div>
       </div>
 
-      {/* Add Node Dialog */}
-      {showNodeDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-4">Add New Node</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Node Name *
-                </label>
-                <input
-                  type="text"
-                  value={nodeName}
-                  onChange={(e) => setNodeName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter node name"
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleAddNode();
-                    } else if (e.key === 'Escape') {
-                      setShowNodeDialog(false);
-                    }
-                  }}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Node Type
-                </label>
-                <input
-                  type="text"
-                  value={nodeType}
-                  onChange={(e) => setNodeType(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  placeholder="Enter node type"
-                />
-              </div>
-              <div className="flex justify-end space-x-2">
-                <button
-                  onClick={() => setShowNodeDialog(false)}
-                  className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleAddNode}
-                  disabled={!nodeName.trim()}
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400"
-                >
-                  Add
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -60,7 +60,9 @@
   },
   "dependencies": {
     "@types/uuid": "^9.0.0",
+    "@xyflow/react": "^12.9.2",
     "react-draggable": "^4.5.0",
+    "reactflow": "^11.11.4",
     "uuid": "^9.0.0",
     "zustand": "^5.0.8"
   }
