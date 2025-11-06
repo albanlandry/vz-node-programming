@@ -3,7 +3,7 @@
 import { DelayNode, HttpRequestNode, PromiseAllNode, PromiseRaceNode, RetryNode } from '../nodes/async/AsyncNodes';
 import { MapNode, FilterNode, ReduceNode, ComposeNode } from '../nodes/functional/FunctionalNodes';
 import { CalculatorNode, CounterNode, BankAccountNode } from '../nodes/oop/ObjectOrientedNodes';
-import { ConditionalNode, MathNode, StringNode, TransformNode, LoggerNode } from '../nodes/utility/UtilityNodes';
+import { ConditionalNode, MathNode, StringNode, TransformNode, LoggerNode, ConstantNode, ArrayNode, ObjectNode } from '../nodes/utility/UtilityNodes';
 import { DataTypes } from '../types';
 
 import { NodeRegistry } from './NodeRegistry';
@@ -766,6 +766,128 @@ export function registerBuiltInNodes(): void {
         dataType: DataTypes.BOOLEAN,
         description: 'Whether logging was successful',
       },
+    ],
+  });
+
+  registry.register(ConstantNode, {
+    type: 'utility.constant',
+    displayName: 'Constant',
+    category: 'Utility',
+    description: 'Defines a constant value from basic data types (string, number, boolean). Output-only node. Configure type and value in the node details panel.',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['utility', 'constant', 'value', 'data'],
+    icon: '📌',
+    color: '#00B894',
+    inputs: [], // Output-only node
+    outputs: [
+      {
+        id: 'result',
+        name: 'Result',
+        dataType: DataTypes.ANY,
+        description: 'Parsed constant value',
+      },
+    ],
+    examples: [
+      'String constant: type="string", value="Hello"',
+      'Number constant: type="number", value="42"',
+      'Boolean constant: type="boolean", value="true"',
+    ],
+  });
+
+  registry.register(ArrayNode, {
+    type: 'utility.array',
+    displayName: 'Array',
+    category: 'Utility',
+    description: 'Defines an array of basic types from JSON string or individual elements',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['utility', 'array', 'data', 'collection'],
+    icon: '📦',
+    color: '#00B894',
+    inputs: [
+      {
+        id: 'json',
+        name: 'JSON Array',
+        dataType: DataTypes.STRING,
+        required: false,
+        description: 'JSON string representing an array (e.g., "[1,2,3]" or \'["a","b"]\')',
+      },
+      {
+        id: 'element',
+        name: 'Element',
+        dataType: DataTypes.ANY,
+        required: false,
+        description: 'Single element to add to array (can be connected multiple times)',
+      },
+      {
+        id: 'separator',
+        name: 'Separator',
+        dataType: DataTypes.STRING,
+        required: false,
+        description: 'Separator for string-based array creation (default: comma)',
+      },
+    ],
+    outputs: [
+      {
+        id: 'result',
+        name: 'Result',
+        dataType: DataTypes.ARRAY,
+        description: 'Array of values',
+      },
+    ],
+    examples: [
+      'JSON array: \'[1,2,3,4,5]\'',
+      'String array: \'["apple","banana","cherry"]\'',
+      'Mixed array: \'[1,"two",true]\'',
+    ],
+  });
+
+  registry.register(ObjectNode, {
+    type: 'utility.object',
+    displayName: 'Object',
+    category: 'Utility',
+    description: 'Defines a plain JSON object with properties and values',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['utility', 'object', 'json', 'data'],
+    icon: '📋',
+    color: '#00B894',
+    inputs: [
+      {
+        id: 'json',
+        name: 'JSON Object',
+        dataType: DataTypes.STRING,
+        required: false,
+        description: 'JSON string representing an object (e.g., \'{"key":"value"}\')',
+      },
+      {
+        id: 'key',
+        name: 'Property Key',
+        dataType: DataTypes.STRING,
+        required: false,
+        description: 'Property key name',
+      },
+      {
+        id: 'value',
+        name: 'Property Value',
+        dataType: DataTypes.ANY,
+        required: false,
+        description: 'Property value',
+      },
+    ],
+    outputs: [
+      {
+        id: 'result',
+        name: 'Result',
+        dataType: DataTypes.OBJECT,
+        description: 'JSON object with properties',
+      },
+    ],
+    examples: [
+      'JSON object: \'{"name":"John","age":30}\'',
+      'Add property: key="status", value="active"',
+      'Nested object: \'{"user":{"name":"John"}}\'',
     ],
   });
 }

@@ -1,5 +1,5 @@
 import { BaseNode } from '../../core/BaseNode';
-import { ExecutionContext, PortId, DataTypes } from '../../types';
+import { ExecutionContext, PortId, DataTypes, NodeConfig } from '../../types';
 import { logger } from '../../utils/Logger';
 
 /**
@@ -308,6 +308,243 @@ export class TransformNode extends BaseNode {
       throw new Error(`Transformation failed: ${error instanceof Error ? error.message : String(error)}`);
     }
 
+    return outputs;
+  }
+}
+
+/**
+ * Constant node - defines a constant value from basic data types
+ * This is an output-only node that uses properties for configuration
+ */
+export class ConstantNode extends BaseNode {
+  constructor(config?: Partial<NodeConfig> & { properties?: { type?: string; value?: string } }) {
+    super({
+      name: 'Constant',
+      description: 'Defines a constant value from basic data types (string, number, boolean)',
+      inputs: [], // Output-only node
+      outputs: [
+        {
+          id: 'result',
+          name: 'Result',
+          dataType: DataTypes.ANY,
+          description: 'Parsed constant value',
+        },
+      ],
+      ...config,
+    });
+
+    // Set default properties if provided
+    if (config?.properties) {
+      this.setProperty('type', config.properties.type ?? 'string');
+      this.setProperty('value', config.properties.value ?? '');
+    } else {
+      // Set default properties
+      this.setProperty('type', 'string');
+      this.setProperty('value', '');
+    }
+  }
+
+  protected async executeInternal(context: ExecutionContext): Promise<Map<PortId, unknown>> {
+    const outputs = new Map<PortId, unknown>();
+
+    // Get type and value from properties
+    const type = this.getProperty<string>('type') ?? 'string';
+    const valueStr = this.getProperty<string>('value') ?? '';
+
+    let result: unknown;
+
+    switch (type?.toLowerCase()) {
+      case 'string':
+        result = valueStr;
+        break;
+      case 'number':
+        result = Number.parseFloat(valueStr);
+        if (Number.isNaN(result)) {
+          throw new Error(`Invalid number: ${valueStr}`);
+        }
+        break;
+      case 'boolean':
+        const lowerValue = valueStr.toLowerCase().trim();
+        if (lowerValue === 'true' || lowerValue === '1' || lowerValue === 'yes') {
+          result = true;
+        } else if (lowerValue === 'false' || lowerValue === '0' || lowerValue === 'no') {
+          result = false;
+        } else {
+          throw new Error(`Invalid boolean: ${valueStr}. Use 'true' or 'false'`);
+        }
+        break;
+      default:
+        throw new Error(`Unsupported type: ${type}. Supported types: string, number, boolean`);
+    }
+
+    this.setOutput(outputs, 'result', result);
+    return outputs;
+  }
+}
+
+/**
+ * Array node - defines an array of basic types
+ */
+export class ArrayNode extends BaseNode {
+  constructor() {
+    super({
+      name: 'Array',
+      description: 'Defines an array of basic types from JSON string or individual elements',
+      inputs: [
+        {
+          id: 'json',
+          name: 'JSON Array',
+          dataType: DataTypes.STRING,
+          required: false,
+          description: 'JSON string representing an array (e.g., "[1,2,3]" or \'["a","b"]\')',
+        },
+        {
+          id: 'element',
+          name: 'Element',
+          dataType: DataTypes.ANY,
+          required: false,
+          description: 'Single element to add to array (can be connected multiple times)',
+        },
+        {
+          id: 'separator',
+          name: 'Separator',
+          dataType: DataTypes.STRING,
+          required: false,
+          description: 'Separator for string-based array creation (default: comma)',
+        },
+      ],
+      outputs: [
+        {
+          id: 'result',
+          name: 'Result',
+          dataType: DataTypes.ARRAY,
+          description: 'Array of values',
+        },
+      ],
+    });
+  }
+
+  protected async executeInternal(context: ExecutionContext): Promise<Map<PortId, unknown>> {
+    const outputs = new Map<PortId, unknown>();
+
+    const jsonInput = this.getInput<string>(context, 'json');
+    const element = this.getInput<unknown>(context, 'element');
+    const separator = this.getInput<string>(context, 'separator') ?? ',';
+
+    let result: unknown[];
+
+    // If JSON is provided, parse it
+    if (jsonInput !== undefined && jsonInput !== null && jsonInput !== '') {
+      try {
+        const parsed = JSON.parse(jsonInput);
+        if (!Array.isArray(parsed)) {
+          throw new Error('JSON input must be a valid array');
+        }
+        result = parsed;
+      } catch (error) {
+        throw new Error(`Invalid JSON array: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    } else if (element !== undefined && element !== null) {
+      // If element is provided, create array with that element
+      // If element is a string and contains separator, split it
+      if (typeof element === 'string' && element.includes(separator)) {
+        result = element.split(separator).map(item => {
+          const trimmed = item.trim();
+          // Try to parse as number or boolean
+          if (trimmed === 'true') return true;
+          if (trimmed === 'false') return false;
+          const num = Number.parseFloat(trimmed);
+          if (!Number.isNaN(num) && trimmed === String(num)) return num;
+          return trimmed;
+        });
+      } else {
+        result = [element];
+      }
+    } else {
+      // Default to empty array
+      result = [];
+    }
+
+    this.setOutput(outputs, 'result', result);
+    return outputs;
+  }
+}
+
+/**
+ * Object node - defines a plain JSON object with properties and values
+ */
+export class ObjectNode extends BaseNode {
+  constructor() {
+    super({
+      name: 'Object',
+      description: 'Defines a plain JSON object with properties and values',
+      inputs: [
+        {
+          id: 'json',
+          name: 'JSON Object',
+          dataType: DataTypes.STRING,
+          required: false,
+          description: 'JSON string representing an object (e.g., \'{"key":"value"}\')',
+        },
+        {
+          id: 'key',
+          name: 'Property Key',
+          dataType: DataTypes.STRING,
+          required: false,
+          description: 'Property key name',
+        },
+        {
+          id: 'value',
+          name: 'Property Value',
+          dataType: DataTypes.ANY,
+          required: false,
+          description: 'Property value',
+        },
+      ],
+      outputs: [
+        {
+          id: 'result',
+          name: 'Result',
+          dataType: DataTypes.OBJECT,
+          description: 'JSON object with properties',
+        },
+      ],
+    });
+  }
+
+  protected async executeInternal(context: ExecutionContext): Promise<Map<PortId, unknown>> {
+    const outputs = new Map<PortId, unknown>();
+
+    const jsonInput = this.getInput<string>(context, 'json');
+    const key = this.getInput<string>(context, 'key');
+    const value = this.getInput<unknown>(context, 'value');
+
+    let result: Record<string, unknown>;
+
+    // If JSON is provided, parse it
+    if (jsonInput !== undefined && jsonInput !== null && jsonInput !== '') {
+      try {
+        const parsed = JSON.parse(jsonInput);
+        if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+          throw new Error('JSON input must be a valid object');
+        }
+        result = parsed as Record<string, unknown>;
+      } catch (error) {
+        throw new Error(`Invalid JSON object: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    } else {
+      // Start with empty object
+      result = {};
+    }
+
+    // If key and value are provided, add/update the property
+    if (key !== undefined && key !== null && key !== '') {
+      if (value !== undefined && value !== null) {
+        result[key] = value;
+      }
+    }
+
+    this.setOutput(outputs, 'result', result);
     return outputs;
   }
 }

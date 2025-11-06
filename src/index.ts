@@ -57,7 +57,7 @@ export { CalculatorNode, CounterNode, BankAccountNode } from './nodes/oop/Object
 export { DelayNode, HttpRequestNode, PromiseAllNode, PromiseRaceNode, RetryNode } from './nodes/async/AsyncNodes';
 
 // Utility nodes
-export { ConditionalNode, MathNode, StringNode, TransformNode, LoggerNode } from './nodes/utility/UtilityNodes';
+export { ConditionalNode, MathNode, StringNode, TransformNode, LoggerNode, ConstantNode, ArrayNode, ObjectNode } from './nodes/utility/UtilityNodes';
 
 // Custom Nodes
 export {

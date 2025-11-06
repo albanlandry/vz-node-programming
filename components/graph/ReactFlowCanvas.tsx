@@ -28,6 +28,10 @@ import ReactFlowNode from './ReactFlowNode';
 import { useGraphStore } from '../../store/graphStore';
 import { Port } from '../../src/types';
 
+interface ReactFlowCanvasProps {
+  onNodeDoubleClick?: (nodeId: string) => void;
+}
+
 /**
  * Node types for React Flow
  */
@@ -63,7 +67,7 @@ function canConnectPorts(fromPort: Port, toPort: Port): boolean {
 /**
  * React Flow Canvas Component
  */
-function ReactFlowCanvasInner() {
+function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
   const reactFlowInstance = useReactFlow();
   const {
     nodes: storeNodes,
@@ -73,6 +77,8 @@ function ReactFlowCanvasInner() {
     resetViewport,
     addConnection,
     canConnect,
+    selectNode,
+    selectedNodeId,
   } = useGraphStore();
 
   /**
@@ -90,9 +96,9 @@ function ReactFlowCanvasInner() {
         outputs: node.outputs,
         properties: node.properties,
       },
-      selected: false,
+      selected: selectedNodeId === node.id,
     }));
-  }, [storeNodes]);
+  }, [storeNodes, selectedNodeId]);
 
   /**
    * Convert store connections to React Flow edges
@@ -138,14 +144,23 @@ function ReactFlowCanvasInner() {
     (changes) => {
       onNodesChange(changes);
 
-      // Update store when nodes move
+      // Update store when nodes move or are selected
       changes.forEach((change) => {
         if (change.type === 'position' && change.position) {
           useGraphStore.getState().moveNode(change.id, change.position);
+        } else if (change.type === 'select') {
+          if (change.selected) {
+            selectNode(change.id);
+          } else {
+            // Deselect if this node was deselected and no other node is selected
+            if (selectedNodeId === change.id) {
+              selectNode(null);
+            }
+          }
         }
       });
     },
-    [onNodesChange],
+    [onNodesChange, selectNode, selectedNodeId],
   );
 
   /**
@@ -293,13 +308,18 @@ function ReactFlowCanvasInner() {
           y: event.clientY - reactFlowBounds.top,
         });
 
-        // Add node to store
+        // Add node to store with default properties for Constant nodes
+        const defaultProperties = nodeData.type === 'utility.constant' 
+          ? { type: 'string', value: '' }
+          : {};
+        
         const nodeId = useGraphStore.getState().addNode({
           name: nodeData.name,
           type: nodeData.type,
           position,
           inputs: nodeData.inputs,
           outputs: nodeData.outputs,
+          properties: defaultProperties,
         });
 
         // Update React Flow nodes
@@ -312,7 +332,7 @@ function ReactFlowCanvasInner() {
             type: nodeData.type,
             inputs: nodeData.inputs,
             outputs: nodeData.outputs,
-            properties: {},
+            properties: defaultProperties,
           },
         };
 
@@ -345,6 +365,11 @@ function ReactFlowCanvasInner() {
         onEdgesChange={handleEdgesChange}
         onConnect={handleConnect}
         onMove={handleMove}
+        onNodeDoubleClick={(_, node) => {
+          if (onNodeDoubleClick) {
+            onNodeDoubleClick(node.id);
+          }
+        }}
         nodeTypes={nodeTypes}
         fitView
         minZoom={0.1}
@@ -380,10 +405,10 @@ function ReactFlowCanvasInner() {
 /**
  * React Flow Canvas with Provider
  */
-export default function ReactFlowCanvas() {
+export default function ReactFlowCanvas({ onNodeDoubleClick }: ReactFlowCanvasProps) {
   return (
     <ReactFlowProvider>
-      <ReactFlowCanvasInner />
+      <ReactFlowCanvasInner onNodeDoubleClick={onNodeDoubleClick} />
     </ReactFlowProvider>
   );
 }

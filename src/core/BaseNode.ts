@@ -23,6 +23,7 @@ export abstract class BaseNode implements INode {
   public readonly description?: string;
   public readonly inputs: Port[];
   public readonly outputs: Port[];
+  protected properties: Map<string, unknown> = new Map();
 
   constructor(config: NodeConfig) {
     this.id = config.id ?? uuidv4();
@@ -188,5 +189,30 @@ export abstract class BaseNode implements INode {
    */
   protected setOutput(outputs: Map<PortId, unknown>, portId: PortId, value: unknown): void {
     outputs.set(portId, value);
+  }
+
+  /**
+   * Set a property value
+   */
+  public setProperty(key: string, value: unknown): void {
+    this.properties.set(key, value);
+  }
+
+  /**
+   * Get a property value
+   */
+  public getProperty<T = unknown>(key: string): T | undefined {
+    return this.properties.get(key) as T | undefined;
+  }
+
+  /**
+   * Get all properties
+   */
+  public getProperties(): Record<string, unknown> {
+    const result: Record<string, unknown> = {};
+    this.properties.forEach((value, key) => {
+      result[key] = value;
+    });
+    return result;
   }
 }
