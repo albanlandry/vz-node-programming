@@ -41,6 +41,10 @@ export type {
 
 // Utilities
 export { logger, LogLevel, ConsoleLogger, JsonLogger, SilentLogger, createChildLogger } from './utils/Logger';
+export { GraphStorage, GraphManager, GraphExecutionEngine } from './graph-management';
+export type { GraphMetadata, ExecutionRequest, ExecutionResponse, GraphStats } from './graph-management';
+// Note: GraphDefinition from graph-management conflicts with serialization GraphDefinition
+// Import directly from './graph-management/types' if needed
 export type { Logger } from './utils/Logger';
 
 // Functional programming nodes

@@ -18,6 +18,7 @@ A powerful TypeScript/Node.js framework for building programs using a visual nod
 - **Dependency Resolution**: Automatic dependency resolution and execution ordering
 - **Custom Node Creation**: Web-based UI for creating custom nodes via templates
 - **Graph Editor**: Visual graph editor using React Flow with drag-and-drop, pan/zoom, type-safe connections, minimap, and controls
+- **Graph Management**: Complete CRUD system for saving, loading, updating, deleting, and executing graphs
 
 ## Installation
 

@@ -18,6 +18,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { href: '/', label: 'Node Registry', icon: '📚' },
   { href: '/graph-editor', label: 'Graph Editor', icon: '🕸️' },
+  { href: '/graphs', label: 'Graphs', icon: '📊' },
   { href: '/custom-nodes', label: 'Custom Nodes', icon: '🎨' },
   { href: '/custom-nodes/create', label: 'Create Node', icon: '➕' },
 ];
