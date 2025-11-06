@@ -37,6 +37,7 @@
     "app/**/*",
     "components/**/*",
     "pages/**/*",
+    "store/**/*",
     ".next/types/**/*.ts"
   ],
   "exclude": [

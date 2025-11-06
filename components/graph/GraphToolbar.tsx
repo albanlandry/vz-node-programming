@@ -62,39 +62,39 @@ export default function GraphToolbar() {
   };
 
   return (
-    <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between shadow-sm">
-      <div className="flex items-center space-x-2">
-        <div className="text-xs text-gray-500 italic">
+    <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between shadow-sm">
+      <div className="flex items-center space-x-3">
+        <div className="text-sm text-gray-600 font-medium">
           💡 Drag nodes from the left sidebar
         </div>
         <button
           onClick={clearGraph}
-          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-medium"
+          className="btn btn-danger btn-sm"
         >
           Clear
         </button>
         <button
           onClick={resetViewport}
-          className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm font-medium"
+          className="btn btn-secondary btn-sm"
         >
           Reset View
         </button>
       </div>
 
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-3">
         <button
           onClick={handleSave}
-          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm font-medium"
+          className="btn btn-success btn-sm"
         >
           Save
         </button>
         <button
           onClick={handleLoad}
-          className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm font-medium"
+          className="btn btn-primary btn-sm"
         >
           Load
         </button>
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-600 font-medium px-3 py-1.5 bg-gray-100 rounded-lg">
           Nodes: {nodes.length}
         </div>
       </div>

@@ -83,7 +83,7 @@ export default function CustomNodesPage() {
             </div>
             <Link
               href="/custom-nodes/create"
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              className="btn btn-primary btn-lg"
             >
               + Create New Node
             </Link>
@@ -163,13 +163,13 @@ export default function CustomNodesPage() {
                     <div className="flex gap-2">
                       <Link
                         href={`/custom-nodes/${node.id}`}
-                        className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-center text-sm"
+                        className="btn btn-primary btn-sm flex-1"
                       >
                         View
                       </Link>
                       <button
                         onClick={() => handleDelete(node.id)}
-                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm"
+                        className="btn btn-danger btn-sm"
                       >
                         Delete
                       </button>

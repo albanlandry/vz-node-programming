@@ -16,6 +16,11 @@ interface BreadcrumbItem {
 export default function Breadcrumbs() {
   const pathname = usePathname();
 
+  // Hide breadcrumbs on graph editor page
+  if (pathname === '/graph-editor') {
+    return null;
+  }
+
   /**
    * Generate breadcrumb items from pathname
    */

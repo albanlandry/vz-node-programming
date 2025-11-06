@@ -4,6 +4,7 @@ import '../styles/globals.css';
 
 import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
+import MainContent from '../components/MainContent';
 
 export const metadata: Metadata = {
   title: 'VZ Programming - Node Registry',
@@ -17,10 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gray-50">
+      <body className="min-h-screen bg-gray-50 font-sans antialiased">
         <Navigation />
-        <Breadcrumbs />
-        {children}
+        <MainContent>
+          <Breadcrumbs />
+          {children}
+        </MainContent>
       </body>
     </html>
   );
