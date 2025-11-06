@@ -1,0 +1,164 @@
+{
+  "id": "6ddd3669-36c9-4936-b073-8003d6dc8477",
+  "metadata": {
+    "id": "6ddd3669-36c9-4936-b073-8003d6dc8477",
+    "name": "Testing Graph",
+    "description": "Just to try",
+    "version": "1.0.0",
+    "createdAt": "2025-11-06T02:31:00.254Z",
+    "updatedAt": "2025-11-06T02:31:00.254Z",
+    "tags": [],
+    "nodeCount": 2,
+    "connectionCount": 1
+  },
+  "data": {
+    "nodes": [
+      {
+        "id": "id-1762395367864-bkntysjcn",
+        "name": "HTTP Request",
+        "type": "async.http-request",
+        "position": {
+          "x": -240,
+          "y": 90
+        },
+        "inputs": [
+          {
+            "id": "url",
+            "name": "URL",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "required": true,
+            "description": "URL to make request to"
+          },
+          {
+            "id": "method",
+            "name": "Method",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "required": false,
+            "description": "HTTP method (GET, POST, PUT, DELETE)"
+          },
+          {
+            "id": "headers",
+            "name": "Headers",
+            "dataType": {
+              "name": "object",
+              "description": "Object value"
+            },
+            "required": false,
+            "description": "Request headers"
+          },
+          {
+            "id": "body",
+            "name": "Body",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "required": false,
+            "description": "Request body"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "response",
+            "name": "Response",
+            "dataType": {
+              "name": "object",
+              "description": "Object value"
+            },
+            "description": "HTTP response"
+          },
+          {
+            "id": "status",
+            "name": "Status",
+            "dataType": {
+              "name": "number",
+              "description": "Numeric value"
+            },
+            "description": "HTTP status code"
+          },
+          {
+            "id": "data",
+            "name": "Data",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "description": "Response data"
+          }
+        ]
+      },
+      {
+        "id": "id-1762395404415-twpnpb0h7",
+        "name": "Logger",
+        "type": "utility.logger",
+        "position": {
+          "x": 150,
+          "y": 180
+        },
+        "inputs": [
+          {
+            "id": "level",
+            "name": "Level",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "required": true,
+            "description": "Log level: info, warn, error, debug"
+          },
+          {
+            "id": "message",
+            "name": "Message",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "required": true,
+            "description": "Message to log"
+          },
+          {
+            "id": "data",
+            "name": "Data",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "required": false,
+            "description": "Additional data to log"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "logged",
+            "name": "Logged",
+            "dataType": {
+              "name": "boolean",
+              "description": "Boolean value"
+            },
+            "description": "Whether logging was successful"
+          }
+        ]
+      }
+    ],
+    "connections": [
+      {
+        "id": "id-1762395413993-frt6dl8oa",
+        "fromNode": "id-1762395367864-bkntysjcn",
+        "fromPort": "data",
+        "toNode": "id-1762395404415-twpnpb0h7",
+        "toPort": "data"
+      }
+    ],
+    "viewport": {
+      "x": 460.5720464173445,
+      "y": 74.78507820950381,
+      "zoom": 1.2429341721356124
+    }
+  }
+}
