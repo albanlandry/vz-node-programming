@@ -145,16 +145,37 @@ export class GraphExecutionEngine {
         }
 
         // Create node instance using registry
+        // Extract properties separately to avoid ID conflicts
+        const { id, name, inputs, outputs, properties: graphProperties, ...otherProps } = graphNode;
         const node = this.registry.create(graphNode.type, {
-          id: graphNode.id,
-          name: graphNode.name,
-          inputs: graphNode.inputs,
-          outputs: graphNode.outputs,
-          ...graphNode.properties,
+          id: id, // Explicitly set ID from graph node
+          name: name,
+          inputs: inputs,
+          outputs: outputs,
+          ...otherProps, // Spread other properties (should not contain id, name, inputs, outputs, properties)
         });
+
+        // Set properties on the node if they exist
+        if (graphProperties && typeof graphProperties === 'object') {
+          if ('setProperty' in node && typeof (node as { setProperty?: (key: string, value: unknown) => void }).setProperty === 'function') {
+            // Call setProperty as a method to preserve 'this' context
+            const nodeWithSetProperty = node as { setProperty: (key: string, value: unknown) => void };
+            for (const [key, value] of Object.entries(graphProperties)) {
+              nodeWithSetProperty.setProperty(key, value);
+            }
+            logger.debug(`Set ${Object.keys(graphProperties).length} properties on node ${node.id}`);
+          }
+        }
+
+        // Verify node ID matches expected ID
+        if (node.id !== graphNode.id) {
+          logger.warn(`Node ID mismatch: expected ${graphNode.id}, got ${node.id}. Using expected ID.`);
+          // This shouldn't happen, but if it does, we need to handle it
+        }
 
         nodeMap.set(graphNode.id, node);
         executor.addNode(node);
+        logger.debug(`Added node ${node.id} (${graphNode.type}) to executor`);
       } catch (error) {
         logger.error(`Failed to create node ${graphNode.id} (${graphNode.type}):`, error);
         throw new Error(`Failed to create node ${graphNode.id}: ${error instanceof Error ? error.message : String(error)}`);
@@ -162,6 +183,18 @@ export class GraphExecutionEngine {
     }
 
     // Add connections
+    // First, verify all nodes were added successfully
+    const addedNodeIds = executor.getNodes().map(n => n.id);
+    const expectedNodeIds = graph.data.nodes.map(n => n.id);
+    const missingNodes = expectedNodeIds.filter(id => !addedNodeIds.includes(id));
+    
+    if (missingNodes.length > 0) {
+      logger.error(`Some nodes were not added to executor. Missing: ${missingNodes.join(', ')}`);
+      logger.error(`Expected nodes: ${expectedNodeIds.join(', ')}`);
+      logger.error(`Added nodes: ${addedNodeIds.join(', ')}`);
+      throw new Error(`Failed to add nodes: ${missingNodes.join(', ')}`);
+    }
+
     for (const connection of graph.data.connections) {
       try {
         executor.addConnection({
@@ -171,8 +204,13 @@ export class GraphExecutionEngine {
           toNode: connection.toNode,
           toPort: connection.toPort,
         });
+        logger.debug(`Added connection ${connection.id}: ${connection.fromNode} -> ${connection.toNode}`);
       } catch (error) {
+        // Log detailed error information
+        const addedNodeIds = executor.getNodes().map(n => n.id);
         logger.error(`Failed to add connection ${connection.id}:`, error);
+        logger.error(`Connection: ${connection.fromNode} -> ${connection.toNode}`);
+        logger.error(`Available nodes: ${addedNodeIds.join(', ')}`);
         throw new Error(`Failed to add connection: ${error instanceof Error ? error.message : String(error)}`);
       }
     }

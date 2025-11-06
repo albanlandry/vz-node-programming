@@ -1,5 +1,5 @@
 import { BaseNode } from '../../core/BaseNode';
-import { ExecutionContext, PortId, DataTypes } from '../../types';
+import { ExecutionContext, PortId, DataTypes, NodeConfig } from '../../types';
 
 /**
  * Object-Oriented Programming Paradigm Examples
@@ -11,7 +11,7 @@ import { ExecutionContext, PortId, DataTypes } from '../../types';
 export class CalculatorNode extends BaseNode {
   private state: Map<string, number> = new Map();
 
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
       name: 'Calculator',
       description: 'Object-oriented calculator with state management',
@@ -52,6 +52,7 @@ export class CalculatorNode extends BaseNode {
           description: 'Current calculator state',
         },
       ],
+      ...config,
     });
   }
 

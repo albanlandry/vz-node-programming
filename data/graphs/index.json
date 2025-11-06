@@ -41,5 +41,21 @@
     ],
     "nodeCount": 8,
     "connectionCount": 7
+  },
+  {
+    "id": "test-live-execution-001",
+    "name": "Live Execution Test Graph",
+    "description": "Test graph for live execution feature. Demonstrates Constant nodes, Math operations, String operations, and Logger output.",
+    "author": "VZ Programming",
+    "version": "1.0.0",
+    "createdAt": "2024-12-01T00:00:00.000Z",
+    "updatedAt": "2024-12-01T00:00:00.000Z",
+    "tags": [
+      "test",
+      "live-execution",
+      "demo"
+    ],
+    "nodeCount": 8,
+    "connectionCount": 7
   }
 ]

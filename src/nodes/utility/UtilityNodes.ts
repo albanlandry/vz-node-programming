@@ -10,7 +10,7 @@ import { logger } from '../../utils/Logger';
  * Conditional node - demonstrates control flow
  */
 export class ConditionalNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
       name: 'Conditional',
       description: 'Executes different logic based on a condition',
@@ -45,6 +45,7 @@ export class ConditionalNode extends BaseNode {
           description: 'Selected value based on condition',
         },
       ],
+      ...config,
     });
   }
 
@@ -66,7 +67,7 @@ export class ConditionalNode extends BaseNode {
  * Math operations node - demonstrates functional operations
  */
 export class MathNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
       name: 'Math',
       description: 'Performs mathematical operations',
@@ -101,6 +102,7 @@ export class MathNode extends BaseNode {
           description: 'Mathematical result',
         },
       ],
+      ...config,
     });
   }
 
@@ -170,7 +172,7 @@ export class MathNode extends BaseNode {
  * String operations node - demonstrates string manipulation
  */
 export class StringNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
       name: 'String',
       description: 'Performs string operations',
@@ -205,6 +207,7 @@ export class StringNode extends BaseNode {
           description: 'String operation result',
         },
       ],
+      ...config,
     });
   }
 
@@ -260,7 +263,7 @@ export class StringNode extends BaseNode {
  * Data transformation node - demonstrates functional data processing
  */
 export class TransformNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
       name: 'Transform',
       description: 'Transforms data using a transformation function',
@@ -288,6 +291,7 @@ export class TransformNode extends BaseNode {
           description: 'Transformed data',
         },
       ],
+      ...config,
     });
   }
 
@@ -386,7 +390,7 @@ export class ConstantNode extends BaseNode {
  * Array node - defines an array of basic types
  */
 export class ArrayNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
       name: 'Array',
       description: 'Defines an array of basic types from JSON string or individual elements',
@@ -421,6 +425,7 @@ export class ArrayNode extends BaseNode {
           description: 'Array of values',
         },
       ],
+      ...config,
     });
   }
 
@@ -474,7 +479,7 @@ export class ArrayNode extends BaseNode {
  * Object node - defines a plain JSON object with properties and values
  */
 export class ObjectNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
       name: 'Object',
       description: 'Defines a plain JSON object with properties and values',
@@ -509,6 +514,7 @@ export class ObjectNode extends BaseNode {
           description: 'JSON object with properties',
         },
       ],
+      ...config,
     });
   }
 
@@ -553,7 +559,7 @@ export class ObjectNode extends BaseNode {
  * Logger node - demonstrates side effects and logging
  */
 export class LoggerNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
       name: 'Logger',
       description: 'Logs data to console with different levels',
@@ -588,6 +594,7 @@ export class LoggerNode extends BaseNode {
           description: 'Whether logging was successful',
         },
       ],
+      ...config,
     });
   }
 

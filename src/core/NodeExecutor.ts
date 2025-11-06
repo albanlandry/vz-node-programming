@@ -239,6 +239,25 @@ export class NodeExecutor extends EventEmitter {
       }
     }
 
+    // Use node properties as default values for unconnected inputs
+    // Only use properties if the input is not already set (from connection or initial input)
+    if ('getProperty' in node && typeof (node as { getProperty?: (key: string) => unknown }).getProperty === 'function') {
+      // Call getProperty as a method to preserve 'this' context
+      const nodeWithGetProperty = node as { getProperty: (key: string) => unknown };
+      for (const inputPort of node.inputs) {
+        // Skip if input already has a value
+        if (inputs.has(inputPort.id)) {
+          continue;
+        }
+
+        // Check if there's a property with the same name as the input port
+        const propertyValue = nodeWithGetProperty.getProperty(inputPort.id);
+        if (propertyValue !== undefined) {
+          inputs.set(inputPort.id, propertyValue);
+        }
+      }
+    }
+
     return inputs;
   }
 
