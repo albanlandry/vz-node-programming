@@ -5,6 +5,10 @@ import { useState, useEffect } from 'react';
 import NodeFilters from '../components/NodeFilters';
 import NodeList from '../components/NodeList';
 import NodeStats from '../components/NodeStats';
+import PageContainer from '../components/layout/PageContainer';
+import PageHeader from '../components/layout/PageHeader';
+import ErrorAlert from '../components/layout/ErrorAlert';
+import LoadingState from '../components/layout/LoadingState';
 import { NodeMetadata } from '../types/node';
 
 interface NodeRegistryData {
@@ -63,75 +67,54 @@ export default function Home() {
   }) ?? [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <main className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            VZ Programming
-          </h1>
-          <p className="text-xl text-gray-600">
-            Node Registry - Browse and discover available nodes
-          </p>
+    <PageContainer>
+      <PageHeader
+        title="Node Registry"
+        description="Browse and discover available nodes in the VZ Programming system"
+      />
+
+      {/* Stats */}
+      {data && (
+        <div className="mb-6">
+          <NodeStats stats={data.stats} />
         </div>
+      )}
 
-        {/* Stats */}
-        {data && (
-          <div className="mb-6">
-            <NodeStats stats={data.stats} />
+      {/* Filters */}
+      {data && (
+        <div className="mb-6">
+          <NodeFilters
+            categories={data.categories}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+        </div>
+      )}
+
+      {/* Content */}
+      {loading && <LoadingState message="Loading nodes..." />}
+
+      {error && (
+        <ErrorAlert
+          message={error}
+          onRetry={() => {
+            void fetchNodes();
+          }}
+        />
+      )}
+
+      {!loading && !error && data && (
+        <div>
+          <div className="mb-4 text-sm text-gray-600 font-medium">
+            Showing <span className="font-semibold text-gray-900">{filteredNodes.length}</span> of{' '}
+            <span className="font-semibold text-gray-900">{data.nodes.length}</span> nodes
           </div>
-        )}
-
-        {/* Filters */}
-        {data && (
-          <div className="mb-6">
-            <NodeFilters
-              categories={data.categories}
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-            />
-          </div>
-        )}
-
-        {/* Content */}
-        {loading && (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-gray-600">Loading nodes...</div>
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-            <strong>Error:</strong> {error}
-            <button
-              onClick={() => {
-                void fetchNodes();
-              }}
-              className="ml-4 text-red-800 underline hover:text-red-900"
-            >
-              Retry
-            </button>
-          </div>
-        )}
-
-        {!loading && !error && data && (
-          <div>
-            <div className="mb-4 text-gray-600">
-              Showing {filteredNodes.length} of {data.nodes.length} nodes
-            </div>
-            <NodeList nodes={filteredNodes} />
-          </div>
-        )}
-      </main>
-
-      <footer className="container mx-auto px-4 py-6 border-t border-gray-200 mt-12">
-        <p className="text-center text-gray-600">
-          VZ Programming Node Registry - {new Date().getFullYear()}
-        </p>
-      </footer>
-    </div>
+          <NodeList nodes={filteredNodes} />
+        </div>
+      )}
+    </PageContainer>
   );
 }
 

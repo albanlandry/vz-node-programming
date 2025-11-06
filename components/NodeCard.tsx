@@ -15,24 +15,22 @@ export default function NodeCard({ node }: NodeCardProps) {
   const categoryColor = categoryColors[node.category] || 'bg-gray-100 text-gray-800';
 
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+    <div className="card card-hover overflow-hidden border-0">
       {/* Header */}
-      <div className={`p-4 ${categoryColor}`}>
+      <div className={`p-4 -m-6 mb-4 ${categoryColor} rounded-t-xl`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             {node.icon && <span className="text-2xl">{node.icon}</span>}
-            <h3 className="text-lg font-semibold">{node.displayName}</h3>
+            <h3 className="text-lg font-bold">{node.displayName}</h3>
           </div>
           {node.deprecated && (
-            <span className="text-xs bg-red-500 text-white px-2 py-1 rounded">
-              Deprecated
-            </span>
+            <span className="badge badge-danger">Deprecated</span>
           )}
         </div>
-        <div className="mt-2">
-          <span className="text-xs font-medium">{node.category}</span>
+        <div className="mt-2 flex items-center gap-2">
+          <span className="text-xs font-semibold">{node.category}</span>
           {node.version && (
-            <span className="text-xs ml-2 opacity-75">v{node.version}</span>
+            <span className="text-xs opacity-75">v{node.version}</span>
           )}
         </div>
       </div>
@@ -48,20 +46,20 @@ export default function NodeCard({ node }: NodeCardProps) {
         </div>
 
         {/* Ports */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
+        <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 rounded-lg">
           <div>
-            <span className="text-xs font-semibold text-gray-500 uppercase">
+            <span className="text-xs font-semibold text-gray-500 uppercase block mb-1">
               Inputs
             </span>
-            <p className="text-sm font-semibold text-blue-600 mt-1">
+            <p className="text-lg font-bold text-blue-600">
               {node.inputs.length}
             </p>
           </div>
           <div>
-            <span className="text-xs font-semibold text-gray-500 uppercase">
+            <span className="text-xs font-semibold text-gray-500 uppercase block mb-1">
               Outputs
             </span>
-            <p className="text-sm font-semibold text-green-600 mt-1">
+            <p className="text-lg font-bold text-green-600">
               {node.outputs.length}
             </p>
           </div>
@@ -70,21 +68,18 @@ export default function NodeCard({ node }: NodeCardProps) {
         {/* Tags */}
         {node.tags.length > 0 && (
           <div className="mb-3">
-            <span className="text-xs font-semibold text-gray-500 uppercase">
+            <span className="text-xs font-semibold text-gray-500 uppercase mb-2 block">
               Tags
             </span>
-            <div className="flex flex-wrap gap-1 mt-1">
+            <div className="flex flex-wrap gap-2">
               {node.tags.slice(0, 5).map((tag) => (
-                <span
-                  key={tag}
-                  className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded"
-                >
+                <span key={tag} className="badge badge-gray">
                   {tag}
                 </span>
               ))}
               {node.tags.length > 5 && (
-                <span className="text-xs text-gray-500">
-                  +{node.tags.length - 5} more
+                <span className="badge badge-gray opacity-60">
+                  +{node.tags.length - 5}
                 </span>
               )}
             </div>
@@ -117,15 +112,15 @@ export default function NodeCard({ node }: NodeCardProps) {
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
+      <div className="px-4 py-3 bg-gray-50 -m-6 mt-4 rounded-b-xl border-t border-gray-200">
         <div className="flex items-center justify-between text-xs text-gray-500">
-          <span>Click to view details</span>
+          <span className="font-medium">Click to view details</span>
           {node.docsUrl && (
             <a
               href={node.docsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800"
+              className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
             >
               Docs →
             </a>

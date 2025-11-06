@@ -71,8 +71,8 @@ export default function Breadcrumbs() {
   }
 
   return (
-    <nav className="bg-gray-50 border-b border-gray-200" aria-label="Breadcrumb">
-      <div className="container mx-auto px-4 py-3">
+    <nav className="bg-white border-b border-gray-200 shadow-sm" aria-label="Breadcrumb">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <ol className="flex items-center space-x-2 text-sm">
           {breadcrumbs.map((item, index) => {
             const isLast = index === breadcrumbs.length - 1;
@@ -93,11 +93,11 @@ export default function Breadcrumbs() {
                   </svg>
                 )}
                 {isLast ? (
-                  <span className="text-gray-700 font-medium">{item.label}</span>
+                  <span className="text-gray-900 font-semibold">{item.label}</span>
                 ) : (
                   <Link
                     href={item.href}
-                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                    className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
                   >
                     {item.label}
                   </Link>

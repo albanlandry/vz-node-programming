@@ -7,6 +7,15 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+
+import PageContainer from '../../components/layout/PageContainer';
+import PageHeader from '../../components/layout/PageHeader';
+import StatsCard from '../../components/layout/StatsCard';
+import SearchBar from '../../components/layout/SearchBar';
+import ContentCard from '../../components/layout/ContentCard';
+import EmptyState from '../../components/layout/EmptyState';
+import ErrorAlert from '../../components/layout/ErrorAlert';
+import LoadingState from '../../components/layout/LoadingState';
 import type { GraphMetadata } from '../../src/graph-management/types';
 
 interface GraphListData {
@@ -77,163 +86,131 @@ export default function GraphsPage() {
   }) ?? [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Graph Management</h1>
-              <p className="text-xl text-gray-600">
-                Manage and execute your saved graphs
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Link
-                href="/graph-editor"
-                className="btn btn-primary"
-              >
-                + Create New Graph
-              </Link>
-            </div>
-          </div>
-        </div>
+    <PageContainer>
+      <PageHeader
+        title="Graph Management"
+        description="Manage and execute your saved graphs"
+        action={
+          <Link href="/graph-editor" className="btn btn-primary btn-lg">
+            + Create New Graph
+          </Link>
+        }
+      />
 
-        {/* Stats */}
-        {data && (
-          <div className="mb-6 bg-white rounded-lg shadow-md p-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <div className="text-sm text-gray-600 mb-1">Total Graphs</div>
-                <div className="text-3xl font-bold text-blue-600">{data.stats.total}</div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-600 mb-1">Total Nodes</div>
-                <div className="text-3xl font-bold text-green-600">{data.stats.totalNodes}</div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-600 mb-1">Total Connections</div>
-                <div className="text-3xl font-bold text-purple-600">{data.stats.totalConnections}</div>
-              </div>
-            </div>
-          </div>
-        )}
+      {/* Stats */}
+      {data && (
+        <StatsCard
+          stats={[
+            { label: 'Total Graphs', value: data.stats.total, color: 'blue', icon: '📊' },
+            { label: 'Total Nodes', value: data.stats.totalNodes, color: 'green', icon: '🔷' },
+            { label: 'Total Connections', value: data.stats.totalConnections, color: 'purple', icon: '🔗' },
+          ]}
+          columns={3}
+        />
+      )}
 
-        {/* Search */}
-        <div className="mb-6">
-          <input
-            type="text"
-            placeholder="Search graphs by name, description, or tags..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+      {/* Search */}
+      <SearchBar
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder="Search graphs by name, description, or tags..."
+      />
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-            <strong>Error:</strong> {error}
-            <button
-              onClick={() => {
-                void fetchGraphs();
-              }}
-              className="ml-4 text-red-800 underline hover:text-red-900"
-            >
-              Retry
-            </button>
-          </div>
-        )}
+      {/* Error Message */}
+      {error && (
+        <ErrorAlert
+          message={error}
+          onRetry={() => {
+            void fetchGraphs();
+          }}
+        />
+      )}
 
-        {/* Loading State */}
-        {loading && (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-gray-600">Loading graphs...</div>
-          </div>
-        )}
+      {/* Loading State */}
+      {loading && <LoadingState message="Loading graphs..." />}
 
-        {/* Graphs List */}
-        {!loading && !error && (
-          <div>
-            {filteredGraphs.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-md p-12 text-center">
-                <p className="text-gray-600 text-lg mb-4">
-                  {searchQuery ? 'No graphs found matching your search' : 'No graphs saved yet'}
-                </p>
-                <Link
-                  href="/graph-editor"
-                  className="btn btn-primary"
-                >
+      {/* Graphs List */}
+      {!loading && !error && (
+        <div>
+          {filteredGraphs.length === 0 ? (
+            <EmptyState
+              title={searchQuery ? 'No graphs found' : 'No graphs saved yet'}
+              description={
+                searchQuery
+                  ? 'Try adjusting your search terms'
+                  : 'Create your first graph to get started'
+              }
+              icon="📊"
+              action={
+                <Link href="/graph-editor" className="btn btn-primary">
                   Create Your First Graph
                 </Link>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredGraphs.map((graph) => (
-                  <div
-                    key={graph.id}
-                    className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-900 mb-1">{graph.name}</h3>
-                        {graph.description && (
-                          <p className="text-sm text-gray-600 line-clamp-2">{graph.description}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {graph.tags?.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                      <div>
-                        <span className="font-medium">{graph.nodeCount}</span> nodes
-                      </div>
-                      <div>
-                        <span className="font-medium">{graph.connectionCount}</span> connections
-                      </div>
-                      <div>
-                        {new Date(graph.updatedAt).toLocaleDateString()}
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Link
-                        href={`/graph-editor?load=${graph.id}`}
-                        className="btn btn-primary btn-sm flex-1"
-                      >
-                        Edit
-                      </Link>
-                      <Link
-                        href={`/graphs/${graph.id}/execute`}
-                        className="btn btn-success btn-sm flex-1"
-                      >
-                        Execute
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(graph.id, graph.name)}
-                        className="btn btn-danger btn-sm"
-                      >
-                        Delete
-                      </button>
+              }
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredGraphs.map((graph) => (
+                <ContentCard key={graph.id} hover>
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xl font-bold text-gray-900 mb-1 truncate">
+                        {graph.name}
+                      </h3>
+                      {graph.description && (
+                        <p className="text-sm text-gray-600 line-clamp-2">{graph.description}</p>
+                      )}
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {graph.tags?.map((tag) => (
+                      <span key={tag} className="badge badge-primary">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <div className="flex items-center gap-1">
+                      <span className="font-semibold text-gray-700">{graph.nodeCount}</span>
+                      <span>nodes</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="font-semibold text-gray-700">{graph.connectionCount}</span>
+                      <span>connections</span>
+                    </div>
+                    <div className="text-xs">
+                      {new Date(graph.updatedAt).toLocaleDateString()}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 pt-4 border-t border-gray-200">
+                    <Link
+                      href={`/graph-editor?load=${graph.id}`}
+                      className="btn btn-primary btn-sm flex-1"
+                    >
+                      Edit
+                    </Link>
+                    <Link
+                      href={`/graphs/${graph.id}/execute`}
+                      className="btn btn-success btn-sm flex-1"
+                    >
+                      Execute
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(graph.id, graph.name)}
+                      className="btn btn-danger btn-sm"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </ContentCard>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </PageContainer>
   );
 }
 

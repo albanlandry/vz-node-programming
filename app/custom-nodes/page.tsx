@@ -8,6 +8,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+import PageContainer from '../../components/layout/PageContainer';
+import PageHeader from '../../components/layout/PageHeader';
+import ContentCard from '../../components/layout/ContentCard';
+import EmptyState from '../../components/layout/EmptyState';
+import ErrorAlert from '../../components/layout/ErrorAlert';
+import LoadingState from '../../components/layout/LoadingState';
+
 interface CustomNode {
   id: string;
   metadata: {
@@ -70,118 +77,90 @@ export default function CustomNodesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Custom Nodes</h1>
-              <p className="text-xl text-gray-600">
-                Manage your custom-created nodes
-              </p>
-            </div>
-            <Link
-              href="/custom-nodes/create"
-              className="btn btn-primary btn-lg"
-            >
-              + Create New Node
-            </Link>
-          </div>
-        </div>
+    <PageContainer>
+      <PageHeader
+        title="Custom Nodes"
+        description="Manage your custom-created nodes"
+        action={
+          <Link href="/custom-nodes/create" className="btn btn-primary btn-lg">
+            + Create New Node
+          </Link>
+        }
+      />
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-            <strong>Error:</strong> {error}
-            <button
-              onClick={fetchNodes}
-              className="ml-4 text-red-800 underline hover:text-red-900"
-            >
-              Retry
-            </button>
-          </div>
-        )}
+      {error && <ErrorAlert message={error} onRetry={fetchNodes} />}
 
-        {/* Loading State */}
-        {loading && (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-gray-600">Loading custom nodes...</div>
-          </div>
-        )}
+      {loading && <LoadingState message="Loading custom nodes..." />}
 
-        {/* Nodes List */}
-        {!loading && !error && (
-          <div>
-            {nodes.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-md p-12 text-center">
-                <p className="text-gray-600 text-lg mb-4">No custom nodes yet</p>
-                <Link
-                  href="/custom-nodes/create"
-                  className="text-blue-600 hover:text-blue-800 underline"
-                >
-                  Create your first custom node
+      {!loading && !error && (
+        <div>
+          {nodes.length === 0 ? (
+            <EmptyState
+              title="No custom nodes yet"
+              description="Create your first custom node to get started"
+              icon="🎨"
+              action={
+                <Link href="/custom-nodes/create" className="btn btn-primary">
+                  Create Your First Node
                 </Link>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {nodes.map((node) => (
-                  <div
-                    key={node.id}
-                    className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow p-6"
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-900">
-                          {node.metadata.displayName}
-                        </h3>
-                        <p className="text-sm text-gray-500">{node.metadata.type}</p>
-                      </div>
-                      <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
-                        Custom
-                      </span>
+              }
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {nodes.map((node) => (
+                <ContentCard key={node.id} hover>
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xl font-bold text-gray-900 mb-1 truncate">
+                        {node.metadata.displayName}
+                      </h3>
+                      <p className="text-sm text-gray-500 truncate">{node.metadata.type}</p>
                     </div>
-
-                    <p className="text-gray-700 mb-4">{node.metadata.description}</p>
-
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {node.metadata.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="text-xs text-gray-500 mb-4">
-                      <p>Version: {node.metadata.version}</p>
-                      <p>Category: {node.metadata.category}</p>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Link
-                        href={`/custom-nodes/${node.id}`}
-                        className="btn btn-primary btn-sm flex-1"
-                      >
-                        View
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(node.id)}
-                        className="btn btn-danger btn-sm"
-                      >
-                        Delete
-                      </button>
-                    </div>
+                    <span className="badge badge-purple ml-2 flex-shrink-0">Custom</span>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+
+                  <p className="text-gray-700 mb-4 line-clamp-3">{node.metadata.description}</p>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {node.metadata.tags.map((tag) => (
+                      <span key={tag} className="badge badge-gray">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="text-xs text-gray-500 mb-4 space-y-1">
+                    <p className="flex items-center gap-2">
+                      <span className="font-medium">Version:</span>
+                      <span>{node.metadata.version}</span>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <span className="font-medium">Category:</span>
+                      <span>{node.metadata.category}</span>
+                    </p>
+                  </div>
+
+                  <div className="flex gap-2 pt-4 border-t border-gray-200">
+                    <Link
+                      href={`/custom-nodes/${node.id}`}
+                      className="btn btn-primary btn-sm flex-1"
+                    >
+                      View
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(node.id)}
+                      className="btn btn-danger btn-sm"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </ContentCard>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </PageContainer>
   );
 }
 
