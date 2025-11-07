@@ -16,25 +16,32 @@ const STORAGE_KEY = 'executionResultsPanelPosition';
 
 export default function ExecutionResultsPanel() {
   const { execution, nodes } = useGraphStore();
-  const [position, setPosition] = useState({ x: window.innerWidth - 420, y: 100 });
+  const [position, setPosition] = useState({ x: 0, y: 100 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
 
-  // Load position from localStorage on mount
+  // Load position from localStorage on mount and set initial position
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      // Set initial position based on window width if not saved
+      const defaultX = window.innerWidth - 420;
+      
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
           const parsed = JSON.parse(saved) as { x: number; y: number };
           if (parsed.x !== undefined && parsed.y !== undefined) {
             setPosition({ x: parsed.x, y: parsed.y });
+            return;
           }
         }
       } catch (error) {
         console.warn('Failed to load panel position from localStorage:', error);
       }
+      
+      // If no saved position, use default
+      setPosition({ x: defaultX, y: 100 });
     }
   }, []);
 
@@ -71,7 +78,7 @@ export default function ExecutionResultsPanel() {
    * Handle drag
    */
   useEffect(() => {
-    if (!isDragging) return;
+    if (!isDragging || typeof window === 'undefined') return;
 
     let currentPosition = position;
 
