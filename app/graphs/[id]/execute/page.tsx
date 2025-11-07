@@ -141,6 +141,23 @@ export default function GraphExecutePage() {
   };
 
   /**
+   * Get entries from outputs (handles both Map and plain object)
+   */
+  const getOutputEntries = (outputs: Map<string, unknown> | Record<string, unknown> | undefined): Array<[string, unknown]> => {
+    if (!outputs) {
+      return [];
+    }
+    
+    // Check if it's a Map
+    if (outputs instanceof Map) {
+      return Array.from(outputs.entries());
+    }
+    
+    // Otherwise, treat as plain object
+    return Object.entries(outputs);
+  };
+
+  /**
    * Render execution result for a node
    */
   const renderNodeResult = (nodeId: string, result: ExecutionResult) => {
@@ -195,7 +212,7 @@ export default function GraphExecutePage() {
             {result.success && result.outputs && (
               <div className="space-y-2">
                 <div className="text-xs font-semibold text-gray-700">Outputs:</div>
-                {Array.from(result.outputs.entries()).map(([portId, value]: [string, unknown]) => {
+                {getOutputEntries(result.outputs as Map<string, unknown> | Record<string, unknown>).map(([portId, value]: [string, unknown]) => {
                   const outputPort = node.outputs.find((p: { id: string }) => p.id === portId);
                   return (
                     <div key={portId} className="bg-gray-50 rounded p-2 border border-gray-200">
