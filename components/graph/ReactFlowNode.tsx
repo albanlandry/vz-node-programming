@@ -75,7 +75,7 @@ function ReactFlowNode({ data, selected }: NodeProps<ReactFlowNodeData>) {
 
   return (
     <div
-      className={`bg-white rounded-lg shadow-lg border-2 min-w-[200px] transition-all ${
+      className={`bg-white rounded-lg shadow-lg border-2 min-w-[250px] transition-all ${
         getExecutionBorderColor(status, selected)
       } ${hasError ? 'bg-red-50' : ''}`}
     >
@@ -119,16 +119,17 @@ function ReactFlowNode({ data, selected }: NodeProps<ReactFlowNodeData>) {
               {data.inputs.map((port) => (
                 <div
                   key={port.id}
-                  className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-4 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
                   title={`${port.name} (${port.dataType.name})${port.required ? ' *' : ''}`}
                 >
                   <Handle
                     type="target"
                     position={Position.Left}
                     id={port.id}
+                    className="!rounded-full !border-2 !border-white"
                     style={{
-                      width: '12px',
-                      height: '12px',
+                      width: '14px',
+                      height: '14px',
                       borderRadius: '50%',
                       border: '2px solid white',
                       backgroundColor: getTypeColor(port.dataType.name).includes('green') ? '#10b981' :
@@ -158,7 +159,7 @@ function ReactFlowNode({ data, selected }: NodeProps<ReactFlowNodeData>) {
               {data.outputs.map((port) => (
                 <div
                   key={port.id}
-                  className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-4 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
                   title={`${port.name} (${port.dataType.name})`}
                 >
                   <div className="flex-1 text-xs">
@@ -169,9 +170,10 @@ function ReactFlowNode({ data, selected }: NodeProps<ReactFlowNodeData>) {
                     type="source"
                     position={Position.Right}
                     id={port.id}
+                    className="!rounded-full !border-2 !border-white"
                     style={{
-                      width: '12px',
-                      height: '12px',
+                      width: '14px',
+                      height: '14px',
                       borderRadius: '50%',
                       border: '2px solid white',
                       backgroundColor: getTypeColor(port.dataType.name).includes('green') ? '#10b981' :
