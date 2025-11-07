@@ -8,8 +8,8 @@
 
 import { useState, useEffect } from 'react';
 import { X, Check } from 'lucide-react';
-import type { FormSchema, FormField, UserInputRequest } from '../../../src/types';
-import { validateForm, getFieldError, validateField, type ValidationResult, type ValidationError } from '../../../utils/formValidation';
+import type { FormSchema, FormField, UserInputRequest } from '../../src/types';
+import { validateForm, getFieldError, validateField, type ValidationResult, type ValidationError } from '../../utils/formValidation';
 
 interface UserInputDialogProps {
   open: boolean;

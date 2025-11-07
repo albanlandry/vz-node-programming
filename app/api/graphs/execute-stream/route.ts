@@ -74,11 +74,11 @@ export async function POST(request: NextRequest) {
           }
         };
 
+        let executionId = `exec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        
         try {
           const engine = new GraphExecutionEngine();
           const executor = await engine.buildExecutor(graph);
-
-          const executionId = `exec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
           // Send execution started event
           sendEvent('execution:started', {

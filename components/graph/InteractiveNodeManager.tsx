@@ -11,8 +11,8 @@ import UserInputDialog from './UserInputDialog';
 import type {
   UserInputRequest,
   InteractiveNodeEventType,
-} from '../../../src/types';
-import { streamingExecutionService } from '../../../services/streamingExecutionService';
+} from '../../src/types';
+import { streamingExecutionService } from '../../services/streamingExecutionService';
 
 interface PendingInputRequest {
   nodeId: string;

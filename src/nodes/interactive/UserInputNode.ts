@@ -13,6 +13,7 @@ import {
 import type {
   IInteractiveNode,
   InteractiveExecutionContext,
+  ExecutionContext,
   ExecutionResult,
   Port,
   UserInputRequest,
@@ -125,6 +126,17 @@ export class UserInputNode extends BaseNode implements IInteractiveNode {
         executionTime,
       };
     }
+  }
+
+  /**
+   * Required by BaseNode - delegates to executeInteractive
+   */
+  protected async executeInternal(context: ExecutionContext): Promise<Map<string, unknown>> {
+    // For interactive nodes, this should not be called directly
+    // The executor will call executeInteractive instead
+    // But we provide a fallback that converts ExecutionContext to InteractiveExecutionContext
+    const result = await this.executeInteractive(context as unknown as InteractiveExecutionContext);
+    return result.outputs || new Map();
   }
 
   /**
