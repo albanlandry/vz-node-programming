@@ -162,6 +162,15 @@ export async function POST(request: NextRequest) {
             });
           });
 
+          executor.on(InteractiveNodeEventType.IMAGE_DISPLAY_REQUESTED, (event: any) => {
+            sendEvent('interactive:image-display-requested', {
+              nodeId: event.data.nodeId,
+              executionId: event.data.executionId,
+              imageData: event.data.imageData,
+              timestamp: Date.now(),
+            });
+          });
+
           // Register executor for user input API
           registerExecutor(executionId, executor);
 

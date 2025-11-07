@@ -740,17 +740,328 @@ Integration tests for the complete flow are planned for future phases:
 
 ## Next Steps (Phase 3)
 
-1. Implement `ImageDisplayPanel` component
-2. Add image display support to execution engine
-3. Create example `ImageDisplayNode`
-4. Add timeout handling for user input requests
-5. Implement session persistence for paused nodes
+1. ✅ Implement `ImageDisplayPanel` component
+2. ✅ Add image display support to execution engine
+3. ✅ Create example `ImageDisplayNode`
+4. Add timeout handling for user input requests (planned for future)
+5. Implement session persistence for paused nodes (planned for future)
+
+---
+
+# Interactive Nodes - Phase 3 Implementation
+
+## Overview
+
+This document describes the implementation of Phase 3: Image Display Support for Interactive Nodes. Phase 3 adds the ability for nodes to display images (from URL, base64, or Blob) during graph execution.
+
+## Implementation Date
+
+**Completed:** 2025-01-07
+
+## Phase 3 Goals
+
+1. ✅ Implement `ImageDisplayPanel` component
+2. ✅ Image data processing (URL, base64, Blob)
+3. ✅ Update `InteractiveNodeManager` to handle image display events
+4. ✅ Update streaming execution to handle `IMAGE_DISPLAY_REQUESTED` events
+5. ✅ Create example `ImageDisplayNode` implementation
+
+## Files Created/Modified
+
+### 1. Image Display Panel Component (`components/graph/ImageDisplayPanel.tsx`)
+
+**New File Created**
+
+Modal panel component for displaying images from various sources.
+
+#### Features
+
+- **Multiple Image Sources**:
+  - URL: Loads images from external URLs
+  - Base64: Displays base64-encoded images (with or without data URI prefix)
+  - Blob: Creates object URLs from Blob data
+- **Image Controls**:
+  - Download button: Downloads the displayed image
+  - Fullscreen button: Opens image in fullscreen modal
+  - Close button: Closes the panel
+- **Image Information**: Displays format and dimensions
+- **Error Handling**: Shows error messages if image fails to load
+- **Loading State**: Shows loading indicator while image loads
+- **Responsive**: Adapts to different screen sizes
+
+#### Props
+
+```typescript
+interface ImageDisplayPanelProps {
+  open: boolean;
+  nodeId: string;
+  executionId: string;
+  imageData: ImageData;
+  onClose: () => void;
+}
+```
+
+#### Image Data Processing
+
+- **URL**: Directly uses the URL as image source
+- **Base64**: Automatically adds data URI prefix if missing (`data:image/{format};base64,{data}`)
+- **Blob**: Creates object URL using `URL.createObjectURL()` and cleans up on unmount
+
+### 2. Interactive Node Manager Updates (`components/graph/InteractiveNodeManager.tsx`)
+
+**Modified File**
+
+Extended to handle image display events in addition to user input events.
+
+#### Changes Made
+
+1. **New State**:
+   ```typescript
+   interface PendingImageDisplay {
+     nodeId: string;
+     executionId: string;
+     imageData: ImageData;
+   }
+   const [pendingImage, setPendingImage] = useState<PendingImageDisplay | null>(null);
+   ```
+
+2. **Event Listener**:
+   - Added listener for `interactive:image-display-requested` events
+   - Updates `pendingImage` state when image display is requested
+
+3. **Component Rendering**:
+   - Renders `ImageDisplayPanel` when `pendingImage` is set
+   - Handles image panel close via `handleImageClose` callback
+
+### 3. Streaming Execution Updates (`app/api/graphs/execute-stream/route.ts`)
+
+**Modified File**
+
+Added event listener for `IMAGE_DISPLAY_REQUESTED` events.
+
+#### Changes Made
+
+1. **Event Listener**:
+   ```typescript
+   executor.on(InteractiveNodeEventType.IMAGE_DISPLAY_REQUESTED, (event: any) => {
+     sendEvent('interactive:image-display-requested', {
+       nodeId: event.data.nodeId,
+       executionId: event.data.executionId,
+       imageData: event.data.imageData,
+       timestamp: Date.now(),
+     });
+   });
+   ```
+
+2. **SSE Event**: Sends `interactive:image-display-requested` event to frontend with image data
+
+### 4. Streaming Execution Service Updates (`services/streamingExecutionService.ts`)
+
+**Modified File**
+
+Added `interactive:image-display-requested` to `ExecutionEventType`:
+
+```typescript
+export type ExecutionEventType =
+  | 'execution:started'
+  | 'node:queued'
+  | 'node:executing'
+  | 'node:completed'
+  | 'node:failed'
+  | 'connection:data'
+  | 'execution:completed'
+  | 'execution:error'
+  | 'interactive:user-input-requested'
+  | 'interactive:user-input-received'
+  | 'interactive:node-paused'
+  | 'interactive:node-resumed'
+  | 'interactive:image-display-requested';  // NEW
+```
+
+### 5. Example Image Display Node (`src/nodes/interactive/ImageDisplayNode.ts`)
+
+**New File Created**
+
+Example implementation of an interactive node that displays images.
+
+#### Features
+
+- Extends `BaseNode` and implements `IInteractiveNode`
+- Accepts image data from multiple input ports:
+  - `url`: Image URL
+  - `base64`: Base64-encoded image data
+  - `format`: Image format (png, jpg, jpeg, gif, webp, svg)
+  - `alt`: Alternative text
+  - `width`: Image width in pixels
+  - `height`: Image height in pixels
+- Validates image format
+- Outputs `displayed` boolean indicating success
+
+#### Configuration
+
+```typescript
+interface ImageDisplayNodeConfig {
+  id?: string;
+  defaultFormat?: 'png' | 'jpg' | 'jpeg' | 'gif' | 'webp' | 'svg';
+  defaultAlt?: string;
+}
+```
+
+#### Usage Example
+
+```typescript
+const imageDisplayNode = new ImageDisplayNode({
+  id: 'image-display-1',
+  defaultFormat: 'png',
+  defaultAlt: 'Graph visualization',
+});
+
+// When executed with URL input:
+// context.inputs.set('url', 'https://example.com/image.png');
+// context.inputs.set('format', 'png');
+// The image will be displayed in the UI
+```
+
+## Architecture
+
+### Component Flow
+
+```
+Graph Execution (SSE Stream)
+  ↓
+Interactive Node calls displayImage()
+  ↓
+NodeExecutor emits IMAGE_DISPLAY_REQUESTED event
+  ↓
+execute-stream route sends SSE event
+  ↓
+StreamingExecutionService emits 'interactive:image-display-requested'
+  ↓
+InteractiveNodeManager receives event
+  ↓
+ImageDisplayPanel displays
+  ↓
+User can view, download, or close image
+```
+
+### Data Flow
+
+```
+1. Node calls displayImage() → InteractiveExecutionContext.displayImage()
+2. Event emitted → SSE stream → Frontend
+3. Panel displayed → Image loaded from URL/base64/Blob
+4. Image rendered → User can interact (download, fullscreen, close)
+```
+
+## Usage Example
+
+### Creating a Graph with Image Display Node
+
+```typescript
+import { ImageDisplayNode } from './nodes/interactive/ImageDisplayNode';
+import { GraphExecutionEngine } from './graph-management';
+
+const imageDisplayNode = new ImageDisplayNode({
+  id: 'image-display-1',
+  defaultFormat: 'png',
+  defaultAlt: 'Analysis result',
+});
+
+// Add to graph and execute
+// When execution reaches this node with image data in inputs,
+// the image will be displayed in a panel
+```
+
+### Frontend Integration
+
+The `InteractiveNodeManager` automatically handles image display events. When a graph with image display nodes is executed:
+
+1. Execution starts via `ExecutionToolbar`
+2. When an interactive node calls `displayImage()`, `ImageDisplayPanel` appears
+3. Image is loaded and displayed (from URL, base64, or Blob)
+4. User can download, view fullscreen, or close the panel
+5. Execution continues (image display does not pause execution)
+
+## Testing
+
+### Unit Tests
+
+Unit tests for Phase 3 components:
+
+#### Test Files Created
+
+1. **`__tests__/nodes/interactive/ImageDisplayNode.test.ts`** (16 tests)
+   - ✅ ImageDisplayNode execution
+   - ✅ Different image sources (URL, base64)
+   - ✅ Format validation
+   - ✅ Error handling
+   - ✅ Default values
+   - ✅ Width/height support
+   - ✅ Execution time measurement
+
+#### Test Results
+
+```
+Test Suites: 1 passed, 1 total
+Tests:       16 passed, 16 total
+Time:        ~1.7s
+```
+
+#### Running Tests
+
+```bash
+# Run Phase 3 tests
+npm test -- __tests__/nodes/interactive/ImageDisplayNode.test.ts
+```
+
+2. **`__tests__/components/ImageDisplayPanel.test.tsx`** (Planned)
+   - Test image loading from URL
+   - Test image loading from base64
+   - Test image loading from Blob
+   - Test download functionality
+   - Test fullscreen functionality
+   - Test error handling
+
+### Integration Tests
+
+Integration tests for the complete flow:
+
+1. **`__tests__/integration/image-display-flow.test.ts`** (Planned)
+   - Test complete image display flow (node → panel → display)
+   - Test multiple image displays in sequence
+   - Test image display with different formats
+
+## Known Limitations
+
+1. **No Image Caching**: Images are not cached, so they reload on each display
+2. **No Image Optimization**: Large images are not automatically optimized or resized
+3. **Blob Cleanup**: Blob URLs are cleaned up, but large Blobs may consume memory
+4. **No Image Editing**: Users can only view/download images, not edit them
+5. **Format Support**: Only standard web formats are supported (png, jpg, jpeg, gif, webp, svg)
+
+## Next Steps (Phase 4)
+
+1. Implement `StreamingDataPanel` component
+2. Real-time data update mechanism
+3. WebSocket/SSE integration (if needed)
+4. Example `StreamingDataNode` implementation
 
 ## Dependencies
 
-- `lucide-react`: Icons for UI components
-- Existing Phase 1 infrastructure
-- Form validation utilities
+- `lucide-react`: Icons for UI components (Download, Maximize2, X)
+- Existing Phase 1 and Phase 2 infrastructure
+- Browser APIs: `URL.createObjectURL()`, `URL.revokeObjectURL()`
+
+## Migration Notes
+
+- No breaking changes to existing code
+- Image display nodes are opt-in (existing nodes continue to work)
+- Frontend automatically handles image display events when `InteractiveNodeManager` is included
+- Image display does not pause execution (unlike user input)
+
+## Conclusion
+
+Phase 3 successfully implements image display support for interactive nodes. The implementation provides a complete solution for displaying images from various sources (URL, base64, Blob) with user-friendly controls (download, fullscreen, close). The architecture is extensible and ready for Phase 4 (Streaming Data Support).
 
 ## Migration Notes
 

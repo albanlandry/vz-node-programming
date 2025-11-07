@@ -18,7 +18,8 @@ export type ExecutionEventType =
   | 'interactive:user-input-requested'
   | 'interactive:user-input-received'
   | 'interactive:node-paused'
-  | 'interactive:node-resumed';
+  | 'interactive:node-resumed'
+  | 'interactive:image-display-requested';
 
 export interface ExecutionEvent {
   type: ExecutionEventType;

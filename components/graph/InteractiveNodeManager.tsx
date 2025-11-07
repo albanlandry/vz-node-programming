@@ -8,8 +8,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import UserInputDialog from './UserInputDialog';
+import ImageDisplayPanel from './ImageDisplayPanel';
 import type {
   UserInputRequest,
+  ImageData,
   InteractiveNodeEventType,
 } from '../../src/types';
 import { streamingExecutionService } from '../../services/streamingExecutionService';
@@ -20,8 +22,15 @@ interface PendingInputRequest {
   request: UserInputRequest;
 }
 
+interface PendingImageDisplay {
+  nodeId: string;
+  executionId: string;
+  imageData: ImageData;
+}
+
 export default function InteractiveNodeManager() {
   const [pendingInput, setPendingInput] = useState<PendingInputRequest | null>(null);
+  const [pendingImage, setPendingImage] = useState<PendingImageDisplay | null>(null);
 
   useEffect(() => {
     // Listen for user input requests from streaming execution
@@ -30,11 +39,19 @@ export default function InteractiveNodeManager() {
       setPendingInput({ nodeId, executionId, request });
     };
 
-    // Register event listener
+    // Listen for image display requests
+    const handleImageDisplayRequested = (event: any) => {
+      const { nodeId, executionId, imageData } = event.data;
+      setPendingImage({ nodeId, executionId, imageData });
+    };
+
+    // Register event listeners
     streamingExecutionService.on('interactive:user-input-requested' as any, handleUserInputRequested);
+    streamingExecutionService.on('interactive:image-display-requested' as any, handleImageDisplayRequested);
 
     return () => {
       streamingExecutionService.off('interactive:user-input-requested' as any, handleUserInputRequested);
+      streamingExecutionService.off('interactive:image-display-requested' as any, handleImageDisplayRequested);
     };
   }, []);
 
@@ -100,6 +117,10 @@ export default function InteractiveNodeManager() {
     }
   }, [pendingInput]);
 
+  const handleImageClose = useCallback(() => {
+    setPendingImage(null);
+  }, []);
+
   return (
     <>
       {pendingInput && (
@@ -110,6 +131,15 @@ export default function InteractiveNodeManager() {
           request={pendingInput.request}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
+        />
+      )}
+      {pendingImage && (
+        <ImageDisplayPanel
+          open={true}
+          nodeId={pendingImage.nodeId}
+          executionId={pendingImage.executionId}
+          imageData={pendingImage.imageData}
+          onClose={handleImageClose}
         />
       )}
     </>
