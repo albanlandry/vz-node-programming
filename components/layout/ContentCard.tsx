@@ -21,7 +21,7 @@ export default function ContentCard({
   return (
     <div
       className={`
-        bg-white rounded-xl shadow-sm border border-gray-200 p-6
+        bg-white shadow-sm border border-gray-200 p-6
         ${hover ? 'hover:shadow-md hover:border-gray-300 transition-all duration-200' : ''}
         ${onClick ? 'cursor-pointer' : ''}
         ${className}

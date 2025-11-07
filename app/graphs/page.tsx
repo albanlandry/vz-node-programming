@@ -110,10 +110,10 @@ export default function GraphsPage() {
         action={
           <div className="flex items-center gap-3">
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            <div className="flex items-center gap-1 bg-gray-100 p-1">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded transition-colors ${
+                className={`p-2 transition-colors ${
                   viewMode === 'grid'
                     ? 'bg-white text-blue-600 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
@@ -124,7 +124,7 @@ export default function GraphsPage() {
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded transition-colors ${
+                className={`p-2 transition-colors ${
                   viewMode === 'list'
                     ? 'bg-white text-blue-600 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
@@ -232,21 +232,21 @@ export default function GraphsPage() {
                     <div className="flex gap-2 pt-4 border-t border-gray-200">
                       <Link
                         href={`/graph-editor?load=${graph.id}`}
-                        className="group p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="group p-2 hover:bg-gray-100 transition-colors"
                         title="Edit"
                       >
                         <Edit className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
                       </Link>
                       <Link
                         href={`/graphs/${graph.id}/execute`}
-                        className="group p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="group p-2 hover:bg-gray-100 transition-colors"
                         title="Execute"
                       >
                         <Play className="w-5 h-5 text-gray-600 group-hover:text-green-600" />
                       </Link>
                       <button
                         onClick={() => handleDelete(graph.id, graph.name)}
-                        className="group p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="group p-2 hover:bg-gray-100 transition-colors"
                         title="Delete"
                       >
                         <Trash2 className="w-5 h-5 text-gray-600 group-hover:text-red-600" />
@@ -256,7 +256,7 @@ export default function GraphsPage() {
                 ))}
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-2 space-y-8">
                 {filteredGraphs.map((graph) => (
                   <ContentCard key={graph.id} hover>
                     <div className="flex items-center justify-between">

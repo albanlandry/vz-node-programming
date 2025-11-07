@@ -35,7 +35,6 @@ a {
 
 ::-webkit-scrollbar-thumb {
   background: #888;
-  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -55,10 +54,10 @@ a {
   background: #6b7280;
 }
 
-/* Modern button styles */
+  /* Modern button styles */
 @layer components {
   .btn {
-    @apply px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200;
+    @apply px-4 py-2.5 font-medium text-sm transition-all duration-200;
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
     @apply disabled:opacity-50 disabled:cursor-not-allowed;
   }
@@ -84,16 +83,16 @@ a {
   }
 
   .btn-sm {
-    @apply px-3 py-1.5 text-xs rounded-lg;
+    @apply px-3 py-1.5 text-xs;
   }
 
   .btn-lg {
-    @apply px-6 py-3 text-base rounded-xl;
+    @apply px-6 py-3 text-base;
   }
 
   /* Card styles */
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+    @apply bg-white shadow-sm border border-gray-200 p-6;
     @apply transition-all duration-200;
   }
 
@@ -103,7 +102,7 @@ a {
 
   /* Tag/Badge styles */
   .badge {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
+    @apply inline-flex items-center px-2.5 py-1 text-xs font-medium;
   }
 
   .badge-primary {
@@ -147,7 +146,6 @@ a {
     font-size: 0.75rem;
     font-weight: 500;
     white-space: nowrap;
-    border-radius: 0.375rem;
     pointer-events: none;
     z-index: 50;
     margin-bottom: 0.25rem;
@@ -166,5 +164,18 @@ a {
     z-index: 50;
     margin-bottom: -0.125rem;
   }
+}
+
+/* Global: Remove all border radius except loading indicators */
+* {
+  border-radius: 0 !important;
+}
+
+/* Keep border radius for loading indicators */
+.rounded-full,
+[class*="rounded-full"],
+.animate-spin[class*="rounded"],
+[class*="animate-spin"][class*="rounded"] {
+  border-radius: 9999px !important;
 }
 
