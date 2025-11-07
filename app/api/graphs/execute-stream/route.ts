@@ -8,7 +8,8 @@ import { NextRequest } from 'next/server';
 import { GraphExecutionEngine } from '../../../../src/graph-management';
 import type { GraphDefinition, ExecutionRequest } from '../../../../src/graph-management/types';
 import { logger } from '../../../../src/utils/Logger';
-import { NodeEventType } from '../../../../src/types';
+import { NodeEventType, InteractiveNodeEventType } from '../../../../src/types';
+import { registerExecutor, unregisterExecutor } from '../interactive/input/[nodeId]/route';
 
 /**
  * POST /api/graphs/execute-stream
@@ -127,6 +128,43 @@ export async function POST(request: NextRequest) {
             });
           });
 
+          // Set up interactive event listeners
+          executor.on(InteractiveNodeEventType.USER_INPUT_REQUESTED, (event: any) => {
+            sendEvent('interactive:user-input-requested', {
+              nodeId: event.data.nodeId,
+              executionId: event.data.executionId,
+              request: event.data.request,
+              timestamp: Date.now(),
+            });
+          });
+
+          executor.on(InteractiveNodeEventType.USER_INPUT_RECEIVED, (event: any) => {
+            sendEvent('interactive:user-input-received', {
+              nodeId: event.data.nodeId,
+              executionId: event.data.executionId,
+              timestamp: Date.now(),
+            });
+          });
+
+          executor.on(InteractiveNodeEventType.NODE_PAUSED, (event: any) => {
+            sendEvent('interactive:node-paused', {
+              nodeId: event.data.nodeId,
+              executionId: event.data.executionId,
+              timestamp: Date.now(),
+            });
+          });
+
+          executor.on(InteractiveNodeEventType.NODE_RESUMED, (event: any) => {
+            sendEvent('interactive:node-resumed', {
+              nodeId: event.data.nodeId,
+              executionId: event.data.executionId,
+              timestamp: Date.now(),
+            });
+          });
+
+          // Register executor for user input API
+          registerExecutor(executionId, executor);
+
           // Prepare initial inputs
           const initialInputs = new Map<string, Map<string, unknown>>();
           if (inputs) {
@@ -185,6 +223,9 @@ export async function POST(request: NextRequest) {
             timestamp: Date.now(),
           });
 
+          // Unregister executor
+          unregisterExecutor(executionId);
+
           controller.close();
         } catch (error) {
           logger.error('Error in streaming execution:', error);
@@ -192,6 +233,8 @@ export async function POST(request: NextRequest) {
             error: error instanceof Error ? error.message : String(error),
             timestamp: Date.now(),
           });
+          // Unregister executor on error
+          unregisterExecutor(executionId);
           controller.close();
         }
       },

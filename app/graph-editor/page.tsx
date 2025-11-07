@@ -15,6 +15,7 @@ import ExecutionToolbar from '../../components/graph/ExecutionToolbar';
 import NodePalette from '../../components/graph/NodePalette';
 import NodeDetailsPanel from '../../components/graph/NodeDetailsPanel';
 import ExecutionResultsPanel from '../../components/graph/ExecutionResultsPanel';
+import InteractiveNodeManager from '../../components/graph/InteractiveNodeManager';
 import { useGraphStore } from '../../store/graphStore';
 
 /**
@@ -165,6 +166,8 @@ function GraphEditorContent() {
       )}
       {/* Execution Results Panel */}
       <ExecutionResultsPanel />
+      {/* Interactive Node Manager */}
+      <InteractiveNodeManager />
     </div>
   );
 }

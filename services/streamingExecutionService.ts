@@ -14,7 +14,11 @@ export type ExecutionEventType =
   | 'node:failed'
   | 'connection:data'
   | 'execution:completed'
-  | 'execution:error';
+  | 'execution:error'
+  | 'interactive:user-input-requested'
+  | 'interactive:user-input-received'
+  | 'interactive:node-paused'
+  | 'interactive:node-resumed';
 
 export interface ExecutionEvent {
   type: ExecutionEventType;
