@@ -150,7 +150,7 @@ export class GraphExecutionEngine {
   /**
    * Build NodeExecutor from graph definition
    */
-  private async buildExecutor(graph: GraphDefinition): Promise<NodeExecutor> {
+  public async buildExecutor(graph: GraphDefinition): Promise<NodeExecutor> {
     const executor = new NodeExecutor();
 
     // Create nodes from graph definition

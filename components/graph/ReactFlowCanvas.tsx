@@ -28,6 +28,7 @@ import 'reactflow/dist/style.css';
 import ReactFlowNode from './ReactFlowNode';
 import { useGraphStore, type NodePosition } from '../../store/graphStore';
 import { Port } from '../../src/types';
+import { getConnectionStyle, getConnectionLabel } from './DataFlowVisualization';
 
 interface ReactFlowCanvasProps {
   onNodeDoubleClick?: (nodeId: string) => void;
@@ -83,6 +84,9 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
     selectedNodeId,
     selectedNodeIds,
     moveNodes,
+    showDataFlow,
+    showConnectionValues,
+    connectionStates,
   } = useGraphStore();
 
   /**
@@ -109,17 +113,36 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
    * Convert store connections to React Flow edges
    */
   const reactFlowEdges = useMemo<Edge[]>(() => {
-    return storeConnections.map((conn) => ({
-      id: conn.id,
-      source: conn.fromNode,
-      sourceHandle: conn.fromPort,
-      target: conn.toNode,
-      targetHandle: conn.toPort,
-      type: 'smoothstep',
-      animated: false,
-      style: { stroke: '#3B82F6', strokeWidth: 2 },
-    }));
-  }, [storeConnections]);
+    return storeConnections.map((conn) => {
+      const baseStyle = showDataFlow ? getConnectionStyle(conn.id, connectionStates) : {};
+      const label = showConnectionValues ? getConnectionLabel(conn.id, connectionStates, showConnectionValues) : undefined;
+      
+      return {
+        id: conn.id,
+        source: conn.fromNode,
+        sourceHandle: conn.fromPort,
+        target: conn.toNode,
+        targetHandle: conn.toPort,
+        type: 'smoothstep',
+        animated: showDataFlow && baseStyle.strokeDasharray !== undefined,
+        style: {
+          stroke: '#3B82F6',
+          strokeWidth: 2,
+          ...baseStyle,
+        },
+        label: label,
+        labelStyle: {
+          fill: '#1f2937',
+          fontWeight: 500,
+          fontSize: '11px',
+        },
+        labelBgStyle: {
+          fill: 'white',
+          fillOpacity: 0.8,
+        },
+      };
+    });
+  }, [storeConnections, showDataFlow, showConnectionValues, connectionStates]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(reactFlowNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(reactFlowEdges);

@@ -70,6 +70,35 @@ export interface NodeExecutionState {
 }
 
 /**
+ * Input template for saving/loading input configurations
+ */
+export interface InputTemplate {
+  id: string;
+  name: string;
+  inputs: Record<string, Record<string, unknown>>;
+  createdAt: string;
+}
+
+/**
+ * Breakpoint configuration
+ */
+export interface Breakpoint {
+  nodeId: string;
+  enabled: boolean;
+  condition?: string;
+}
+
+/**
+ * Connection state for data flow visualization
+ */
+export interface ConnectionState {
+  connectionId: string;
+  status: 'idle' | 'active' | 'error';
+  data?: unknown;
+  animationProgress?: number;
+}
+
+/**
  * Graph execution state
  */
 export interface ExecutionState {
@@ -142,6 +171,21 @@ interface GraphState {
   // Execution state
   execution: ExecutionState;
   
+  // Input configuration
+  inputConfig: Record<string, Record<string, unknown>>;
+  inputTemplates: InputTemplate[];
+  
+  // Debugging
+  breakpoints: Record<string, Breakpoint>;
+  isPaused: boolean;
+  stepMode: boolean;
+  currentStepNodeId: string | null;
+  
+  // Data flow visualization
+  connectionStates: Record<string, ConnectionState>;
+  showDataFlow: boolean;
+  showConnectionValues: boolean;
+  
   // Actions - Execution
   startExecution: (mode: 'sequential' | 'parallel') => void;
   stopExecution: () => void;
@@ -150,6 +194,26 @@ interface GraphState {
   setExecutionErrors: (errors: Record<string, NodeError>) => void;
   setExecutionTime: (time: number) => void;
   clearExecutionState: () => void;
+  
+  // Actions - Input Configuration
+  setInputValue: (nodeId: string, portId: string, value: unknown) => void;
+  clearInputConfig: () => void;
+  saveInputTemplate: (name: string) => void;
+  loadInputTemplate: (templateId: string) => void;
+  deleteInputTemplate: (templateId: string) => void;
+  
+  // Actions - Debugging
+  addBreakpoint: (nodeId: string, condition?: string) => void;
+  removeBreakpoint: (nodeId: string) => void;
+  toggleBreakpoint: (nodeId: string) => void;
+  pauseExecution: () => void;
+  resumeExecution: () => void;
+  stepExecution: () => void;
+  
+  // Actions - Data Flow Visualization
+  updateConnectionState: (connectionId: string, state: Partial<ConnectionState>) => void;
+  setShowDataFlow: (show: boolean) => void;
+  setShowConnectionValues: (show: boolean) => void;
 }
 
 /**
@@ -224,6 +288,21 @@ export const useGraphStore = create<GraphState>((set, get) => ({
     executionTime: 0,
     mode: 'sequential',
   },
+  
+  // Input configuration
+  inputConfig: {},
+  inputTemplates: [],
+  
+  // Debugging
+  breakpoints: {},
+  isPaused: false,
+  stepMode: false,
+  currentStepNodeId: null,
+  
+  // Data flow visualization
+  connectionStates: {},
+  showDataFlow: false,
+  showConnectionValues: false,
 
   // Node actions
   addNode: (nodeData) => {
@@ -612,7 +691,131 @@ export const useGraphStore = create<GraphState>((set, get) => ({
         executionTime: 0,
         mode: 'sequential',
       },
+      isPaused: false,
+      currentStepNodeId: null,
+      connectionStates: {},
     });
+  },
+
+  // Input configuration actions
+  setInputValue: (nodeId, portId, value) => {
+    set((state) => ({
+      inputConfig: {
+        ...state.inputConfig,
+        [nodeId]: {
+          ...(state.inputConfig[nodeId] || {}),
+          [portId]: value,
+        },
+      },
+    }));
+  },
+
+  clearInputConfig: () => {
+    set({ inputConfig: {} });
+  },
+
+  saveInputTemplate: (name) => {
+    const state = get();
+    const template: InputTemplate = {
+      id: generateId(),
+      name,
+      inputs: state.inputConfig,
+      createdAt: new Date().toISOString(),
+    };
+    set((s) => ({
+      inputTemplates: [...s.inputTemplates, template],
+    }));
+  },
+
+  loadInputTemplate: (templateId) => {
+    const state = get();
+    const template = state.inputTemplates.find((t) => t.id === templateId);
+    if (template) {
+      set({ inputConfig: template.inputs });
+    }
+  },
+
+  deleteInputTemplate: (templateId) => {
+    set((state) => ({
+      inputTemplates: state.inputTemplates.filter((t) => t.id !== templateId),
+    }));
+  },
+
+  // Debugging actions
+  addBreakpoint: (nodeId, condition) => {
+    set((state) => ({
+      breakpoints: {
+        ...state.breakpoints,
+        [nodeId]: {
+          nodeId,
+          enabled: true,
+          condition,
+        },
+      },
+    }));
+  },
+
+  removeBreakpoint: (nodeId) => {
+    set((state) => {
+      const { [nodeId]: removed, ...rest } = state.breakpoints;
+      return { breakpoints: rest };
+    });
+  },
+
+  toggleBreakpoint: (nodeId) => {
+    set((state) => {
+      const breakpoint = state.breakpoints[nodeId];
+      if (breakpoint) {
+        return {
+          breakpoints: {
+            ...state.breakpoints,
+            [nodeId]: {
+              ...breakpoint,
+              enabled: !breakpoint.enabled,
+            },
+          },
+        };
+      }
+      return state;
+    });
+  },
+
+  pauseExecution: () => {
+    set({ isPaused: true });
+  },
+
+  resumeExecution: () => {
+    set({ isPaused: false, currentStepNodeId: null });
+  },
+
+  stepExecution: () => {
+    // Step execution logic would be handled by execution service
+    // This just marks that step mode is active
+    set({ stepMode: true, isPaused: false });
+  },
+
+  // Data flow visualization actions
+  updateConnectionState: (connectionId, stateUpdate) => {
+    set((state) => ({
+      connectionStates: {
+        ...state.connectionStates,
+        [connectionId]: {
+          ...(state.connectionStates[connectionId] || {
+            connectionId,
+            status: 'idle',
+          }),
+          ...stateUpdate,
+        },
+      },
+    }));
+  },
+
+  setShowDataFlow: (show) => {
+    set({ showDataFlow: show });
+  },
+
+  setShowConnectionValues: (show) => {
+    set({ showConnectionValues: show });
   },
 }));
 

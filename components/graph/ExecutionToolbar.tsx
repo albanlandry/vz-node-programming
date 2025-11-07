@@ -7,11 +7,14 @@
  * Includes play/stop buttons, execution mode toggle, and status display.
  */
 
-import { useState } from 'react';
-import { Play, Square, Loader2, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Play, Square, Loader2, CheckCircle2, XCircle, Clock, Settings, Bug, Eye } from 'lucide-react';
 import { useGraphStore } from '../../store/graphStore';
 import { graphExecutionService } from '../../services/graphExecutionService';
+import { streamingExecutionService } from '../../services/streamingExecutionService';
 import type { NodeError } from '../../src/types';
+import InputConfigPanel from './InputConfigPanel';
+import DebugPanel from './DebugPanel';
 
 export default function ExecutionToolbar() {
   const {
@@ -29,9 +32,19 @@ export default function ExecutionToolbar() {
 
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionMode, setExecutionMode] = useState<'sequential' | 'parallel'>('sequential');
+  const [useStreaming, setUseStreaming] = useState(true);
+  const [showInputPanel, setShowInputPanel] = useState(false);
+  const [showDebugPanel, setShowDebugPanel] = useState(false);
+  const {
+    inputConfig,
+    showDataFlow,
+    setShowDataFlow,
+    setShowConnectionValues,
+    showConnectionValues,
+  } = useGraphStore();
 
   /**
-   * Handle execution start
+   * Handle execution start with streaming support
    */
   const handleExecute = async () => {
     if (nodes.length === 0) {
@@ -57,52 +70,13 @@ export default function ExecutionToolbar() {
         updateNodeExecutionState(node.id, { status: 'queued' });
       });
 
-      // Execute graph
-      const result = await graphExecutionService.executeGraph(
-        graphDefinition,
-        undefined,
-        { parallel: executionMode === 'parallel' },
-      );
-
-      // Update execution state with results
-      if (result.results) {
-        setExecutionResults(result.results);
-        
-        // Update node states based on results
-        Object.entries(result.results).forEach(([nodeId, execResult]) => {
-          if (execResult.success) {
-            updateNodeExecutionState(nodeId, {
-              status: 'completed',
-              endTime: Date.now(),
-              executionTime: execResult.executionTime,
-            });
-          } else {
-            updateNodeExecutionState(nodeId, {
-              status: 'failed',
-              endTime: Date.now(),
-              executionTime: execResult.executionTime,
-              error: execResult.error,
-            });
-          }
-        });
+      if (useStreaming) {
+        // Use streaming execution
+        await handleStreamingExecution(graphDefinition);
+      } else {
+        // Use regular execution
+        await handleRegularExecution(graphDefinition);
       }
-
-      // Set errors if any
-      if (result.errors && result.errors.length > 0) {
-        const errorsMap: Record<string, NodeError> = {};
-        result.errors.forEach((error) => {
-          if (error.nodeId) {
-            errorsMap[error.nodeId] = error;
-          }
-        });
-        setExecutionErrors(errorsMap);
-      }
-
-      // Set execution time
-      setExecutionTime(result.executionTime);
-
-      // Stop execution
-      stopExecution();
     } catch (error) {
       console.error('Execution error:', error);
       alert(`Execution failed: ${error instanceof Error ? error.message : String(error)}`);
@@ -114,13 +88,151 @@ export default function ExecutionToolbar() {
   };
 
   /**
+   * Handle streaming execution
+   */
+  const handleStreamingExecution = async (graphDefinition: any) => {
+    // Set up event listeners
+    const handleNodeExecuting = (event: any) => {
+      const { nodeId } = event.data;
+      updateNodeExecutionState(nodeId, { status: 'executing', startTime: Date.now() });
+    };
+
+    const handleNodeCompleted = (event: any) => {
+      const { nodeId, result, executionTime } = event.data;
+      if (result) {
+        setExecutionResults({ [nodeId]: result });
+        updateNodeExecutionState(nodeId, {
+          status: 'completed',
+          endTime: Date.now(),
+          executionTime: executionTime || result.executionTime,
+        });
+      }
+    };
+
+    const handleNodeFailed = (event: any) => {
+      const { nodeId, error } = event.data;
+      if (error) {
+        setExecutionErrors({ [nodeId]: error });
+        updateNodeExecutionState(nodeId, {
+          status: 'failed',
+          endTime: Date.now(),
+          error,
+        });
+      }
+    };
+
+    const handleExecutionCompleted = (event: any) => {
+      const { executionTime, results } = event.data;
+      if (results) {
+        setExecutionResults(results);
+      }
+      setExecutionTime(executionTime);
+      stopExecution();
+    };
+
+    const handleExecutionError = (event: any) => {
+      console.error('Execution error:', event.data);
+      stopExecution();
+      clearExecutionState();
+    };
+
+    // Register event listeners
+    streamingExecutionService.on('node:executing', handleNodeExecuting);
+    streamingExecutionService.on('node:completed', handleNodeCompleted);
+    streamingExecutionService.on('node:failed', handleNodeFailed);
+    streamingExecutionService.on('execution:completed', handleExecutionCompleted);
+    streamingExecutionService.on('execution:error', handleExecutionError);
+
+    try {
+      await streamingExecutionService.executeStream(
+        graphDefinition,
+        inputConfig,
+        {
+          parallel: executionMode === 'parallel',
+          breakpoints: Object.keys(useGraphStore.getState().breakpoints).filter(
+            (id) => useGraphStore.getState().breakpoints[id].enabled,
+          ),
+        },
+      );
+    } finally {
+      // Clean up event listeners
+      streamingExecutionService.off('node:executing', handleNodeExecuting);
+      streamingExecutionService.off('node:completed', handleNodeCompleted);
+      streamingExecutionService.off('node:failed', handleNodeFailed);
+      streamingExecutionService.off('execution:completed', handleExecutionCompleted);
+      streamingExecutionService.off('execution:error', handleExecutionError);
+    }
+  };
+
+  /**
+   * Handle regular (non-streaming) execution
+   */
+  const handleRegularExecution = async (graphDefinition: any) => {
+    const result = await graphExecutionService.executeGraph(
+      graphDefinition,
+      inputConfig,
+      { parallel: executionMode === 'parallel' },
+    );
+
+    // Update execution state with results
+    if (result.results) {
+      setExecutionResults(result.results);
+      
+      // Update node states based on results
+      Object.entries(result.results).forEach(([nodeId, execResult]) => {
+        if (execResult.success) {
+          updateNodeExecutionState(nodeId, {
+            status: 'completed',
+            endTime: Date.now(),
+            executionTime: execResult.executionTime,
+          });
+        } else {
+          updateNodeExecutionState(nodeId, {
+            status: 'failed',
+            endTime: Date.now(),
+            executionTime: execResult.executionTime,
+            error: execResult.error,
+          });
+        }
+      });
+    }
+
+    // Set errors if any
+    if (result.errors && result.errors.length > 0) {
+      const errorsMap: Record<string, NodeError> = {};
+      result.errors.forEach((error) => {
+        if (error.nodeId) {
+          errorsMap[error.nodeId] = error;
+        }
+      });
+      setExecutionErrors(errorsMap);
+    }
+
+    // Set execution time
+    setExecutionTime(result.executionTime);
+
+    // Stop execution
+    stopExecution();
+  };
+
+  /**
    * Handle execution stop
    */
   const handleStop = () => {
+    if (useStreaming) {
+      streamingExecutionService.cancel();
+    }
     stopExecution();
     clearExecutionState();
     setIsExecuting(false);
   };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      streamingExecutionService.cancel();
+    };
+  }, []);
 
   /**
    * Get execution status
@@ -148,7 +260,7 @@ export default function ExecutionToolbar() {
         {status === 'executing' ? (
           <button
             onClick={handleStop}
-            className="group p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="group p-2 hover:bg-gray-100 transition-colors"
             title="Stop Execution"
           >
             <Square className="w-5 h-5 text-gray-600 group-hover:text-red-600" />
@@ -157,7 +269,7 @@ export default function ExecutionToolbar() {
           <button
             onClick={handleExecute}
             disabled={!canExecute}
-            className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group p-2 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Execute Graph"
           >
             {isExecuting ? (
@@ -168,13 +280,44 @@ export default function ExecutionToolbar() {
           </button>
         )}
 
+        {/* Feature Toggles */}
+        <div className="flex items-center gap-2 border-l border-gray-300 pl-3">
+          <button
+            onClick={() => setShowInputPanel(!showInputPanel)}
+            className={`p-2 hover:bg-gray-100 transition-colors ${
+              showInputPanel ? 'bg-blue-50 text-blue-600' : 'text-gray-600'
+            }`}
+            title="Input Configuration"
+          >
+            <Settings className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setShowDebugPanel(!showDebugPanel)}
+            className={`p-2 hover:bg-gray-100 transition-colors ${
+              showDebugPanel ? 'bg-purple-50 text-purple-600' : 'text-gray-600'
+            }`}
+            title="Debug Panel"
+          >
+            <Bug className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setShowDataFlow(!showDataFlow)}
+            className={`p-2 hover:bg-gray-100 transition-colors ${
+              showDataFlow ? 'bg-green-50 text-green-600' : 'text-gray-600'
+            }`}
+            title="Data Flow Visualization"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
+        </div>
+
         {/* Execution Mode Toggle */}
         <div className="flex items-center gap-2 border-l border-gray-300 pl-3">
           <span className="text-xs text-gray-600 font-medium">Mode:</span>
           <button
             onClick={() => setExecutionMode('sequential')}
             disabled={isExecuting || execution.isExecuting}
-            className={`px-3 py-1 text-xs rounded transition-colors ${
+            className={`px-3 py-1 text-xs transition-colors ${
               executionMode === 'sequential'
                 ? 'bg-blue-100 text-blue-700 font-semibold'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -185,7 +328,7 @@ export default function ExecutionToolbar() {
           <button
             onClick={() => setExecutionMode('parallel')}
             disabled={isExecuting || execution.isExecuting}
-            className={`px-3 py-1 text-xs rounded transition-colors ${
+            className={`px-3 py-1 text-xs transition-colors ${
               executionMode === 'parallel'
                 ? 'bg-blue-100 text-blue-700 font-semibold'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -235,6 +378,19 @@ export default function ExecutionToolbar() {
           Nodes: {nodes.length} | Connections: {connections.length}
         </div>
       </div>
+
+      {/* Input Configuration Panel */}
+      <InputConfigPanel
+        isOpen={showInputPanel}
+        onClose={() => setShowInputPanel(false)}
+        position={{ x: 20, y: 100 }}
+      />
+
+      {/* Debug Panel */}
+      <DebugPanel
+        isOpen={showDebugPanel}
+        onClose={() => setShowDebugPanel(false)}
+      />
     </div>
   );
 }
