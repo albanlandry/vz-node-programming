@@ -65,13 +65,24 @@ export interface ExecutionRequest {
 }
 
 /**
+ * Serialized execution result (for JSON responses)
+ * Maps are converted to plain objects for JSON serialization
+ */
+export interface SerializedExecutionResult {
+  success: boolean;
+  outputs?: Record<string, any>;
+  error?: NodeError;
+  executionTime?: number;
+}
+
+/**
  * Graph execution response
  */
 export interface ExecutionResponse {
   /** Whether execution was successful */
   success: boolean;
-  /** Execution results by node ID */
-  results?: Record<string, ExecutionResult>;
+  /** Execution results by node ID (outputs are serialized as plain objects) */
+  results?: Record<string, SerializedExecutionResult>;
   /** Execution errors */
   errors?: NodeError[];
   /** Total execution time in milliseconds */

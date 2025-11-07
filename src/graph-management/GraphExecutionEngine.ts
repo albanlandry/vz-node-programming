@@ -13,6 +13,7 @@ import type {
   GraphDefinition,
   ExecutionRequest,
   ExecutionResponse,
+  SerializedExecutionResult,
   ValidationResult,
 } from './types';
 import type { ExecutionResult, INode } from '../types';
@@ -86,9 +87,27 @@ export class GraphExecutionEngine {
       }
 
       // Convert results to record
-      const resultsRecord: Record<string, ExecutionResult> = {};
+      // Convert Map outputs to plain objects for JSON serialization
+      const resultsRecord: Record<string, SerializedExecutionResult> = {};
       for (const [nodeId, result] of results.entries()) {
-        resultsRecord[nodeId] = result;
+        // Convert Map outputs to plain object for JSON serialization
+        let serializedOutputs: Record<string, any> | undefined;
+        if (result.outputs) {
+          if (result.outputs instanceof Map) {
+            serializedOutputs = Object.fromEntries(result.outputs);
+          } else if (typeof result.outputs === 'object' && result.outputs !== null) {
+            // Already a plain object
+            serializedOutputs = result.outputs as Record<string, any>;
+          }
+        }
+
+        const convertedResult: SerializedExecutionResult = {
+          success: result.success,
+          outputs: serializedOutputs,
+          error: result.error,
+          executionTime: result.executionTime,
+        };
+        resultsRecord[nodeId] = convertedResult;
       }
 
       // Check for errors
