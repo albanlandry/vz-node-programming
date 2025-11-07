@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import {
   INode,
+  IInteractiveNode,
   NodeId,
   PortId,
   ExecutionId,
@@ -15,6 +16,7 @@ import {
   NodeError,
 } from '../types';
 import { logger } from '../utils/Logger';
+import { InteractiveExecutionContext } from './InteractiveExecutionContext';
 
 /**
  * Node execution engine that manages the execution of connected nodes
@@ -26,6 +28,8 @@ export class NodeExecutor extends EventEmitter {
   private executionQueue: NodeId[] = [];
   private executingNodes: Set<NodeId> = new Set();
   private executionResults: Map<NodeId, ExecutionResult> = new Map();
+  private interactiveContexts: Map<NodeId, InteractiveExecutionContext> = new Map();
+  private pausedNodes: Set<NodeId> = new Set();
 
   constructor() {
     super();
@@ -168,8 +172,8 @@ export class NodeExecutor extends EventEmitter {
       // Gather inputs from connected nodes
       const inputs = this.gatherNodeInputs(nodeId, initialInputs);
 
-      // Create execution context
-      const context: ExecutionContext = {
+      // Create base execution context
+      const baseContext: ExecutionContext = {
         executionId,
         inputs,
         outputs: new Map(),
@@ -179,11 +183,42 @@ export class NodeExecutor extends EventEmitter {
         },
       };
 
-      // Execute the node
-      const result = await node.execute(context);
+      // Check if node is interactive
+      const isInteractive = this.isInteractiveNode(node);
+      let result: ExecutionResult;
+
+      if (isInteractive) {
+        // Create interactive context
+        const interactiveContext = new InteractiveExecutionContext(
+          baseContext,
+          this,
+          nodeId,
+        );
+        
+        // Store interactive context for potential user input
+        this.interactiveContexts.set(nodeId, interactiveContext);
+
+        // Execute with interactive context if method exists
+        const interactiveNode = node as IInteractiveNode;
+        if (interactiveNode.executeInteractive) {
+          // Mark node as potentially pausable
+          this.pausedNodes.add(nodeId);
+          result = await interactiveNode.executeInteractive(interactiveContext);
+        } else {
+          // Fallback to regular execute if executeInteractive not implemented
+          result = await node.execute(baseContext);
+        }
+      } else {
+        // Execute normally
+        result = await node.execute(baseContext);
+      }
 
       // Store the result
       this.executionResults.set(nodeId, result);
+
+      // Clean up interactive context
+      this.interactiveContexts.delete(nodeId);
+      this.pausedNodes.delete(nodeId);
 
       if (result.success) {
         this.emitEvent(NodeEventType.EXECUTION_COMPLETED, {
@@ -198,9 +233,66 @@ export class NodeExecutor extends EventEmitter {
           error: result.error,
         });
       }
+    } catch (error) {
+      // Clean up on error
+      this.interactiveContexts.delete(nodeId);
+      this.pausedNodes.delete(nodeId);
+      throw error;
     } finally {
       this.executingNodes.delete(nodeId);
     }
+  }
+
+  /**
+   * Check if a node is interactive
+   */
+  private isInteractiveNode(node: INode): boolean {
+    const interactiveNode = node as IInteractiveNode;
+    return interactiveNode.isInteractive === true;
+  }
+
+  /**
+   * Provide user input to a paused interactive node
+   * @param nodeId - The ID of the node waiting for input
+   * @param value - The user input value
+   */
+  public provideUserInput(nodeId: NodeId, value: unknown): void {
+    const context = this.interactiveContexts.get(nodeId);
+    if (context) {
+      context.provideUserInput(value);
+      this.pausedNodes.delete(nodeId);
+    } else {
+      logger.warn(`No interactive context found for node ${nodeId}`);
+    }
+  }
+
+  /**
+   * Cancel user input request for a paused interactive node
+   * @param nodeId - The ID of the node waiting for input
+   * @param error - Optional error to pass to the node
+   */
+  public cancelUserInput(nodeId: NodeId, error?: Error): void {
+    const context = this.interactiveContexts.get(nodeId);
+    if (context) {
+      context.cancelUserInput(error);
+      this.pausedNodes.delete(nodeId);
+    } else {
+      logger.warn(`No interactive context found for node ${nodeId}`);
+    }
+  }
+
+  /**
+   * Get list of nodes currently paused waiting for user input
+   */
+  public getPausedNodes(): NodeId[] {
+    return Array.from(this.pausedNodes);
+  }
+
+  /**
+   * Check if a node is currently paused
+   */
+  public isNodePaused(nodeId: NodeId): boolean {
+    return this.pausedNodes.has(nodeId);
   }
 
   /**

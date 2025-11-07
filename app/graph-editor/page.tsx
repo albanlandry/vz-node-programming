@@ -43,7 +43,7 @@ function GraphEditorContent() {
       const result = await response.json();
       const graph = result.graph as { 
         id: string;
-        metadata: { id: string; name: string; description?: string; tags?: string[]; [key: string]: unknown };
+        metadata: import('../../src/graph-management/types').GraphMetadata;
         data: { nodes: unknown[]; connections: unknown[]; viewport: unknown } 
       };
 

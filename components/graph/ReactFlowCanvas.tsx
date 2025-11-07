@@ -118,12 +118,12 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
       const label = showConnectionValues ? getConnectionLabel(conn.id, connectionStates, showConnectionValues) : undefined;
       
       return {
-        id: conn.id,
-        source: conn.fromNode,
-        sourceHandle: conn.fromPort,
-        target: conn.toNode,
-        targetHandle: conn.toPort,
-        type: 'smoothstep',
+      id: conn.id,
+      source: conn.fromNode,
+      sourceHandle: conn.fromPort,
+      target: conn.toNode,
+      targetHandle: conn.toPort,
+      type: 'smoothstep',
         animated: showDataFlow && baseStyle.strokeDasharray !== undefined,
         style: {
           stroke: '#3B82F6',
@@ -188,8 +188,8 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
           useGraphStore.getState().moveNode(id, position);
         } else {
           moveNodes(positionUpdates);
-        }
-      }
+            }
+          }
     },
     [onNodesChange, moveNodes],
   );

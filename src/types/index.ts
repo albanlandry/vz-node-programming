@@ -133,3 +133,124 @@ export interface NodeEvent {
   timestamp: Date;
   data: any;
 }
+
+/**
+ * Interactive node types
+ */
+export enum InteractiveNodeType {
+  USER_INPUT = 'user-input',      // User input request
+  IMAGE_DISPLAY = 'image-display', // Image display
+  STREAMING = 'streaming',         // Streaming data
+  CUSTOM_UI = 'custom-ui',         // Custom UI component
+}
+
+/**
+ * User input request
+ */
+export interface UserInputRequest {
+  type: 'form' | 'prompt' | 'confirm';
+  formSchema?: FormSchema;
+  prompt?: string;
+  defaultValue?: unknown;
+  validation?: ValidationRule[];
+}
+
+/**
+ * Form schema
+ */
+export interface FormSchema {
+  fields: FormField[];
+  title?: string;
+  description?: string;
+}
+
+export interface FormField {
+  id: string;
+  label: string;
+  type: 'text' | 'number' | 'email' | 'password' | 'select' | 'checkbox' | 'textarea' | 'date';
+  required?: boolean;
+  placeholder?: string;
+  defaultValue?: unknown;
+  options?: { label: string; value: unknown }[]; // for select
+  validation?: ValidationRule[];
+}
+
+export interface ValidationRule {
+  type: 'required' | 'min' | 'max' | 'pattern' | 'custom';
+  value?: unknown;
+  message?: string;
+  validator?: (value: unknown) => boolean | string;
+}
+
+/**
+ * Image data
+ */
+export interface ImageData {
+  url?: string;
+  base64?: string;
+  blob?: Blob;
+  format: 'png' | 'jpg' | 'jpeg' | 'gif' | 'webp' | 'svg';
+  alt?: string;
+  width?: number;
+  height?: number;
+}
+
+/**
+ * Interactive node execution context extension
+ */
+export interface InteractiveExecutionContext extends ExecutionContext {
+  /**
+   * Request user input
+   * When a node calls this method, execution is paused and UI is displayed
+   */
+  requestUserInput(request: UserInputRequest): Promise<unknown>;
+  
+  /**
+   * Request image display
+   */
+  displayImage(imageData: ImageData): void;
+  
+  /**
+   * Update streaming data
+   */
+  updateStreamingData(data: unknown): void;
+  
+  /**
+   * Request custom UI component rendering
+   */
+  renderCustomUI(componentType: string, props: Record<string, unknown>): void;
+}
+
+/**
+ * Interactive node interface
+ */
+export interface IInteractiveNode extends INode {
+  /**
+   * Whether this node is interactive
+   */
+  readonly isInteractive: boolean;
+  
+  /**
+   * Interactive node type
+   */
+  readonly interactiveType?: InteractiveNodeType;
+  
+  /**
+   * Execute with interactive context
+   * If this method exists, it will be called instead of execute() for interactive nodes
+   */
+  executeInteractive?(context: InteractiveExecutionContext): Promise<ExecutionResult>;
+}
+
+/**
+ * Event types for interactive node execution
+ */
+export enum InteractiveNodeEventType {
+  USER_INPUT_REQUESTED = 'interactive:user-input-requested',
+  USER_INPUT_RECEIVED = 'interactive:user-input-received',
+  IMAGE_DISPLAY_REQUESTED = 'interactive:image-display-requested',
+  STREAMING_DATA_UPDATE = 'interactive:streaming-data-update',
+  CUSTOM_UI_RENDER = 'interactive:custom-ui-render',
+  NODE_PAUSED = 'interactive:node-paused',
+  NODE_RESUMED = 'interactive:node-resumed',
+}
