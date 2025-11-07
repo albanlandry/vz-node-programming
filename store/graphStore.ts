@@ -11,6 +11,7 @@
 
 import { create } from 'zustand';
 import type { DataType, Port, ExecutionResult, NodeError } from '../src/types';
+import type { GraphMetadata } from '../src/graph-management/types';
 
 /**
  * Visual position of a node on the canvas
@@ -220,10 +221,15 @@ interface GraphState {
   startConnection: (nodeId: string, portId: string) => void;
   cancelConnection: () => void;
   
+  // Current graph info
+  currentGraphId: string | null;
+  currentGraphMetadata: GraphMetadata | null;
+  
   // Actions - Persistence
   saveGraph: () => GraphData;
   loadGraph: (data: GraphData) => void;
   clearGraph: () => void;
+  setCurrentGraph: (id: string | null, metadata: GraphMetadata | null) => void;
   
   // Execution state
   execution: ExecutionState;
@@ -357,6 +363,8 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   selectedNodeIds: new Set<string>(),
   selectedConnectionId: null,
   connectionStart: null,
+  currentGraphId: null,
+  currentGraphMetadata: null,
   
   // Execution state
   execution: {
@@ -680,6 +688,15 @@ export const useGraphStore = create<GraphState>((set, get) => ({
       selectedNodeIds: new Set<string>(),
       selectedConnectionId: null,
       connectionStart: null,
+      currentGraphId: null,
+      currentGraphMetadata: null,
+    });
+  },
+
+  setCurrentGraph: (id, metadata) => {
+    set({
+      currentGraphId: id,
+      currentGraphMetadata: metadata,
     });
   },
   

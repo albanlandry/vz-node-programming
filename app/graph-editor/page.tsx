@@ -23,7 +23,7 @@ import { useGraphStore } from '../../store/graphStore';
  */
 function GraphEditorContent() {
   const searchParams = useSearchParams();
-  const { selectedNodeId, loadGraph, clearGraph, clearExecutionState } = useGraphStore();
+  const { selectedNodeId, loadGraph, clearGraph, clearExecutionState, setCurrentGraph } = useGraphStore();
   const [showDetailsPanel, setShowDetailsPanel] = useState(false);
   const [detailsPanelNodeId, setDetailsPanelNodeId] = useState<string | null>(null);
   const [isLoadingGraph, setIsLoadingGraph] = useState(false);
@@ -41,7 +41,11 @@ function GraphEditorContent() {
       }
 
       const result = await response.json();
-      const graph = result.graph as { data: { nodes: unknown[]; connections: unknown[]; viewport: unknown } };
+      const graph = result.graph as { 
+        id: string;
+        metadata: { id: string; name: string; description?: string; tags?: string[]; [key: string]: unknown };
+        data: { nodes: unknown[]; connections: unknown[]; viewport: unknown } 
+      };
 
       // Load graph data, ignoring invalid values
       const safeLoadGraph = (data: {
@@ -94,13 +98,15 @@ function GraphEditorContent() {
       };
 
       safeLoadGraph(graph.data);
+      // Store current graph ID and metadata
+      setCurrentGraph(graph.id, graph.metadata);
     } catch (error) {
       console.error('Failed to load graph:', error);
       alert(`Failed to load graph: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsLoadingGraph(false);
     }
-  }, [loadGraph]);
+  }, [loadGraph, setCurrentGraph]);
 
   /**
    * Load graph from query parameter on mount

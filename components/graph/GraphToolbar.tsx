@@ -5,22 +5,46 @@
  * Provides controls for graph operations with save, load, and export functionality
  */
 
-import { useState } from 'react';
-import { Save, FolderOpen, Download, RotateCcw, Trash2 } from 'lucide-react';
-import { useGraphStore } from '../../store/graphStore';
+import { useState, useEffect } from 'react';
+
+import { Save, FolderOpen, Download, RotateCcw, Trash2, Edit } from 'lucide-react';
+
 import type { GraphMetadata } from '../../src/graph-management/types';
+import { useGraphStore } from '../../store/graphStore';
 
 interface GraphSaveDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string, description: string, tags: string[]) => Promise<void>;
   loading: boolean;
+  initialName?: string;
+  initialDescription?: string;
+  initialTags?: string;
+  title?: string;
 }
 
-function GraphSaveDialog({ isOpen, onClose, onSave, loading }: GraphSaveDialogProps) {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [tags, setTags] = useState('');
+function GraphSaveDialog({
+  isOpen,
+  onClose,
+  onSave,
+  loading,
+  initialName = '',
+  initialDescription = '',
+  initialTags = '',
+  title = 'Save Graph',
+}: GraphSaveDialogProps) {
+  const [name, setName] = useState(initialName);
+  const [description, setDescription] = useState(initialDescription);
+  const [tags, setTags] = useState(initialTags);
+
+  // Reset form when dialog opens or initial values change
+  useEffect(() => {
+    if (isOpen) {
+      setName(initialName);
+      setDescription(initialDescription);
+      setTags(initialTags);
+    }
+  }, [isOpen, initialName, initialDescription, initialTags]);
 
   if (!isOpen) return null;
 
@@ -38,8 +62,8 @@ function GraphSaveDialog({ isOpen, onClose, onSave, loading }: GraphSaveDialogPr
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Save Graph</h3>
+      <div className="bg-white shadow-xl p-6 max-w-md w-full mx-4">
+        <h3 className="text-lg font-bold text-gray-900 mb-4">{title}</h3>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
@@ -259,11 +283,13 @@ export default function GraphToolbar() {
     saveGraph: getGraphData,
     loadGraph,
     nodes,
-    connections,
-    viewport,
+    currentGraphId,
+    currentGraphMetadata,
+    setCurrentGraph,
   } = useGraphStore();
 
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [loadDialogOpen, setLoadDialogOpen] = useState(false);
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -286,7 +312,7 @@ export default function GraphToolbar() {
   };
 
   /**
-   * Handle save graph to backend
+   * Handle save graph to backend (new or existing)
    */
   const handleSaveToBackend = async (name: string, description: string, tags: string[]) => {
     setLoading(true);
@@ -295,13 +321,135 @@ export default function GraphToolbar() {
     try {
       const graphData = getGraphData();
 
-      const response = await fetch('/api/graphs', {
-        method: 'POST',
+      // If we have a current graph ID, update it; otherwise create new
+      if (currentGraphId) {
+        const response = await fetch(`/api/graphs/${currentGraphId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            data: graphData,
+            metadata: {
+              name,
+              description: description || undefined,
+              tags,
+            },
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to update graph');
+        }
+
+        const result = await response.json();
+        setCurrentGraph(currentGraphId, result.graph.metadata);
+        alert('Graph updated successfully!');
+      } else {
+        const response = await fetch('/api/graphs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            data: graphData,
+            metadata: {
+              name,
+              description: description || undefined,
+              tags,
+            },
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to save graph');
+        }
+
+        const result = await response.json();
+        setCurrentGraph(result.graph.id, result.graph.metadata);
+        alert('Graph saved successfully!');
+      }
+
+      setSaveDialogOpen(false);
+      void fetchAvailableGraphs();
+    } catch (error) {
+      alert(`Failed to save graph: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setLoading(false);
+      setLoadingMessage('');
+    }
+  };
+
+  /**
+   * Handle quick save (no dialog for existing graphs)
+   */
+  const handleQuickSave = async () => {
+    if (!currentGraphId) {
+      // New graph - show dialog
+      setSaveDialogOpen(true);
+      return;
+    }
+
+    // Existing graph - save directly
+    setLoading(true);
+    setLoadingMessage('Saving graph...');
+
+    try {
+      const graphData = getGraphData();
+
+      const response = await fetch(`/api/graphs/${currentGraphId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           data: graphData,
+          metadata: currentGraphMetadata ? {
+            name: currentGraphMetadata.name,
+            description: currentGraphMetadata.description,
+            tags: currentGraphMetadata.tags,
+          } : undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save graph');
+      }
+
+      const result = await response.json();
+      setCurrentGraph(currentGraphId, result.graph.metadata);
+      alert('Graph saved successfully!');
+      void fetchAvailableGraphs();
+    } catch (error) {
+      alert(`Failed to save graph: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setLoading(false);
+      setLoadingMessage('');
+    }
+  };
+
+  /**
+   * Handle edit graph metadata
+   */
+  const handleEditMetadata = async (name: string, description: string, tags: string[]) => {
+    if (!currentGraphId) {
+      alert('No graph loaded to edit');
+      return;
+    }
+
+    setLoading(true);
+    setLoadingMessage('Updating graph metadata...');
+
+    try {
+      const response = await fetch(`/api/graphs/${currentGraphId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           metadata: {
             name,
             description: description || undefined,
@@ -312,14 +460,16 @@ export default function GraphToolbar() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to save graph');
+        throw new Error(errorData.message || 'Failed to update graph');
       }
 
-      alert('Graph saved successfully!');
-      setSaveDialogOpen(false);
+      const result = await response.json();
+      setCurrentGraph(currentGraphId, result.graph.metadata);
+      alert('Graph metadata updated successfully!');
+      setEditDialogOpen(false);
       void fetchAvailableGraphs();
     } catch (error) {
-      alert(`Failed to save graph: ${error instanceof Error ? error.message : String(error)}`);
+      alert(`Failed to update graph: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setLoading(false);
       setLoadingMessage('');
@@ -530,6 +680,8 @@ export default function GraphToolbar() {
       };
 
       safeLoadGraph(graph.data);
+      // Store current graph ID and metadata
+      setCurrentGraph(graph.id, graph.metadata);
       setLoadDialogOpen(false);
       alert('Graph loaded successfully!');
     } catch (error) {
@@ -797,14 +949,27 @@ export default function GraphToolbar() {
         <div className="flex items-center space-x-3">
           <div className="relative">
             <button
-              onClick={() => setSaveDialogOpen(true)}
+              onClick={handleQuickSave}
               disabled={loading || nodes.length === 0}
               className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Save"
+              title={currentGraphId ? 'Save (Quick Save)' : 'Save'}
             >
               <Save className="w-5 h-5 text-gray-600 group-hover:text-green-600 disabled:text-gray-300" />
             </button>
           </div>
+
+          {currentGraphId && (
+            <div className="relative">
+              <button
+                onClick={() => setEditDialogOpen(true)}
+                disabled={loading}
+                className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Edit Graph Metadata"
+              >
+                <Edit className="w-5 h-5 text-gray-600 group-hover:text-blue-600 disabled:text-gray-300" />
+              </button>
+            </div>
+          )}
 
           <div className="relative">
             <button
@@ -858,6 +1023,20 @@ export default function GraphToolbar() {
         }}
         onSave={handleSaveToBackend}
         loading={loading}
+      />
+
+      {/* Edit Dialog */}
+      <GraphSaveDialog
+        isOpen={editDialogOpen}
+        onClose={() => {
+          setEditDialogOpen(false);
+        }}
+        onSave={handleEditMetadata}
+        loading={loading}
+        initialName={currentGraphMetadata?.name ?? ''}
+        initialDescription={currentGraphMetadata?.description ?? ''}
+        initialTags={currentGraphMetadata?.tags?.join(', ') ?? ''}
+        title="Edit Graph Metadata"
       />
 
       {/* Load Dialog */}
