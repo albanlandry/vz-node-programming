@@ -97,6 +97,7 @@ interface GraphState {
   
   // Selection
   selectedNodeId: string | null;
+  selectedNodeIds: Set<string>;
   selectedConnectionId: string | null;
   
   // Connection creation
@@ -107,6 +108,7 @@ interface GraphState {
   updateNode: (id: string, updates: Partial<GraphNode>) => void;
   deleteNode: (id: string) => void;
   moveNode: (id: string, position: NodePosition) => void;
+  moveNodes: (nodePositions: Record<string, NodePosition>) => void;
   
   // Actions - Ports
   addPort: (nodeId: string, port: Port, type: 'input' | 'output') => void;
@@ -125,6 +127,7 @@ interface GraphState {
   
   // Actions - Selection
   selectNode: (id: string | null) => void;
+  selectNodes: (ids: string[]) => void;
   selectConnection: (id: string | null) => void;
   
   // Actions - Connection creation
@@ -207,6 +210,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
     zoom: 1,
   },
   selectedNodeId: null,
+  selectedNodeIds: new Set<string>(),
   selectedConnectionId: null,
   connectionStart: null,
   
@@ -249,6 +253,9 @@ export const useGraphStore = create<GraphState>((set, get) => ({
         (conn) => conn.fromNode !== id && conn.toNode !== id,
       ),
       selectedNodeId: state.selectedNodeId === id ? null : state.selectedNodeId,
+      selectedNodeIds: new Set(
+        Array.from(state.selectedNodeIds).filter((nodeId) => nodeId !== id),
+      ),
     }));
   },
 
@@ -256,6 +263,16 @@ export const useGraphStore = create<GraphState>((set, get) => ({
     set((state) => ({
       nodes: state.nodes.map((node) =>
         node.id === id ? { ...node, position } : node,
+      ),
+    }));
+  },
+
+  moveNodes: (nodePositions: Record<string, NodePosition>) => {
+    set((state) => ({
+      nodes: state.nodes.map((node) =>
+        nodePositions[node.id]
+          ? { ...node, position: nodePositions[node.id] }
+          : node,
       ),
     }));
   },
@@ -421,6 +438,15 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   selectNode: (id) => {
     set({
       selectedNodeId: id,
+      selectedNodeIds: id ? new Set([id]) : new Set<string>(),
+      selectedConnectionId: null,
+    });
+  },
+
+  selectNodes: (ids) => {
+    set({
+      selectedNodeId: ids.length === 1 ? ids[0] : null,
+      selectedNodeIds: new Set(ids),
       selectedConnectionId: null,
     });
   },
@@ -429,6 +455,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
     set({
       selectedConnectionId: id,
       selectedNodeId: null,
+      selectedNodeIds: new Set<string>(),
     });
   },
 
@@ -461,6 +488,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
       connections: data.connections,
       viewport: data.viewport,
       selectedNodeId: null,
+      selectedNodeIds: new Set<string>(),
       selectedConnectionId: null,
       connectionStart: null,
     });
@@ -476,6 +504,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
         zoom: 1,
       },
       selectedNodeId: null,
+      selectedNodeIds: new Set<string>(),
       selectedConnectionId: null,
       connectionStart: null,
     });

@@ -21,11 +21,12 @@ import ReactFlow, {
   OnEdgesChange,
   OnConnect,
   useReactFlow,
+  OnSelectionChangeParams,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
 import ReactFlowNode from './ReactFlowNode';
-import { useGraphStore } from '../../store/graphStore';
+import { useGraphStore, type NodePosition } from '../../store/graphStore';
 import { Port } from '../../src/types';
 
 interface ReactFlowCanvasProps {
@@ -78,7 +79,10 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
     addConnection,
     canConnect,
     selectNode,
+    selectNodes,
     selectedNodeId,
+    selectedNodeIds,
+    moveNodes,
   } = useGraphStore();
 
   /**
@@ -97,9 +101,9 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
         outputs: node.outputs,
         properties: node.properties,
       },
-      selected: selectedNodeId === node.id,
+      selected: selectedNodeIds.has(node.id),
     }));
-  }, [storeNodes, selectedNodeId]);
+  }, [storeNodes, selectedNodeIds]);
 
   /**
    * Convert store connections to React Flow edges
@@ -145,23 +149,26 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
     (changes) => {
       onNodesChange(changes);
 
-      // Update store when nodes move or are selected
+      // Handle position changes for multiple nodes
+      const positionUpdates: Record<string, NodePosition> = {};
+
       changes.forEach((change) => {
         if (change.type === 'position' && change.position) {
-          useGraphStore.getState().moveNode(change.id, change.position);
-        } else if (change.type === 'select') {
-          if (change.selected) {
-            selectNode(change.id);
-          } else {
-            // Deselect if this node was deselected and no other node is selected
-            if (selectedNodeId === change.id) {
-              selectNode(null);
-            }
-          }
+          positionUpdates[change.id] = change.position;
         }
       });
+
+      // Batch update positions for multiple nodes
+      if (Object.keys(positionUpdates).length > 0) {
+        if (Object.keys(positionUpdates).length === 1) {
+          const [id, position] = Object.entries(positionUpdates)[0];
+          useGraphStore.getState().moveNode(id, position);
+        } else {
+          moveNodes(positionUpdates);
+        }
+      }
     },
-    [onNodesChange, selectNode, selectedNodeId],
+    [onNodesChange, moveNodes],
   );
 
   /**
@@ -354,6 +361,17 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
+  /**
+   * Handle selection change (for rect selection)
+   */
+  const handleSelectionChange = useCallback(
+    (params: OnSelectionChangeParams) => {
+      const selectedIds = params.nodes.map((node) => node.id);
+      selectNodes(selectedIds);
+    },
+    [selectNodes],
+  );
+
   return (
     <div
       className="w-full h-full"
@@ -367,6 +385,7 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
         onEdgesChange={handleEdgesChange}
         onConnect={handleConnect}
         onMove={handleMove}
+        onSelectionChange={handleSelectionChange}
         onNodeDoubleClick={(_, node) => {
           if (onNodeDoubleClick) {
             onNodeDoubleClick(node.id);
@@ -384,6 +403,9 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
         connectionLineStyle={{ stroke: '#3B82F6', strokeWidth: 2 }}
         snapToGrid
         snapGrid={[15, 15]}
+        nodesDraggable
+        nodesConnectable
+        selectNodesOnDrag={false}
       >
         <Background color="#f3f4f6" gap={16} />
         <Controls />
