@@ -593,6 +593,12 @@ export class LoggerNode extends BaseNode {
           dataType: DataTypes.BOOLEAN,
           description: 'Whether logging was successful',
         },
+        {
+          id: 'formatted',
+          name: 'Formatted',
+          dataType: DataTypes.STRING,
+          description: 'Formatted log text that was logged',
+        },
       ],
       ...config,
     });
@@ -606,8 +612,17 @@ export class LoggerNode extends BaseNode {
     const data = this.getInput<any>(context, 'data');
 
     // Map string level to LogLevel enum and use logger
-    const logLevel = level?.toLowerCase();
+    const logLevel = level?.toLowerCase() || 'info';
     const logMessage = typeof message === 'string' ? message : JSON.stringify(message);
+
+    // Format the log text
+    let formattedText = `[${logLevel.toUpperCase()}] ${logMessage}`;
+    if (data !== undefined && data !== null) {
+      const dataStr = typeof data === 'string' 
+        ? data 
+        : JSON.stringify(data, null, 2);
+      formattedText += ` | Data: ${dataStr}`;
+    }
 
     // Log using the logger abstraction
     switch (logLevel) {
@@ -628,6 +643,7 @@ export class LoggerNode extends BaseNode {
     }
 
     this.setOutput(outputs, 'logged', true);
+    this.setOutput(outputs, 'formatted', formattedText);
     return outputs;
   }
 }

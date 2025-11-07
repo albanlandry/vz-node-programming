@@ -766,6 +766,12 @@ export function registerBuiltInNodes(): void {
         dataType: DataTypes.BOOLEAN,
         description: 'Whether logging was successful',
       },
+      {
+        id: 'formatted',
+        name: 'Formatted',
+        dataType: DataTypes.STRING,
+        description: 'Formatted log text that was logged',
+      },
     ],
   });
 
