@@ -1,16 +1,5 @@
 [
   {
-    "id": "6ddd3669-36c9-4936-b073-8003d6dc8477",
-    "name": "Testing Graph",
-    "description": "Just to try",
-    "version": "1.0.0",
-    "createdAt": "2025-11-06T02:31:00.254Z",
-    "updatedAt": "2025-11-06T02:31:00.254Z",
-    "tags": [],
-    "nodeCount": 2,
-    "connectionCount": 1
-  },
-  {
     "id": "26aabae5-bdec-4e1c-a7c0-03c7b4deb42b",
     "name": "Live Execution Test Graph",
     "description": "Test graph for live execution feature. Demonstrates Constant nodes, Math operations, String operations, and Logger output.",

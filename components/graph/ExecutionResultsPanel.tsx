@@ -171,10 +171,13 @@ export default function ExecutionResultsPanel() {
     const nodeState = execution.nodeStates[nodeId];
     const isExpanded = expandedNodes.has(nodeId);
     const hasResult = result !== undefined || error !== undefined;
+    const hasOutputs = result?.outputs && (
+      (result.outputs instanceof Map && result.outputs.size > 0) ||
+      (typeof result.outputs === 'object' && Object.keys(result.outputs).length > 0)
+    );
 
-    if (!hasResult && (!nodeState || nodeState.status === 'idle')) {
-      return null;
-    }
+    // Always show all nodes in the graph to display their outputs (including intermediate results)
+    // This ensures users can see outputs from all nodes, even if they haven't been executed yet
 
     const status = nodeState?.status || 'idle';
 
@@ -232,10 +235,10 @@ export default function ExecutionResultsPanel() {
             )}
 
             {/* Output Values */}
-            {result && result.success && result.outputs && (
+            {hasOutputs ? (
               <div className="space-y-2">
                 <div className="text-xs font-semibold text-gray-700">Outputs:</div>
-                {getOutputEntries(result.outputs as Map<string, unknown> | Record<string, unknown>).map(([portId, value]) => {
+                {getOutputEntries(result?.outputs as Map<string, unknown> | Record<string, unknown>).map(([portId, value]) => {
                   const outputPort = node.outputs.find((p) => p.id === portId);
                   return (
                     <div key={portId} className="bg-gray-50 rounded p-2 border border-gray-200">
@@ -254,7 +257,19 @@ export default function ExecutionResultsPanel() {
                   );
                 })}
               </div>
-            )}
+            ) : status === 'executing' || status === 'queued' ? (
+              <div className="text-xs text-gray-500 italic">
+                {status === 'executing' ? 'Executing...' : 'Queued...'}
+              </div>
+            ) : result && !error ? (
+              <div className="text-xs text-gray-500 italic">
+                No outputs produced
+              </div>
+            ) : !result && !error && status === 'idle' ? (
+              <div className="text-xs text-gray-400 italic">
+                Not executed yet
+              </div>
+            ) : null}
 
             {/* Execution Time */}
             {nodeState?.executionTime && (
