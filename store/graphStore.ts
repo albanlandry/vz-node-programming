@@ -99,6 +99,63 @@ export interface ConnectionState {
 }
 
 /**
+ * Cached execution result
+ */
+export interface CachedResult {
+  nodeId: string;
+  result: ExecutionResult;
+  graphHash: string;
+  timestamp: number;
+  ttl?: number;
+}
+
+/**
+ * Timeline event for execution visualization
+ */
+export interface TimelineEvent {
+  nodeId: string;
+  nodeName: string;
+  startTime: number;
+  endTime: number;
+  duration: number;
+  status: 'completed' | 'failed';
+  dependencies: string[];
+}
+
+/**
+ * Execution timeline
+ */
+export interface ExecutionTimeline {
+  events: TimelineEvent[];
+  totalDuration: number;
+  parallelExecution: boolean;
+}
+
+/**
+ * Node performance metrics
+ */
+export interface NodePerformanceMetrics {
+  nodeId: string;
+  nodeName: string;
+  executionCount: number;
+  averageExecutionTime: number;
+  minExecutionTime: number;
+  maxExecutionTime: number;
+  totalExecutionTime: number;
+  successRate: number;
+  lastExecutionTime?: number;
+}
+
+/**
+ * Graph performance metrics
+ */
+export interface GraphPerformanceMetrics {
+  nodes: Record<string, NodePerformanceMetrics>;
+  totalExecutions: number;
+  averageGraphExecutionTime: number;
+}
+
+/**
  * Graph execution state
  */
 export interface ExecutionState {
@@ -186,6 +243,16 @@ interface GraphState {
   showDataFlow: boolean;
   showConnectionValues: boolean;
   
+  // Incremental execution
+  previousGraphHash: string | null;
+  cachedResults: Record<string, CachedResult>;
+  
+  // Performance metrics
+  performanceMetrics: GraphPerformanceMetrics;
+  
+  // Visualization
+  executionTimeline: ExecutionTimeline | null;
+  
   // Actions - Execution
   startExecution: (mode: 'sequential' | 'parallel') => void;
   stopExecution: () => void;
@@ -214,6 +281,19 @@ interface GraphState {
   updateConnectionState: (connectionId: string, state: Partial<ConnectionState>) => void;
   setShowDataFlow: (show: boolean) => void;
   setShowConnectionValues: (show: boolean) => void;
+  
+  // Actions - Incremental Execution
+  setCachedResult: (nodeId: string, result: ExecutionResult, hash: string) => void;
+  getCachedResult: (nodeId: string, hash: string) => CachedResult | null;
+  invalidateCache: (nodeId?: string) => void;
+  setPreviousGraphHash: (hash: string | null) => void;
+  
+  // Actions - Performance Metrics
+  updatePerformanceMetrics: (nodeId: string, metrics: Partial<NodePerformanceMetrics>) => void;
+  resetPerformanceMetrics: () => void;
+  
+  // Actions - Visualization
+  setExecutionTimeline: (timeline: ExecutionTimeline | null) => void;
 }
 
 /**
@@ -303,6 +383,20 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   connectionStates: {},
   showDataFlow: false,
   showConnectionValues: false,
+  
+  // Incremental execution
+  previousGraphHash: null,
+  cachedResults: {},
+  
+  // Performance metrics
+  performanceMetrics: {
+    nodes: {},
+    totalExecutions: 0,
+    averageGraphExecutionTime: 0,
+  },
+  
+  // Visualization
+  executionTimeline: null,
 
   // Node actions
   addNode: (nodeData) => {
@@ -816,6 +910,113 @@ export const useGraphStore = create<GraphState>((set, get) => ({
 
   setShowConnectionValues: (show) => {
     set({ showConnectionValues: show });
+  },
+
+  // Incremental execution actions
+  setCachedResult: (nodeId, result, hash) => {
+    set((state) => ({
+      cachedResults: {
+        ...state.cachedResults,
+        [nodeId]: {
+          nodeId,
+          result,
+          graphHash: hash,
+          timestamp: Date.now(),
+        },
+      },
+    }));
+  },
+
+  getCachedResult: (nodeId, hash) => {
+    const state = get();
+    const cached = state.cachedResults[nodeId];
+    if (cached && cached.graphHash === hash) {
+      // Check TTL (default 5 minutes)
+      const ttl = cached.ttl || 5 * 60 * 1000;
+      if (Date.now() - cached.timestamp < ttl) {
+        return cached;
+      }
+    }
+    return null;
+  },
+
+  invalidateCache: (nodeId) => {
+    if (nodeId) {
+      set((state) => {
+        const { [nodeId]: removed, ...rest } = state.cachedResults;
+        return { cachedResults: rest };
+      });
+    } else {
+      set({ cachedResults: {} });
+    }
+  },
+
+  setPreviousGraphHash: (hash) => {
+    set({ previousGraphHash: hash });
+  },
+
+  // Performance metrics actions
+  updatePerformanceMetrics: (nodeId, metricsUpdate) => {
+    set((state) => {
+      const currentMetrics = state.performanceMetrics.nodes[nodeId] || {
+        nodeId,
+        nodeName: state.nodes.find((n) => n.id === nodeId)?.name || nodeId,
+        executionCount: 0,
+        averageExecutionTime: 0,
+        minExecutionTime: Infinity,
+        maxExecutionTime: 0,
+        totalExecutionTime: 0,
+        successRate: 1,
+      };
+
+      const updatedMetrics: NodePerformanceMetrics = {
+        ...currentMetrics,
+        ...metricsUpdate,
+      };
+
+      // Recalculate average if executionTime is provided
+      if (metricsUpdate.lastExecutionTime !== undefined) {
+        updatedMetrics.executionCount = (updatedMetrics.executionCount || 0) + 1;
+        updatedMetrics.totalExecutionTime =
+          (updatedMetrics.totalExecutionTime || 0) + metricsUpdate.lastExecutionTime;
+        updatedMetrics.averageExecutionTime =
+          updatedMetrics.totalExecutionTime / updatedMetrics.executionCount;
+        updatedMetrics.minExecutionTime = Math.min(
+          updatedMetrics.minExecutionTime || Infinity,
+          metricsUpdate.lastExecutionTime,
+        );
+        updatedMetrics.maxExecutionTime = Math.max(
+          updatedMetrics.maxExecutionTime || 0,
+          metricsUpdate.lastExecutionTime,
+        );
+      }
+
+      return {
+        performanceMetrics: {
+          ...state.performanceMetrics,
+          nodes: {
+            ...state.performanceMetrics.nodes,
+            [nodeId]: updatedMetrics,
+          },
+          totalExecutions: state.performanceMetrics.totalExecutions + 1,
+        },
+      };
+    });
+  },
+
+  resetPerformanceMetrics: () => {
+    set({
+      performanceMetrics: {
+        nodes: {},
+        totalExecutions: 0,
+        averageGraphExecutionTime: 0,
+      },
+    });
+  },
+
+  // Visualization actions
+  setExecutionTimeline: (timeline) => {
+    set({ executionTimeline: timeline });
   },
 }));
 

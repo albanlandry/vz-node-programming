@@ -23,7 +23,7 @@ import { useGraphStore } from '../../store/graphStore';
  */
 function GraphEditorContent() {
   const searchParams = useSearchParams();
-  const { selectedNodeId, loadGraph } = useGraphStore();
+  const { selectedNodeId, loadGraph, clearGraph, clearExecutionState } = useGraphStore();
   const [showDetailsPanel, setShowDetailsPanel] = useState(false);
   const [detailsPanelNodeId, setDetailsPanelNodeId] = useState<string | null>(null);
   const [isLoadingGraph, setIsLoadingGraph] = useState(false);
@@ -112,6 +112,17 @@ function GraphEditorContent() {
       void loadGraphFromId(graphId);
     }
   }, [searchParams, isLoadingGraph, hasLoaded, loadGraphFromId]);
+
+  /**
+   * Clear graph and execution state when leaving the editor
+   */
+  useEffect(() => {
+    return () => {
+      // Cleanup: Clear graph and execution state when component unmounts
+      clearGraph();
+      clearExecutionState();
+    };
+  }, [clearGraph, clearExecutionState]);
 
   /**
    * Handle node double click to show details panel

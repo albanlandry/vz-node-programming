@@ -8,13 +8,30 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Play, Square, Loader2, CheckCircle2, XCircle, Clock, Settings, Bug, Eye } from 'lucide-react';
+import { Play, Square, Loader2, CheckCircle2, XCircle, Clock, Settings, Bug, Eye, BarChart3, Network } from 'lucide-react';
 import { useGraphStore } from '../../store/graphStore';
 import { graphExecutionService } from '../../services/graphExecutionService';
 import { streamingExecutionService } from '../../services/streamingExecutionService';
-import type { NodeError } from '../../src/types';
+import { incrementalExecutionService } from '../../services/incrementalExecutionService';
+import type { NodeError, ExecutionResult } from '../../src/types';
+import type { SerializedExecutionResult } from '../../src/graph-management/types';
 import InputConfigPanel from './InputConfigPanel';
 import DebugPanel from './DebugPanel';
+import ExecutionTimeline from './ExecutionTimeline';
+import PerformanceMetrics from './PerformanceMetrics';
+import DataFlowGraph from './DataFlowGraph';
+
+/**
+ * Convert SerializedExecutionResult to ExecutionResult
+ */
+function deserializeResult(serialized: SerializedExecutionResult): ExecutionResult {
+  return {
+    success: serialized.success,
+    outputs: serialized.outputs ? new Map(Object.entries(serialized.outputs)) : undefined,
+    error: serialized.error,
+    executionTime: serialized.executionTime,
+  };
+}
 
 export default function ExecutionToolbar() {
   const {
@@ -33,18 +50,50 @@ export default function ExecutionToolbar() {
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionMode, setExecutionMode] = useState<'sequential' | 'parallel'>('sequential');
   const [useStreaming, setUseStreaming] = useState(true);
+  const [useIncremental, setUseIncremental] = useState(true);
   const [showInputPanel, setShowInputPanel] = useState(false);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
+  const [showTimeline, setShowTimeline] = useState(false);
+  const [showPerformanceMetrics, setShowPerformanceMetrics] = useState(false);
+  const [showDataFlowGraph, setShowDataFlowGraph] = useState(false);
   const {
     inputConfig,
     showDataFlow,
     setShowDataFlow,
     setShowConnectionValues,
     showConnectionValues,
+    previousGraphHash,
+    setPreviousGraphHash,
+    updatePerformanceMetrics,
+    setExecutionTimeline,
+    saveGraph,
   } = useGraphStore();
 
   /**
-   * Handle execution start with streaming support
+   * Generate graph hash for change detection
+   */
+  const generateGraphHash = (graph: any): string => {
+    const graphString = JSON.stringify({
+      nodes: graph.data.nodes.map((n: any) => ({
+        id: n.id,
+        type: n.type,
+        properties: n.properties,
+        inputs: n.inputs,
+        outputs: n.outputs,
+      })),
+      connections: graph.data.connections,
+    });
+    let hash = 0;
+    for (let i = 0; i < graphString.length; i++) {
+      const char = graphString.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return hash.toString(36);
+  };
+
+  /**
+   * Handle execution start with streaming and incremental support
    */
   const handleExecute = async () => {
     if (nodes.length === 0) {
@@ -70,13 +119,30 @@ export default function ExecutionToolbar() {
         updateNodeExecutionState(node.id, { status: 'queued' });
       });
 
-      if (useStreaming) {
+      // Get previous graph for incremental execution
+      const currentHash = generateGraphHash(graphDefinition);
+      const previousGraphData = previousGraphHash ? saveGraph() : undefined;
+      const previousGraphDefinition = previousGraphData
+        ? graphExecutionService.convertToGraphDefinition(previousGraphData, 'Previous Execution')
+        : undefined;
+
+      if (useIncremental && previousGraphDefinition && previousGraphHash !== currentHash) {
+        // Use incremental execution
+        await handleIncrementalExecution(graphDefinition, previousGraphDefinition);
+      } else if (useStreaming) {
         // Use streaming execution
         await handleStreamingExecution(graphDefinition);
       } else {
         // Use regular execution
         await handleRegularExecution(graphDefinition);
       }
+
+      // Update graph hash
+      setPreviousGraphHash(currentHash);
+
+      // Generate timeline and update metrics
+      generateTimeline();
+      updatePerformanceMetricsFromExecution();
     } catch (error) {
       console.error('Execution error:', error);
       alert(`Execution failed: ${error instanceof Error ? error.message : String(error)}`);
@@ -85,6 +151,108 @@ export default function ExecutionToolbar() {
     } finally {
       setIsExecuting(false);
     }
+  };
+
+  /**
+   * Handle incremental execution
+   */
+  const handleIncrementalExecution = async (
+    currentGraph: any,
+    previousGraph: any,
+  ) => {
+    const result = await incrementalExecutionService.executeIncremental(
+      currentGraph,
+      previousGraph,
+      execution.results,
+      inputConfig,
+      {
+        useCache: true,
+        parallel: executionMode === 'parallel',
+      },
+    );
+
+    // Update execution state with results
+    if (result.results) {
+      // Convert SerializedExecutionResult to ExecutionResult
+      const executionResults: Record<string, ExecutionResult> = {};
+      Object.entries(result.results).forEach(([nodeId, serializedResult]) => {
+        executionResults[nodeId] = deserializeResult(serializedResult);
+      });
+      setExecutionResults(executionResults);
+      
+      // Update node states
+      Object.entries(executionResults).forEach(([nodeId, execResult]) => {
+        if (execResult.success) {
+          updateNodeExecutionState(nodeId, {
+            status: 'completed',
+            endTime: Date.now(),
+            executionTime: execResult.executionTime,
+          });
+        } else {
+          updateNodeExecutionState(nodeId, {
+            status: 'failed',
+            endTime: Date.now(),
+            executionTime: execResult.executionTime,
+            error: execResult.error,
+          });
+        }
+      });
+    }
+
+    setExecutionTime(result.executionTime);
+    stopExecution();
+  };
+
+  /**
+   * Generate execution timeline
+   */
+  const generateTimeline = () => {
+    const timelineEvents: import('../../store/graphStore').TimelineEvent[] = [];
+    const parallelExecution = executionMode === 'parallel';
+
+    nodes.forEach((node) => {
+      const nodeState = execution.nodeStates[node.id];
+      if (nodeState && nodeState.startTime && nodeState.endTime) {
+        const dependencies = connections
+          .filter((conn) => conn.toNode === node.id)
+          .map((conn) => conn.fromNode);
+
+        timelineEvents.push({
+          nodeId: node.id,
+          nodeName: node.name,
+          startTime: nodeState.startTime!,
+          endTime: nodeState.endTime!,
+          duration: nodeState.endTime! - nodeState.startTime!,
+          status: nodeState.status === 'completed' ? 'completed' : 'failed',
+          dependencies,
+        });
+      }
+    });
+
+    if (timelineEvents.length > 0) {
+      const minTime = Math.min(...timelineEvents.map((e) => e.startTime));
+      const maxTime = Math.max(...timelineEvents.map((e) => e.endTime));
+      setExecutionTimeline({
+        events: timelineEvents.sort((a, b) => a.startTime - b.startTime),
+        totalDuration: maxTime - minTime,
+        parallelExecution,
+      });
+    }
+  };
+
+  /**
+   * Update performance metrics from execution
+   */
+  const updatePerformanceMetricsFromExecution = () => {
+    nodes.forEach((node) => {
+      const nodeState = execution.nodeStates[node.id];
+      if (nodeState?.executionTime !== undefined) {
+        updatePerformanceMetrics(node.id, {
+          lastExecutionTime: nodeState.executionTime,
+          successRate: nodeState.status === 'completed' ? 1 : 0,
+        });
+      }
+    });
   };
 
   /**
@@ -171,48 +339,53 @@ export default function ExecutionToolbar() {
     const result = await graphExecutionService.executeGraph(
       graphDefinition,
       inputConfig,
-      { parallel: executionMode === 'parallel' },
-    );
+        { parallel: executionMode === 'parallel' },
+      );
 
-    // Update execution state with results
-    if (result.results) {
-      setExecutionResults(result.results);
-      
-      // Update node states based on results
-      Object.entries(result.results).forEach(([nodeId, execResult]) => {
-        if (execResult.success) {
-          updateNodeExecutionState(nodeId, {
-            status: 'completed',
-            endTime: Date.now(),
-            executionTime: execResult.executionTime,
-          });
-        } else {
-          updateNodeExecutionState(nodeId, {
-            status: 'failed',
-            endTime: Date.now(),
-            executionTime: execResult.executionTime,
-            error: execResult.error,
-          });
-        }
-      });
-    }
+      // Update execution state with results
+      if (result.results) {
+        // Convert SerializedExecutionResult to ExecutionResult
+        const executionResults: Record<string, ExecutionResult> = {};
+        Object.entries(result.results).forEach(([nodeId, serializedResult]) => {
+          executionResults[nodeId] = deserializeResult(serializedResult);
+        });
+        setExecutionResults(executionResults);
+        
+        // Update node states based on results
+        Object.entries(executionResults).forEach(([nodeId, execResult]) => {
+          if (execResult.success) {
+            updateNodeExecutionState(nodeId, {
+              status: 'completed',
+              endTime: Date.now(),
+              executionTime: execResult.executionTime,
+            });
+          } else {
+            updateNodeExecutionState(nodeId, {
+              status: 'failed',
+              endTime: Date.now(),
+              executionTime: execResult.executionTime,
+              error: execResult.error,
+            });
+          }
+        });
+      }
 
-    // Set errors if any
-    if (result.errors && result.errors.length > 0) {
-      const errorsMap: Record<string, NodeError> = {};
-      result.errors.forEach((error) => {
-        if (error.nodeId) {
-          errorsMap[error.nodeId] = error;
-        }
-      });
-      setExecutionErrors(errorsMap);
-    }
+      // Set errors if any
+      if (result.errors && result.errors.length > 0) {
+        const errorsMap: Record<string, NodeError> = {};
+        result.errors.forEach((error) => {
+          if (error.nodeId) {
+            errorsMap[error.nodeId] = error;
+          }
+        });
+        setExecutionErrors(errorsMap);
+      }
 
-    // Set execution time
-    setExecutionTime(result.executionTime);
+      // Set execution time
+      setExecutionTime(result.executionTime);
 
-    // Stop execution
-    stopExecution();
+      // Stop execution
+      stopExecution();
   };
 
   /**
@@ -309,6 +482,33 @@ export default function ExecutionToolbar() {
           >
             <Eye className="w-4 h-4" />
           </button>
+          <button
+            onClick={() => setShowTimeline(!showTimeline)}
+            className={`p-2 hover:bg-gray-100 transition-colors ${
+              showTimeline ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600'
+            }`}
+            title="Execution Timeline"
+          >
+            <Clock className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setShowPerformanceMetrics(!showPerformanceMetrics)}
+            className={`p-2 hover:bg-gray-100 transition-colors ${
+              showPerformanceMetrics ? 'bg-purple-50 text-purple-600' : 'text-gray-600'
+            }`}
+            title="Performance Metrics"
+          >
+            <BarChart3 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setShowDataFlowGraph(!showDataFlowGraph)}
+            className={`p-2 hover:bg-gray-100 transition-colors ${
+              showDataFlowGraph ? 'bg-teal-50 text-teal-600' : 'text-gray-600'
+            }`}
+            title="Data Flow Graph"
+          >
+            <Network className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Execution Mode Toggle */}
@@ -390,6 +590,27 @@ export default function ExecutionToolbar() {
       <DebugPanel
         isOpen={showDebugPanel}
         onClose={() => setShowDebugPanel(false)}
+      />
+
+      {/* Execution Timeline */}
+      <ExecutionTimeline
+        isOpen={showTimeline}
+        onClose={() => setShowTimeline(false)}
+        position={{ x: 20, y: 150 }}
+      />
+
+      {/* Performance Metrics */}
+      <PerformanceMetrics
+        isOpen={showPerformanceMetrics}
+        onClose={() => setShowPerformanceMetrics(false)}
+        position={{ x: 20, y: 200 }}
+      />
+
+      {/* Data Flow Graph */}
+      <DataFlowGraph
+        isOpen={showDataFlowGraph}
+        onClose={() => setShowDataFlowGraph(false)}
+        position={{ x: 20, y: 250 }}
       />
     </div>
   );

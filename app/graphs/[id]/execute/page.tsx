@@ -17,8 +17,20 @@ import PageHeader from '../../../../components/layout/PageHeader';
 import ContentCard from '../../../../components/layout/ContentCard';
 import LoadingState from '../../../../components/layout/LoadingState';
 import ErrorAlert from '../../../../components/layout/ErrorAlert';
-import type { GraphDefinition, ExecutionResponse } from '../../../../src/graph-management/types';
+import type { GraphDefinition, ExecutionResponse, SerializedExecutionResult } from '../../../../src/graph-management/types';
 import type { ExecutionResult, NodeError } from '../../../../src/types';
+
+/**
+ * Convert SerializedExecutionResult to ExecutionResult
+ */
+function deserializeResult(serialized: SerializedExecutionResult): ExecutionResult {
+  return {
+    success: serialized.success,
+    outputs: serialized.outputs ? new Map(Object.entries(serialized.outputs)) : undefined,
+    error: serialized.error,
+    executionTime: serialized.executionTime,
+  };
+}
 
 export default function GraphExecutePage() {
   const params = useParams();
@@ -266,7 +278,7 @@ export default function GraphExecutePage() {
 
   const hasErrors = executionResult?.errors && executionResult.errors.length > 0;
   const successCount = executionResult?.results
-    ? Object.values(executionResult.results).filter((r: ExecutionResult) => r?.success).length
+    ? Object.values(executionResult.results).filter((r: SerializedExecutionResult) => r?.success).length
     : 0;
   const totalCount = executionResult?.results
     ? Object.keys(executionResult.results).length
@@ -477,8 +489,8 @@ export default function GraphExecutePage() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Node Results</h3>
                   <div className="border border-gray-200 rounded-lg divide-y divide-gray-200 max-h-96 overflow-y-auto">
-                    {Object.entries(executionResult.results).map(([nodeId, result]) =>
-                      renderNodeResult(nodeId, result),
+                    {Object.entries(executionResult.results).map(([nodeId, serializedResult]) =>
+                      renderNodeResult(nodeId, deserializeResult(serializedResult)),
                     )}
                   </div>
                 </div>
