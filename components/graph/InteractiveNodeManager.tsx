@@ -9,6 +9,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import UserInputDialog from './UserInputDialog';
 import ImageDisplayPanel from './ImageDisplayPanel';
+import StreamingDataPanel from './StreamingDataPanel';
 import type {
   UserInputRequest,
   ImageData,
@@ -28,9 +29,15 @@ interface PendingImageDisplay {
   imageData: ImageData;
 }
 
+interface ActiveStreamingNode {
+  nodeId: string;
+  executionId: string;
+}
+
 export default function InteractiveNodeManager() {
   const [pendingInput, setPendingInput] = useState<PendingInputRequest | null>(null);
   const [pendingImage, setPendingImage] = useState<PendingImageDisplay | null>(null);
+  const [streamingNodes, setStreamingNodes] = useState<Map<string, ActiveStreamingNode>>(new Map());
 
   useEffect(() => {
     // Listen for user input requests from streaming execution
@@ -45,13 +52,27 @@ export default function InteractiveNodeManager() {
       setPendingImage({ nodeId, executionId, imageData });
     };
 
+    // Listen for streaming data updates
+    const handleStreamingDataUpdate = (event: any) => {
+      const { nodeId, executionId } = event.data;
+      
+      // Add or update streaming node
+      setStreamingNodes((prev) => {
+        const updated = new Map(prev);
+        updated.set(nodeId, { nodeId, executionId });
+        return updated;
+      });
+    };
+
     // Register event listeners
     streamingExecutionService.on('interactive:user-input-requested' as any, handleUserInputRequested);
     streamingExecutionService.on('interactive:image-display-requested' as any, handleImageDisplayRequested);
+    streamingExecutionService.on('interactive:streaming-data-update' as any, handleStreamingDataUpdate);
 
     return () => {
       streamingExecutionService.off('interactive:user-input-requested' as any, handleUserInputRequested);
       streamingExecutionService.off('interactive:image-display-requested' as any, handleImageDisplayRequested);
+      streamingExecutionService.off('interactive:streaming-data-update' as any, handleStreamingDataUpdate);
     };
   }, []);
 
@@ -121,6 +142,14 @@ export default function InteractiveNodeManager() {
     setPendingImage(null);
   }, []);
 
+  const handleStreamingClose = useCallback((nodeId: string) => {
+    setStreamingNodes((prev) => {
+      const updated = new Map(prev);
+      updated.delete(nodeId);
+      return updated;
+    });
+  }, []);
+
   return (
     <>
       {pendingInput && (
@@ -142,6 +171,15 @@ export default function InteractiveNodeManager() {
           onClose={handleImageClose}
         />
       )}
+      {Array.from(streamingNodes.values()).map((streamingNode) => (
+        <StreamingDataPanel
+          key={streamingNode.nodeId}
+          open={true}
+          nodeId={streamingNode.nodeId}
+          executionId={streamingNode.executionId}
+          onClose={() => handleStreamingClose(streamingNode.nodeId)}
+        />
+      ))}
     </>
   );
 }

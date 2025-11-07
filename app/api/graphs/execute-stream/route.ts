@@ -171,6 +171,15 @@ export async function POST(request: NextRequest) {
             });
           });
 
+          executor.on(InteractiveNodeEventType.STREAMING_DATA_UPDATE, (event: any) => {
+            sendEvent('interactive:streaming-data-update', {
+              nodeId: event.data.nodeId,
+              executionId: event.data.executionId,
+              data: event.data.data,
+              timestamp: Date.now(),
+            });
+          });
+
           // Register executor for user input API
           registerExecutor(executionId, executor);
 
