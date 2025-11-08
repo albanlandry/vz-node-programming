@@ -10,6 +10,9 @@ export * from './nodes/filesystem';
 export * from './nodes/dataprocessing';
 export * from './nodes/database';
 
+// Debugging system
+export * from './debugging';
+
 // Core classes
 export { BaseNode } from './core/BaseNode';
 export { NodeExecutor } from './core/NodeExecutor';
