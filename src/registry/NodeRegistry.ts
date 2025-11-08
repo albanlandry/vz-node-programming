@@ -107,6 +107,9 @@ export class NodeRegistry {
    * Unregister a node type
    */
   public unregister(type: string): boolean {
+    if (!this.nodes.has(type)) {
+      throw new Error(`Node type '${type}' is not registered`);
+    }
     return this.nodes.delete(type);
   }
 
@@ -144,30 +147,40 @@ export class NodeRegistry {
   }
 
   /**
+   * Get all registered nodes (alias for getAllNodes, returns RegisteredNode array)
+   */
+  public getAll(): RegisteredNode[] {
+    return Array.from(this.nodes.values());
+  }
+
+  /**
    * Get nodes by category
    */
-  public getByCategory(category: string): NodeMetadata[] {
-    return this.getAllNodes().filter(n => n.category === category);
+  public getByCategory(category: string): RegisteredNode[] {
+    return this.getAll().filter(n => n.metadata.category === category);
   }
 
   /**
    * Get nodes by tag
    */
-  public getByTag(tag: string): NodeMetadata[] {
-    return this.getAllNodes().filter(n => n.tags.includes(tag));
+  public getByTag(tag: string): RegisteredNode[] {
+    return this.getAll().filter(n => n.metadata.tags.includes(tag));
   }
 
   /**
    * Search nodes by keyword
    */
-  public search(keyword: string): NodeMetadata[] {
+  public search(keyword: string): RegisteredNode[] {
     const lowerKeyword = keyword.toLowerCase();
-    return this.getAllNodes().filter(n =>
-      n.displayName.toLowerCase().includes(lowerKeyword) ||
-      n.description.toLowerCase().includes(lowerKeyword) ||
-      n.tags.some(tag => tag.toLowerCase().includes(lowerKeyword)) ||
-      n.type.toLowerCase().includes(lowerKeyword),
-    );
+    return this.getAll().filter(n => {
+      const metadata = n.metadata;
+      return (
+        metadata.displayName.toLowerCase().includes(lowerKeyword) ||
+        metadata.description.toLowerCase().includes(lowerKeyword) ||
+        metadata.tags.some(tag => tag.toLowerCase().includes(lowerKeyword)) ||
+        metadata.type.toLowerCase().includes(lowerKeyword)
+      );
+    });
   }
 
   /**
@@ -189,6 +202,13 @@ export class NodeRegistry {
    */
   public isRegistered(type: string): boolean {
     return this.nodes.has(type);
+  }
+
+  /**
+   * Check if a node type is registered (alias for isRegistered)
+   */
+  public has(type: string): boolean {
+    return this.isRegistered(type);
   }
 
   /**
@@ -221,6 +241,21 @@ export class NodeRegistry {
       tags: this.getTags(),
     };
     return JSON.stringify(data, null, 2);
+  }
+
+  /**
+   * Export catalog of all nodes with full metadata
+   */
+  public exportCatalog(): {
+    version: string;
+    timestamp: string;
+    nodes: RegisteredNode[];
+    } {
+    return {
+      version: '1.0.0',
+      timestamp: new Date().toISOString(),
+      nodes: this.getAll(),
+    };
   }
 
   /**

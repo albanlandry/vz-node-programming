@@ -17,6 +17,7 @@ import {
 } from '../types';
 import { logger } from '../utils/Logger';
 import { InteractiveExecutionContext } from './InteractiveExecutionContext';
+import { ExecutionController, type ExecutionOptions } from './ExecutionController';
 
 /**
  * Node execution engine that manages the execution of connected nodes
@@ -30,6 +31,7 @@ export class NodeExecutor extends EventEmitter {
   private executionResults: Map<NodeId, ExecutionResult> = new Map();
   private interactiveContexts: Map<NodeId, InteractiveExecutionContext> = new Map();
   private pausedNodes: Set<NodeId> = new Set();
+  private executionController?: ExecutionController;
 
   constructor() {
     super();
@@ -93,26 +95,71 @@ export class NodeExecutor extends EventEmitter {
   /**
    * Execute all nodes in the correct order based on dependencies (sequential)
    */
-  public async execute(initialInputs: Map<NodeId, Map<PortId, unknown>> = new Map()): Promise<Map<NodeId, ExecutionResult>> {
+  public async execute(
+    initialInputs: Map<NodeId, Map<PortId, unknown>> = new Map(),
+    options: ExecutionOptions = {},
+  ): Promise<Map<NodeId, ExecutionResult>> {
     const executionId = uuidv4();
     this.executionResults.clear();
     this.executingNodes.clear();
 
+    // Create execution controller
+    this.executionController = new ExecutionController(options);
+
     try {
+      // Check if already cancelled
+      if (this.executionController.isCancelled()) {
+        throw new Error('Execution cancelled before start');
+      }
+
       // Build execution order based on dependencies
       const executionOrder = this.buildExecutionOrder();
 
       // Execute nodes in order
       for (const nodeId of executionOrder) {
-        await this.executeNode(nodeId, executionId, initialInputs);
+        // Check for cancellation
+        if (this.executionController.isCancelled()) {
+          this.emitEvent(NodeEventType.EXECUTION_CANCELLED, {
+            executionId,
+            nodeId,
+          });
+          throw new Error('Execution cancelled');
+        }
+
+        await this.executeNode(nodeId, executionId, initialInputs, options.nodeTimeout);
       }
+
+      // Cleanup
+      this.executionController.cleanup();
+      this.executionController = undefined;
 
       return new Map(this.executionResults);
     } catch (error) {
-      this.emitEvent(NodeEventType.EXECUTION_FAILED, {
-        executionId,
-        error: error instanceof Error ? error.message : String(error),
-      });
+      // Cleanup on error
+      if (this.executionController) {
+        this.executionController.cleanup();
+        this.executionController = undefined;
+      }
+
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      if (errorMessage.includes('timeout') || errorMessage.includes('Timeout')) {
+        this.emitEvent(NodeEventType.EXECUTION_TIMEOUT, {
+          executionId,
+          error: errorMessage,
+        });
+      } else if (errorMessage.includes('cancelled') || errorMessage.includes('Cancelled')) {
+        this.emitEvent(NodeEventType.EXECUTION_CANCELLED, {
+          executionId,
+          error: errorMessage,
+        });
+      } else {
+        this.emitEvent(NodeEventType.EXECUTION_FAILED, {
+          executionId,
+          error: errorMessage,
+        });
+      }
+      
       throw error;
     }
   }
@@ -122,32 +169,76 @@ export class NodeExecutor extends EventEmitter {
    * Groups nodes into execution levels based on dependencies
    * Nodes in the same level have no dependencies on each other and can run in parallel
    */
-  public async executeParallel(initialInputs: Map<NodeId, Map<PortId, unknown>> = new Map()): Promise<Map<NodeId, ExecutionResult>> {
+  public async executeParallel(
+    initialInputs: Map<NodeId, Map<PortId, unknown>> = new Map(),
+    options: ExecutionOptions = {},
+  ): Promise<Map<NodeId, ExecutionResult>> {
     const executionId = uuidv4();
     this.executionResults.clear();
     this.executingNodes.clear();
 
+    // Create execution controller
+    this.executionController = new ExecutionController(options);
+
     try {
+      // Check if already cancelled
+      if (this.executionController.isCancelled()) {
+        throw new Error('Execution cancelled before start');
+      }
+
       // Build execution levels for parallel execution
       const executionLevels = this.buildExecutionLevels();
 
       // Execute each level in parallel
       for (const level of executionLevels) {
+        // Check for cancellation
+        if (this.executionController.isCancelled()) {
+          this.emitEvent(NodeEventType.EXECUTION_CANCELLED, {
+            executionId,
+          });
+          throw new Error('Execution cancelled');
+        }
+
         // Execute all nodes in this level concurrently
         const levelPromises = level.map(nodeId =>
-          this.executeNode(nodeId, executionId, initialInputs),
+          this.executeNode(nodeId, executionId, initialInputs, options.nodeTimeout),
         );
 
         // Wait for all nodes in this level to complete
         await Promise.all(levelPromises);
       }
 
+      // Cleanup
+      this.executionController.cleanup();
+      this.executionController = undefined;
+
       return new Map(this.executionResults);
     } catch (error) {
-      this.emitEvent(NodeEventType.EXECUTION_FAILED, {
-        executionId,
-        error: error instanceof Error ? error.message : String(error),
-      });
+      // Cleanup on error
+      if (this.executionController) {
+        this.executionController.cleanup();
+        this.executionController = undefined;
+      }
+
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      if (errorMessage.includes('timeout') || errorMessage.includes('Timeout')) {
+        this.emitEvent(NodeEventType.EXECUTION_TIMEOUT, {
+          executionId,
+          error: errorMessage,
+        });
+      } else if (errorMessage.includes('cancelled') || errorMessage.includes('Cancelled')) {
+        this.emitEvent(NodeEventType.EXECUTION_CANCELLED, {
+          executionId,
+          error: errorMessage,
+        });
+      } else {
+        this.emitEvent(NodeEventType.EXECUTION_FAILED, {
+          executionId,
+          error: errorMessage,
+        });
+      }
+      
       throw error;
     }
   }
@@ -159,6 +250,7 @@ export class NodeExecutor extends EventEmitter {
     nodeId: NodeId,
     executionId: ExecutionId,
     initialInputs: Map<NodeId, Map<PortId, unknown>>,
+    nodeTimeout?: number,
   ): Promise<void> {
     const node = this.nodes.get(nodeId);
     if (!node) {
@@ -172,20 +264,37 @@ export class NodeExecutor extends EventEmitter {
       // Gather inputs from connected nodes
       const inputs = this.gatherNodeInputs(nodeId, initialInputs);
 
-      // Create base execution context
+      // Create base execution context with abort signal and timeout
       const baseContext: ExecutionContext = {
         executionId,
         inputs,
         outputs: new Map(),
         metadata: new Map(),
+        abortSignal: this.executionController?.getSignal(),
+        timeout: nodeTimeout,
         errorHandler: (error: NodeError) => {
           this.handleNodeError(error, nodeId);
         },
       };
 
+      // Set node timeout if provided
+      if (nodeTimeout && this.executionController) {
+        this.executionController.setNodeTimeout(nodeId, nodeTimeout, () => {
+          this.emitEvent(NodeEventType.EXECUTION_TIMEOUT, {
+            nodeId,
+            executionId,
+          });
+        });
+      }
+
       // Check if node is interactive
       const isInteractive = this.isInteractiveNode(node);
       let result: ExecutionResult;
+
+      // Check for cancellation before execution
+      if (this.executionController?.isCancelled()) {
+        throw new Error('Execution cancelled');
+      }
 
       if (isInteractive) {
         // Create interactive context
@@ -203,14 +312,45 @@ export class NodeExecutor extends EventEmitter {
         if (interactiveNode.executeInteractive) {
           // Mark node as potentially pausable
           this.pausedNodes.add(nodeId);
-          result = await interactiveNode.executeInteractive(interactiveContext);
+          
+          // Execute with timeout if provided
+          if (nodeTimeout) {
+            result = await ExecutionController.executeWithTimeout(
+              () => interactiveNode.executeInteractive(interactiveContext),
+              nodeTimeout,
+              baseContext.abortSignal,
+            );
+          } else {
+            result = await interactiveNode.executeInteractive(interactiveContext);
+          }
         } else {
           // Fallback to regular execute if executeInteractive not implemented
-          result = await node.execute(baseContext);
+          if (nodeTimeout) {
+            result = await ExecutionController.executeWithTimeout(
+              () => node.execute(baseContext),
+              nodeTimeout,
+              baseContext.abortSignal,
+            );
+          } else {
+            result = await node.execute(baseContext);
+          }
         }
       } else {
-        // Execute normally
-        result = await node.execute(baseContext);
+        // Execute normally with timeout if provided
+        if (nodeTimeout) {
+          result = await ExecutionController.executeWithTimeout(
+            () => node.execute(baseContext),
+            nodeTimeout,
+            baseContext.abortSignal,
+          );
+        } else {
+          result = await node.execute(baseContext);
+        }
+      }
+
+      // Clear node timeout on success
+      if (this.executionController) {
+        this.executionController.clearNodeTimeout(nodeId);
       }
 
       // Store the result
@@ -237,10 +377,29 @@ export class NodeExecutor extends EventEmitter {
       // Clean up on error
       this.interactiveContexts.delete(nodeId);
       this.pausedNodes.delete(nodeId);
+      if (this.executionController) {
+        this.executionController.clearNodeTimeout(nodeId);
+      }
       throw error;
     } finally {
       this.executingNodes.delete(nodeId);
     }
+  }
+
+  /**
+   * Cancel ongoing execution
+   */
+  public cancel(reason?: string): void {
+    if (this.executionController) {
+      this.executionController.cancel(reason || 'Execution cancelled by user');
+    }
+  }
+
+  /**
+   * Check if execution is cancelled
+   */
+  public isCancelled(): boolean {
+    return this.executionController?.isCancelled() ?? false;
   }
 
   /**
@@ -494,6 +653,38 @@ export class NodeExecutor extends EventEmitter {
         `Type mismatch: cannot connect ${fromPort.dataType.name} to ${toPort.dataType.name}`,
       );
     }
+
+    // Check for circular dependency (basic check - will be fully validated during execution)
+    // This is a simple check to catch obvious cycles at connection time
+    if (this.wouldCreateCycle(connection.fromNode, connection.toNode)) {
+      throw new Error(`Circular dependency detected: cannot connect ${connection.fromNode} to ${connection.toNode}`);
+    }
+  }
+
+  /**
+   * Check if adding a connection would create a cycle
+   */
+  private wouldCreateCycle(fromNode: NodeId, toNode: NodeId): boolean {
+    // If we're connecting toNode -> fromNode, check if fromNode can reach toNode
+    const visited = new Set<NodeId>();
+    const queue: NodeId[] = [toNode];
+
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      if (current === fromNode) {
+        return true; // Cycle detected
+      }
+      if (visited.has(current)) {
+        continue;
+      }
+      visited.add(current);
+
+      // Get all nodes that current depends on
+      const dependencies = this.getNodeDependencies(current);
+      queue.push(...dependencies);
+    }
+
+    return false;
   }
 
   /**
@@ -507,11 +698,13 @@ export class NodeExecutor extends EventEmitter {
   /**
    * Emit a node event
    */
-  private emitEvent(type: NodeEventType, data: unknown): void {
+  private emitEvent(type: NodeEventType, data: any): void {
     const event: NodeEvent = {
       type,
       timestamp: new Date(),
       data,
+      // Spread data properties onto event for easier access in tests/consumers
+      ...(typeof data === 'object' && data !== null ? data : {}),
     };
     this.emit(type, event);
   }

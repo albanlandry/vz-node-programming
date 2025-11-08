@@ -11,6 +11,13 @@ describe('Graph Store - Phase 2 Features', () => {
     useGraphStore.getState().clearGraph();
     useGraphStore.getState().clearExecutionState();
     useGraphStore.getState().clearInputConfig();
+    // Clear input templates by resetting the store's inputTemplates
+    const state = useGraphStore.getState();
+    // Get all template IDs and delete them
+    const templates = state.inputTemplates;
+    templates.forEach(template => {
+      state.deleteInputTemplate(template.id);
+    });
   });
 
   describe('Input Configuration', () => {

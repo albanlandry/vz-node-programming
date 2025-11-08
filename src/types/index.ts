@@ -60,6 +60,10 @@ export interface ExecutionContext {
   outputs: Map<PortId, any>;
   metadata: Map<string, any>;
   errorHandler?: (error: NodeError) => void;
+  /** Abort signal for cancellation */
+  abortSignal?: AbortSignal;
+  /** Timeout in milliseconds */
+  timeout?: number;
 }
 
 /**
@@ -119,6 +123,8 @@ export enum NodeEventType {
   EXECUTION_STARTED = 'execution_started',
   EXECUTION_COMPLETED = 'execution_completed',
   EXECUTION_FAILED = 'execution_failed',
+  EXECUTION_CANCELLED = 'execution_cancelled',
+  EXECUTION_TIMEOUT = 'execution_timeout',
   NODE_ADDED = 'node_added',
   NODE_REMOVED = 'node_removed',
   CONNECTION_ADDED = 'connection_added',

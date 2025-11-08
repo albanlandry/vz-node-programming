@@ -4,6 +4,9 @@ import { DelayNode, HttpRequestNode, PromiseAllNode, PromiseRaceNode, RetryNode 
 import { MapNode, FilterNode, ReduceNode, ComposeNode } from '../nodes/functional/FunctionalNodes';
 import { CalculatorNode, CounterNode, BankAccountNode } from '../nodes/oop/ObjectOrientedNodes';
 import { ConditionalNode, MathNode, StringNode, TransformNode, LoggerNode, ConstantNode, ArrayNode, ObjectNode } from '../nodes/utility/UtilityNodes';
+import { ReadFileNode, WriteFileNode, ListDirectoryNode, FileExistsNode } from '../nodes/filesystem/FileSystemNodes';
+import { JsonPathNode, DataValidationNode, JsonParseNode, JsonStringifyNode, ArrayFilterNode } from '../nodes/dataprocessing/DataProcessingNodes';
+import { SqlQueryNode, DatabaseConnectionTestNode } from '../nodes/database/DatabaseNodes';
 import { DataTypes } from '../types';
 
 import { NodeRegistry } from './NodeRegistry';
@@ -894,6 +897,484 @@ export function registerBuiltInNodes(): void {
       'JSON object: \'{"name":"John","age":30}\'',
       'Add property: key="status", value="active"',
       'Nested object: \'{"user":{"name":"John"}}\'',
+    ],
+  });
+
+  // File System Nodes
+  registry.register(ReadFileNode, {
+    type: 'filesystem.read-file',
+    displayName: 'Read File',
+    category: 'File System',
+    description: 'Reads content from a file',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['filesystem', 'file', 'read', 'io'],
+    icon: '📄',
+    color: '#3498DB',
+    inputs: [
+      {
+        id: 'path',
+        name: 'File Path',
+        dataType: DataTypes.STRING,
+        required: true,
+        description: 'Path to the file to read',
+      },
+      {
+        id: 'encoding',
+        name: 'Encoding',
+        dataType: DataTypes.STRING,
+        required: false,
+        description: 'File encoding (default: utf8)',
+      },
+    ],
+    outputs: [
+      {
+        id: 'content',
+        name: 'Content',
+        dataType: DataTypes.STRING,
+        description: 'File content',
+      },
+      {
+        id: 'size',
+        name: 'Size',
+        dataType: DataTypes.NUMBER,
+        description: 'File size in bytes',
+      },
+    ],
+    examples: [
+      'Read text file: path="data.txt"',
+      'Read with encoding: path="data.txt", encoding="utf8"',
+    ],
+  });
+
+  registry.register(WriteFileNode, {
+    type: 'filesystem.write-file',
+    displayName: 'Write File',
+    category: 'File System',
+    description: 'Writes content to a file',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['filesystem', 'file', 'write', 'io'],
+    icon: '✍️',
+    color: '#E74C3C',
+    inputs: [
+      {
+        id: 'path',
+        name: 'File Path',
+        dataType: DataTypes.STRING,
+        required: true,
+        description: 'Path to the file to write',
+      },
+      {
+        id: 'content',
+        name: 'Content',
+        dataType: DataTypes.STRING,
+        required: true,
+        description: 'Content to write',
+      },
+      {
+        id: 'encoding',
+        name: 'Encoding',
+        dataType: DataTypes.STRING,
+        required: false,
+        description: 'File encoding (default: utf8)',
+      },
+      {
+        id: 'createDir',
+        name: 'Create Directory',
+        dataType: DataTypes.BOOLEAN,
+        required: false,
+        description: 'Create parent directory if it does not exist',
+      },
+    ],
+    outputs: [
+      {
+        id: 'success',
+        name: 'Success',
+        dataType: DataTypes.BOOLEAN,
+        description: 'Whether the write was successful',
+      },
+      {
+        id: 'bytesWritten',
+        name: 'Bytes Written',
+        dataType: DataTypes.NUMBER,
+        description: 'Number of bytes written',
+      },
+    ],
+  });
+
+  registry.register(ListDirectoryNode, {
+    type: 'filesystem.list-directory',
+    displayName: 'List Directory',
+    category: 'File System',
+    description: 'Lists files and directories in a path',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['filesystem', 'directory', 'list', 'io'],
+    icon: '📁',
+    color: '#9B59B6',
+    inputs: [
+      {
+        id: 'path',
+        name: 'Directory Path',
+        dataType: DataTypes.STRING,
+        required: true,
+        description: 'Path to the directory',
+      },
+    ],
+    outputs: [
+      {
+        id: 'files',
+        name: 'Files',
+        dataType: DataTypes.ARRAY,
+        description: 'Array of file names',
+      },
+      {
+        id: 'directories',
+        name: 'Directories',
+        dataType: DataTypes.ARRAY,
+        description: 'Array of directory names',
+      },
+      {
+        id: 'items',
+        name: 'Items',
+        dataType: DataTypes.ARRAY,
+        description: 'Array of all items with metadata',
+      },
+    ],
+  });
+
+  registry.register(FileExistsNode, {
+    type: 'filesystem.file-exists',
+    displayName: 'File Exists',
+    category: 'File System',
+    description: 'Checks if a file or directory exists',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['filesystem', 'file', 'check', 'io'],
+    icon: '🔍',
+    color: '#F39C12',
+    inputs: [
+      {
+        id: 'path',
+        name: 'Path',
+        dataType: DataTypes.STRING,
+        required: true,
+        description: 'Path to check',
+      },
+    ],
+    outputs: [
+      {
+        id: 'exists',
+        name: 'Exists',
+        dataType: DataTypes.BOOLEAN,
+        description: 'Whether the path exists',
+      },
+      {
+        id: 'isFile',
+        name: 'Is File',
+        dataType: DataTypes.BOOLEAN,
+        description: 'Whether the path is a file',
+      },
+      {
+        id: 'isDirectory',
+        name: 'Is Directory',
+        dataType: DataTypes.BOOLEAN,
+        description: 'Whether the path is a directory',
+      },
+    ],
+  });
+
+  // Data Processing Nodes
+  registry.register(JsonPathNode, {
+    type: 'dataprocessing.json-path',
+    displayName: 'JSON Path',
+    category: 'Data Processing',
+    description: 'Queries JSON data using path expressions',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['data', 'json', 'query', 'path'],
+    icon: '🔎',
+    color: '#1ABC9C',
+    inputs: [
+      {
+        id: 'data',
+        name: 'Data',
+        dataType: DataTypes.ANY,
+        required: true,
+        description: 'JSON data to query',
+      },
+      {
+        id: 'path',
+        name: 'Path',
+        dataType: DataTypes.STRING,
+        required: true,
+        description: 'JSONPath expression (e.g., $.users[0].name)',
+      },
+    ],
+    outputs: [
+      {
+        id: 'result',
+        name: 'Result',
+        dataType: DataTypes.ANY,
+        description: 'Query result',
+      },
+      {
+        id: 'found',
+        name: 'Found',
+        dataType: DataTypes.BOOLEAN,
+        description: 'Whether the path was found',
+      },
+    ],
+    examples: [
+      'Get user name: path="$.users[0].name"',
+      'Get nested value: path="$.data.user.profile.email"',
+    ],
+  });
+
+  registry.register(DataValidationNode, {
+    type: 'dataprocessing.data-validation',
+    displayName: 'Data Validation',
+    category: 'Data Processing',
+    description: 'Validates data against validation rules',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['data', 'validation', 'schema', 'check'],
+    icon: '✅',
+    color: '#27AE60',
+    inputs: [
+      {
+        id: 'data',
+        name: 'Data',
+        dataType: DataTypes.ANY,
+        required: true,
+        description: 'Data to validate',
+      },
+      {
+        id: 'rules',
+        name: 'Validation Rules',
+        dataType: DataTypes.OBJECT,
+        required: true,
+        description: 'Validation rules object',
+      },
+    ],
+    outputs: [
+      {
+        id: 'valid',
+        name: 'Valid',
+        dataType: DataTypes.BOOLEAN,
+        description: 'Whether the data is valid',
+      },
+      {
+        id: 'errors',
+        name: 'Errors',
+        dataType: DataTypes.ARRAY,
+        description: 'Array of validation errors',
+      },
+    ],
+  });
+
+  registry.register(JsonParseNode, {
+    type: 'dataprocessing.json-parse',
+    displayName: 'JSON Parse',
+    category: 'Data Processing',
+    description: 'Parses a JSON string to an object',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['data', 'json', 'parse', 'convert'],
+    icon: '📦',
+    color: '#E67E22',
+    inputs: [
+      {
+        id: 'json',
+        name: 'JSON String',
+        dataType: DataTypes.STRING,
+        required: true,
+        description: 'JSON string to parse',
+      },
+    ],
+    outputs: [
+      {
+        id: 'result',
+        name: 'Result',
+        dataType: DataTypes.OBJECT,
+        description: 'Parsed JSON object',
+      },
+      {
+        id: 'valid',
+        name: 'Valid',
+        dataType: DataTypes.BOOLEAN,
+        description: 'Whether the JSON is valid',
+      },
+    ],
+  });
+
+  registry.register(JsonStringifyNode, {
+    type: 'dataprocessing.json-stringify',
+    displayName: 'JSON Stringify',
+    category: 'Data Processing',
+    description: 'Converts an object to a JSON string',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['data', 'json', 'stringify', 'convert'],
+    icon: '📝',
+    color: '#16A085',
+    inputs: [
+      {
+        id: 'data',
+        name: 'Data',
+        dataType: DataTypes.ANY,
+        required: true,
+        description: 'Data to stringify',
+      },
+      {
+        id: 'pretty',
+        name: 'Pretty Print',
+        dataType: DataTypes.BOOLEAN,
+        required: false,
+        description: 'Whether to pretty print the JSON',
+      },
+    ],
+    outputs: [
+      {
+        id: 'json',
+        name: 'JSON String',
+        dataType: DataTypes.STRING,
+        description: 'JSON string representation',
+      },
+    ],
+  });
+
+  registry.register(ArrayFilterNode, {
+    type: 'dataprocessing.array-filter',
+    displayName: 'Array Filter',
+    category: 'Data Processing',
+    description: 'Filters array elements based on a condition',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['data', 'array', 'filter', 'process'],
+    icon: '🔽',
+    color: '#8E44AD',
+    inputs: [
+      {
+        id: 'array',
+        name: 'Array',
+        dataType: DataTypes.ARRAY,
+        required: true,
+        description: 'Array to filter',
+      },
+      {
+        id: 'condition',
+        name: 'Condition',
+        dataType: DataTypes.STRING,
+        required: true,
+        description: 'Filter condition (e.g., "item > 10")',
+      },
+    ],
+    outputs: [
+      {
+        id: 'filtered',
+        name: 'Filtered Array',
+        dataType: DataTypes.ARRAY,
+        description: 'Filtered array',
+      },
+      {
+        id: 'count',
+        name: 'Count',
+        dataType: DataTypes.NUMBER,
+        description: 'Number of filtered items',
+      },
+    ],
+  });
+
+  // Database Nodes
+  registry.register(SqlQueryNode, {
+    type: 'database.sql-query',
+    displayName: 'SQL Query',
+    category: 'Database',
+    description: 'Executes a SQL query (requires database connection)',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['database', 'sql', 'query', 'db'],
+    icon: '🗄️',
+    color: '#34495E',
+    inputs: [
+      {
+        id: 'connectionString',
+        name: 'Connection String',
+        dataType: DataTypes.STRING,
+        required: true,
+        description: 'Database connection string',
+      },
+      {
+        id: 'query',
+        name: 'Query',
+        dataType: DataTypes.STRING,
+        required: true,
+        description: 'SQL query to execute',
+      },
+      {
+        id: 'parameters',
+        name: 'Parameters',
+        dataType: DataTypes.ARRAY,
+        required: false,
+        description: 'Query parameters',
+      },
+    ],
+    outputs: [
+      {
+        id: 'results',
+        name: 'Results',
+        dataType: DataTypes.ARRAY,
+        description: 'Query results',
+      },
+      {
+        id: 'rowCount',
+        name: 'Row Count',
+        dataType: DataTypes.NUMBER,
+        description: 'Number of rows affected/returned',
+      },
+      {
+        id: 'success',
+        name: 'Success',
+        dataType: DataTypes.BOOLEAN,
+        description: 'Whether the query succeeded',
+      },
+    ],
+  });
+
+  registry.register(DatabaseConnectionTestNode, {
+    type: 'database.connection-test',
+    displayName: 'Database Connection Test',
+    category: 'Database',
+    description: 'Tests a database connection',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['database', 'connection', 'test', 'db'],
+    icon: '🔌',
+    color: '#7F8C8D',
+    inputs: [
+      {
+        id: 'connectionString',
+        name: 'Connection String',
+        dataType: DataTypes.STRING,
+        required: true,
+        description: 'Database connection string',
+      },
+    ],
+    outputs: [
+      {
+        id: 'connected',
+        name: 'Connected',
+        dataType: DataTypes.BOOLEAN,
+        description: 'Whether the connection succeeded',
+      },
+      {
+        id: 'message',
+        name: 'Message',
+        dataType: DataTypes.STRING,
+        description: 'Connection status message',
+      },
     ],
   });
 }

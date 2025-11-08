@@ -5,6 +5,10 @@
 
 // Core types and interfaces
 export * from './types';
+export * from './core/ExecutionController';
+export * from './nodes/filesystem';
+export * from './nodes/dataprocessing';
+export * from './nodes/database';
 
 // Core classes
 export { BaseNode } from './core/BaseNode';

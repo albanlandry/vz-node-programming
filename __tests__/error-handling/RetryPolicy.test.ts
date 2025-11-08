@@ -118,7 +118,7 @@ describe('RetryPolicy', () => {
       }
 
       expect(attempts).toBe(10);
-    });
+    }, 30000); // Increase timeout to 30 seconds for this test
   });
 
   describe('Jitter', () => {

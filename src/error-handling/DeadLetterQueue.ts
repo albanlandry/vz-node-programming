@@ -74,8 +74,21 @@ export class DeadLetterQueue {
   static getInstance(config?: Partial<DLQConfig>): DeadLetterQueue {
     if (!DeadLetterQueue.instance) {
       DeadLetterQueue.instance = new DeadLetterQueue(config);
+    } else if (config) {
+      // Update config if instance already exists (useful for testing)
+      DeadLetterQueue.instance.config = { ...DeadLetterQueue.instance.config, ...config };
     }
     return DeadLetterQueue.instance;
+  }
+
+  /**
+   * Reset the singleton instance (useful for testing)
+   */
+  static resetInstance(): void {
+    if (DeadLetterQueue.instance) {
+      DeadLetterQueue.instance.destroy();
+      DeadLetterQueue.instance = undefined as any;
+    }
   }
 
   /**
@@ -108,8 +121,8 @@ export class DeadLetterQueue {
     // Add to queue
     this.entries.set(entry.id, entry);
 
-    // Enforce max entries
-    if (this.entries.size > this.config.maxEntries) {
+    // Enforce max entries - remove oldest entries until we're under the limit
+    while (this.entries.size > this.config.maxEntries) {
       this.removeOldest();
     }
 
@@ -123,7 +136,8 @@ export class DeadLetterQueue {
       this.config.onEntryAdded(entry);
     }
 
-    logger.error(
+    // Log at WARN level since this is expected behavior when failures occur
+    logger.warn(
       `💀 Dead Letter Queue: Added entry ${entry.id} for ${params.nodeName} ` +
       `(Error: ${params.error.message})`,
     );
@@ -160,6 +174,13 @@ export class DeadLetterQueue {
   }
 
   /**
+   * Get entries for a specific node (alias for getByNode)
+   */
+  getByNodeId(nodeId: NodeId): DeadLetterEntry[] {
+    return this.getByNode(nodeId);
+  }
+
+  /**
    * Get entries for a specific execution
    */
   getByExecution(executionId: ExecutionId): DeadLetterEntry[] {
@@ -176,6 +197,13 @@ export class DeadLetterQueue {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Mark an entry as processed (alias for markProcessed)
+   */
+  markAsProcessed(id: string): boolean {
+    return this.markProcessed(id);
   }
 
   /**
@@ -198,6 +226,7 @@ export class DeadLetterQueue {
   getStats(): {
     total: number;
     unprocessed: number;
+    processed: number;
     byNode: Map<NodeId, number>;
     oldestEntry?: Date;
     newestEntry?: Date;
@@ -210,10 +239,12 @@ export class DeadLetterQueue {
     });
 
     const timestamps = all.map(e => e.timestamp.getTime());
+    const processed = all.filter(e => e.processed).length;
 
     return {
       total: all.length,
       unprocessed: this.getUnprocessed().length,
+      processed,
       byNode,
       oldestEntry: timestamps.length > 0 ? new Date(Math.min(...timestamps)) : undefined,
       newestEntry: timestamps.length > 0 ? new Date(Math.max(...timestamps)) : undefined,
@@ -221,20 +252,18 @@ export class DeadLetterQueue {
   }
 
   /**
-   * Export entries as JSON
+   * Export entries as array
    */
-  export(): string {
-    const entries = this.getAll().map(entry => ({
+  export(): DeadLetterEntry[] {
+    return this.getAll().map(entry => ({
       ...entry,
       error: {
         name: entry.error.name,
         message: entry.error.message,
         stack: entry.error.stack,
-      },
-      timestamp: entry.timestamp.toISOString(),
+      } as any,
+      timestamp: entry.timestamp,
     }));
-
-    return JSON.stringify(entries, null, 2);
   }
 
   /**
@@ -265,8 +294,10 @@ export class DeadLetterQueue {
     );
 
     const toRemove = entries.length - this.config.maxEntries;
-    for (let i = 0; i < toRemove; i++) {
-      this.entries.delete(entries[i].id);
+    if (toRemove > 0) {
+      for (let i = 0; i < toRemove; i++) {
+        this.entries.delete(entries[i].id);
+      }
     }
   }
 
@@ -281,9 +312,9 @@ export class DeadLetterQueue {
   }
 
   /**
-   * Cleanup old entries
+   * Cleanup old entries (public for testing)
    */
-  private cleanup(): void {
+  cleanup(): void {
     const now = Date.now();
     const cutoff = now - this.config.retentionPeriod;
 

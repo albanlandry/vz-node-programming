@@ -1,7 +1,9 @@
 /**
  * Unit Tests for InputConfigPanel Component
+ * @jest-environment jsdom
  */
 
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import InputConfigPanel from '../../components/graph/InputConfigPanel';
 import { useGraphStore } from '../../store/graphStore';

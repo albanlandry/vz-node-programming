@@ -473,7 +473,8 @@ describe('NodeExecutor - Basic Execution', () => {
 
   describe('Dependency Resolution', () => {
     it('should detect circular dependencies', () => {
-      const node1 = new SimpleNode('node-1');
+      // Create nodes with both inputs and outputs for circular dependency test
+      const node1 = new TransformNode('node-1');
       const node2 = new TransformNode('node-2');
       executor.addNode(node1);
       executor.addNode(node2);
@@ -619,7 +620,7 @@ describe('NodeExecutor - Basic Execution', () => {
     it('should handle multiple connections to same input', async () => {
       const node1 = new SimpleNode('node-1', 'value1');
       const node2 = new SimpleNode('node-2', 'value2');
-      const node3 = new TransformNode('node-3');
+      const node3 = new TransformNode('node-3', (v) => `transformed-${v}`);
       executor.addNode(node1);
       executor.addNode(node2);
       executor.addNode(node3);

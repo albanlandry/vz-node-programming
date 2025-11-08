@@ -12,6 +12,7 @@ import {
   DataType,
 } from '../types';
 import { logger } from '../utils/Logger';
+import { ExecutionController } from './ExecutionController';
 
 /**
  * Abstract base class for all nodes
@@ -46,11 +47,35 @@ export abstract class BaseNode implements INode {
     const startTime = Date.now();
 
     try {
+      // Check for cancellation
+      if (context.abortSignal?.aborted) {
+        throw new NodeError('Execution cancelled', this.id);
+      }
+
       // Validate inputs
       this.validateInputs(context.inputs);
 
-      // Execute the node's internal logic
-      const outputs = await this.executeInternal(context);
+      // Check for cancellation again
+      if (context.abortSignal?.aborted) {
+        throw new NodeError('Execution cancelled', this.id);
+      }
+
+      // Execute with timeout if provided
+      let outputs: Map<PortId, unknown>;
+      if (context.timeout) {
+        outputs = await ExecutionController.executeWithTimeout(
+          () => this.executeInternal(context),
+          context.timeout,
+          context.abortSignal,
+        );
+      } else {
+        outputs = await this.executeInternal(context);
+      }
+
+      // Check for cancellation after execution
+      if (context.abortSignal?.aborted) {
+        throw new NodeError('Execution cancelled', this.id);
+      }
 
       // Validate outputs
       this.validateOutputs(outputs);

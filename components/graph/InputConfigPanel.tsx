@@ -6,7 +6,7 @@
  * Allows users to configure input values for nodes that require external inputs
  */
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Save, FolderOpen, Trash2 } from 'lucide-react';
 import { useGraphStore } from '../../store/graphStore';
 import type { Port } from '../../src/types';
