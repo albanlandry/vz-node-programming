@@ -50,8 +50,8 @@
         "inputs": [],
         "outputs": [
           {
-            "id": "output",
-            "name": "Output",
+            "id": "result",
+            "name": "Result",
             "dataType": {
               "name": "any",
               "description": "Any type"
@@ -99,7 +99,7 @@
       {
         "id": "conn-1",
         "fromNode": "node-constant",
-        "fromPort": "output",
+        "fromPort": "result",
         "toNode": "node-image-display",
         "toPort": "url"
       }

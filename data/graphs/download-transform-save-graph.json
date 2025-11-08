@@ -25,8 +25,8 @@
         "inputs": [],
         "outputs": [
           {
-            "id": "output",
-            "name": "Output",
+            "id": "result",
+            "name": "Result",
             "dataType": {
               "name": "any",
               "description": "Any type"
@@ -111,8 +111,8 @@
         ],
         "outputs": [
           {
-            "id": "output",
-            "name": "Output",
+            "id": "result",
+            "name": "Result",
             "dataType": {
               "name": "any",
               "description": "Any type"
@@ -134,8 +134,8 @@
         "inputs": [],
         "outputs": [
           {
-            "id": "output",
-            "name": "Output",
+            "id": "result",
+            "name": "Result",
             "dataType": {
               "name": "any",
               "description": "Any type"
@@ -203,7 +203,7 @@
       {
         "id": "conn-1",
         "fromNode": "node-constant-url",
-        "fromPort": "output",
+        "fromPort": "result",
         "toNode": "node-http-request",
         "toPort": "url"
       },
@@ -217,14 +217,14 @@
       {
         "id": "conn-3",
         "fromNode": "node-transform",
-        "fromPort": "output",
+        "fromPort": "result",
         "toNode": "node-write-file",
         "toPort": "content"
       },
       {
         "id": "conn-4",
         "fromNode": "node-constant-filename",
-        "fromPort": "output",
+        "fromPort": "result",
         "toNode": "node-write-file",
         "toPort": "path"
       }

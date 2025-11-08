@@ -1,5 +1,5 @@
 import { BaseNode } from '../../core/BaseNode';
-import { ExecutionContext, PortId, DataTypes } from '../../types';
+import { ExecutionContext, PortId, DataTypes, NodeConfig } from '../../types';
 
 /**
  * Async Programming Paradigm Examples
@@ -62,10 +62,11 @@ export class DelayNode extends BaseNode {
  * HTTP Request node - demonstrates async HTTP operations
  */
 export class HttpRequestNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
-      name: 'HTTP Request',
-      description: 'Makes asynchronous HTTP requests',
+      id: config?.id,
+      name: config?.name || 'HTTP Request',
+      description: config?.description || 'Makes asynchronous HTTP requests',
       inputs: [
         {
           id: 'url',
@@ -132,42 +133,95 @@ export class HttpRequestNode extends BaseNode {
     }
 
     try {
-      // Async HTTP request using fetch
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          ...headers,
-        },
-        body: body ? JSON.stringify(body) : undefined,
-      });
+      // Create AbortController for timeout and cancellation
+      const abortController = new AbortController();
+      const timeoutMs = context.timeout || 30000; // Default 30 seconds timeout
+      
+      // Set timeout
+      const timeoutId = setTimeout(() => {
+        abortController.abort();
+      }, timeoutMs);
 
-      // Try to parse as JSON, fallback to text
+      // Use provided abort signal or the timeout controller
+      const abortSignal = context.abortSignal || abortController.signal;
+      
+      // If context has an abort signal, listen to it
+      if (context.abortSignal) {
+        context.abortSignal.addEventListener('abort', () => {
+          abortController.abort();
+          clearTimeout(timeoutId);
+        });
+      }
+
+      try {
+        // Async HTTP request using fetch with abort signal
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            ...headers,
+          },
+          body: body ? JSON.stringify(body) : undefined,
+          signal: abortController.signal, // Add abort signal to fetch
+        });
+
+      // Read response body based on content type
+      // IMPORTANT: Response body can only be read once, so we must determine the type first
       let data: any;
       const contentType = response.headers.get('content-type') || '';
+      
       if (contentType.includes('application/json')) {
         data = await response.json();
       } else if (contentType.includes('text/')) {
         data = await response.text();
+      } else if (contentType.includes('image/')) {
+        // For images, convert to base64 data URL
+        const arrayBuffer = await response.arrayBuffer();
+        const base64 = Buffer.from(arrayBuffer).toString('base64');
+        data = `data:${contentType};base64,${base64}`;
       } else {
-        // Try JSON first, fallback to text
+        // For unknown types, try to read as text first (most common)
+        // If that fails, try as arrayBuffer and convert to base64
         try {
-          data = await response.json();
-        } catch {
           data = await response.text();
+        } catch {
+          // If text fails, try as binary data
+          try {
+            const arrayBuffer = await response.arrayBuffer();
+            const base64 = Buffer.from(arrayBuffer).toString('base64');
+            data = `data:${contentType || 'application/octet-stream'};base64,${base64}`;
+          } catch (binaryError) {
+            throw new Error(`Failed to read response body: ${binaryError instanceof Error ? binaryError.message : String(binaryError)}`);
+          }
         }
       }
 
-      this.setOutput(outputs, 'response', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
-      });
-      this.setOutput(outputs, 'status', response.status);
-      this.setOutput(outputs, 'data', data);
+        this.setOutput(outputs, 'response', {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+        });
+        this.setOutput(outputs, 'status', response.status);
+        this.setOutput(outputs, 'data', data);
 
+        // Clear timeout on success
+        clearTimeout(timeoutId);
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        
+        // Check if it was aborted
+        if (abortController.signal.aborted || context.abortSignal?.aborted) {
+          throw new Error('HTTP request was cancelled or timed out');
+        }
+        
+        throw fetchError;
+      }
     } catch (error) {
-      throw new Error(`HTTP request failed: ${error instanceof Error ? error.message : String(error)}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('aborted') || errorMessage.includes('cancelled')) {
+        throw new Error(`HTTP request ${errorMessage}`);
+      }
+      throw new Error(`HTTP request failed: ${errorMessage}`);
     }
 
     return outputs;

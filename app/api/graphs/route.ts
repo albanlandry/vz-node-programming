@@ -5,7 +5,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 import { GraphManager } from '../../../src/graph-management';
@@ -37,17 +37,15 @@ export async function GET() {
       ];
       
       for (const { id, file } of graphsToInit) {
-        const graphExists = graphs.some(g => g.id === id);
-        if (graphExists) {
-          continue;
-        }
-        
         const graphPath = join(graphsDir, file);
         try {
-          const graphData = JSON.parse(readFileSync(graphPath, 'utf-8')) as GraphDefinition;
-          // Save directly using storage to preserve the ID
-          await storage.save(graphData);
-          logger.info(`Graph initialized: ${id}`);
+          // Always reload from JSON source file if it exists (to pick up updates)
+          if (existsSync(graphPath)) {
+            const graphData = JSON.parse(readFileSync(graphPath, 'utf-8')) as GraphDefinition;
+            // Save directly using storage to preserve the ID (this will update if it exists)
+            await storage.save(graphData);
+            logger.info(`Graph loaded/updated from JSON: ${id}`);
+          }
         } catch (fileError) {
           // Graph file doesn't exist or can't be read - that's okay
           logger.debug(`Graph file not found: ${file}, skipping initialization`);

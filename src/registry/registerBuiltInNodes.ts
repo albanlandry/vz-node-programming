@@ -7,7 +7,9 @@ import { ConditionalNode, MathNode, StringNode, TransformNode, LoggerNode, Const
 import { ReadFileNode, WriteFileNode, ListDirectoryNode, FileExistsNode } from '../nodes/filesystem/FileSystemNodes';
 import { JsonPathNode, DataValidationNode, JsonParseNode, JsonStringifyNode, ArrayFilterNode } from '../nodes/dataprocessing/DataProcessingNodes';
 import { SqlQueryNode, DatabaseConnectionTestNode } from '../nodes/database/DatabaseNodes';
-import { DataTypes } from '../types';
+import { UserInputNode } from '../nodes/interactive/UserInputNode';
+import { ImageDisplayNode } from '../nodes/interactive/ImageDisplayNode';
+import { DataTypes, NodeConfig } from '../types';
 
 import { NodeRegistry } from './NodeRegistry';
 
@@ -1375,6 +1377,117 @@ export function registerBuiltInNodes(): void {
         dataType: DataTypes.STRING,
         description: 'Connection status message',
       },
+    ],
+  });
+
+  // Interactive Nodes
+  // Create wrapper classes that accept NodeConfig for registry compatibility
+  const UserInputNodeWrapper = class extends UserInputNode {
+    constructor(config?: Partial<NodeConfig> & { properties?: { prompt?: string; inputType?: string; formSchema?: any } }) {
+      super({
+        id: config?.id,
+        prompt: config?.properties?.prompt || 'Please provide input:',
+        inputType: (config?.properties?.inputType as 'form' | 'prompt' | 'confirm') || 'prompt',
+        formSchema: config?.properties?.formSchema,
+      });
+    }
+  };
+
+  const ImageDisplayNodeWrapper = class extends ImageDisplayNode {
+    constructor(config?: Partial<NodeConfig> & { properties?: { defaultFormat?: string; defaultAlt?: string } }) {
+      super({
+        id: config?.id,
+        defaultFormat: (config?.properties?.defaultFormat as 'png' | 'jpg' | 'jpeg' | 'gif' | 'webp' | 'svg') || 'png',
+        defaultAlt: config?.properties?.defaultAlt || 'Image',
+      });
+    }
+  };
+
+  registry.register(UserInputNodeWrapper as any, {
+    type: 'user-input',
+    displayName: 'User Input',
+    category: 'Interactive',
+    description: 'Requests user input during execution',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['interactive', 'user-input', 'form', 'prompt'],
+    icon: '📝',
+    color: '#E67E22',
+    inputs: [],
+    outputs: [
+      {
+        id: 'value',
+        name: 'Value',
+        dataType: DataTypes.ANY,
+        description: 'The user-provided input value',
+      },
+    ],
+    examples: [
+      'Simple prompt: prompt="Enter your name"',
+      'Form input: inputType="form" with formSchema',
+      'Confirmation: inputType="confirm"',
+    ],
+  });
+
+  registry.register(ImageDisplayNodeWrapper as any, {
+    type: 'image-display',
+    displayName: 'Image Display',
+    category: 'Interactive',
+    description: 'Displays images during execution',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['interactive', 'image', 'display', 'visualization'],
+    icon: '🖼️',
+    color: '#9B59B6',
+    inputs: [
+      {
+        id: 'url',
+        name: 'URL',
+        dataType: DataTypes.STRING,
+        description: 'Image URL',
+      },
+      {
+        id: 'base64',
+        name: 'Base64',
+        dataType: DataTypes.STRING,
+        description: 'Base64 encoded image data',
+      },
+      {
+        id: 'format',
+        name: 'Format',
+        dataType: DataTypes.STRING,
+        description: 'Image format (png, jpg, etc.)',
+      },
+      {
+        id: 'alt',
+        name: 'Alt Text',
+        dataType: DataTypes.STRING,
+        description: 'Alternative text for the image',
+      },
+      {
+        id: 'width',
+        name: 'Width',
+        dataType: DataTypes.NUMBER,
+        description: 'Image width in pixels',
+      },
+      {
+        id: 'height',
+        name: 'Height',
+        dataType: DataTypes.NUMBER,
+        description: 'Image height in pixels',
+      },
+    ],
+    outputs: [
+      {
+        id: 'displayed',
+        name: 'Displayed',
+        dataType: DataTypes.BOOLEAN,
+        description: 'Whether the image was displayed',
+      },
+    ],
+    examples: [
+      'Display image from URL: url="https://example.com/image.png"',
+      'Display base64 image: base64="data:image/png;base64,..."',
     ],
   });
 }

@@ -25,8 +25,8 @@
         "inputs": [],
         "outputs": [
           {
-            "id": "output",
-            "name": "Output",
+            "id": "result",
+            "name": "Result",
             "dataType": {
               "name": "any",
               "description": "Any type"
@@ -136,7 +136,7 @@
       {
         "id": "conn-1",
         "fromNode": "node-constant-url",
-        "fromPort": "output",
+        "fromPort": "result",
         "toNode": "node-http-request",
         "toPort": "url"
       },

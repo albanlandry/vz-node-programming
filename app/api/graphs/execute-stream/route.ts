@@ -130,52 +130,64 @@ export async function POST(request: NextRequest) {
 
           // Set up interactive event listeners
           executor.on(InteractiveNodeEventType.USER_INPUT_REQUESTED, (event: any) => {
+            // Interactive events are emitted directly, not wrapped in data property
+            const eventData = event.data || event;
             sendEvent('interactive:user-input-requested', {
-              nodeId: event.data.nodeId,
-              executionId: event.data.executionId,
-              request: event.data.request,
+              nodeId: eventData.nodeId,
+              executionId: eventData.executionId,
+              request: eventData.request,
               timestamp: Date.now(),
             });
           });
 
           executor.on(InteractiveNodeEventType.USER_INPUT_RECEIVED, (event: any) => {
+            // Interactive events are emitted directly, not wrapped in data property
+            const eventData = event.data || event;
             sendEvent('interactive:user-input-received', {
-              nodeId: event.data.nodeId,
-              executionId: event.data.executionId,
+              nodeId: eventData.nodeId,
+              executionId: eventData.executionId,
               timestamp: Date.now(),
             });
           });
 
           executor.on(InteractiveNodeEventType.NODE_PAUSED, (event: any) => {
+            // Interactive events are emitted directly, not wrapped in data property
+            const eventData = event.data || event;
             sendEvent('interactive:node-paused', {
-              nodeId: event.data.nodeId,
-              executionId: event.data.executionId,
+              nodeId: eventData.nodeId,
+              executionId: eventData.executionId,
               timestamp: Date.now(),
             });
           });
 
           executor.on(InteractiveNodeEventType.NODE_RESUMED, (event: any) => {
+            // Interactive events are emitted directly, not wrapped in data property
+            const eventData = event.data || event;
             sendEvent('interactive:node-resumed', {
-              nodeId: event.data.nodeId,
-              executionId: event.data.executionId,
+              nodeId: eventData.nodeId,
+              executionId: eventData.executionId,
               timestamp: Date.now(),
             });
           });
 
           executor.on(InteractiveNodeEventType.IMAGE_DISPLAY_REQUESTED, (event: any) => {
+            // Interactive events are emitted directly, not wrapped in data property
+            const eventData = event.data || event;
             sendEvent('interactive:image-display-requested', {
-              nodeId: event.data.nodeId,
-              executionId: event.data.executionId,
-              imageData: event.data.imageData,
+              nodeId: eventData.nodeId,
+              executionId: eventData.executionId,
+              imageData: eventData.imageData,
               timestamp: Date.now(),
             });
           });
 
           executor.on(InteractiveNodeEventType.STREAMING_DATA_UPDATE, (event: any) => {
+            // Interactive events are emitted directly, not wrapped in data property
+            const eventData = event.data || event;
             sendEvent('interactive:streaming-data-update', {
-              nodeId: event.data.nodeId,
-              executionId: event.data.executionId,
-              data: event.data.data,
+              nodeId: eventData.nodeId,
+              executionId: eventData.executionId,
+              data: eventData.data,
               timestamp: Date.now(),
             });
           });

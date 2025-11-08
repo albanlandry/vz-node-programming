@@ -165,13 +165,14 @@ export class GraphExecutionEngine {
 
         // Create node instance using registry
         // Extract properties separately to avoid ID conflicts
-        const { id, name, inputs, outputs, properties: graphProperties, ...otherProps } = graphNode;
+        // Note: Built-in nodes define their own inputs/outputs, so we don't pass them from the graph
+        const { id, name, inputs, outputs, properties: graphProperties, position, ...otherProps } = graphNode;
         const node = this.registry.create(graphNode.type, {
           id: id, // Explicitly set ID from graph node
           name: name,
-          inputs: inputs,
-          outputs: outputs,
-          ...otherProps, // Spread other properties (should not contain id, name, inputs, outputs, properties)
+          // Don't pass inputs/outputs - built-in nodes define their own
+          // Don't pass position - that's UI metadata, not node config
+          // Only pass other properties that might be relevant (but typically none)
         });
 
         // Set properties on the node if they exist
@@ -193,8 +194,18 @@ export class GraphExecutionEngine {
         }
 
         nodeMap.set(graphNode.id, node);
-        executor.addNode(node);
-        logger.debug(`Added node ${node.id} (${graphNode.type}) to executor`);
+        
+        // Try to add node to executor with better error handling
+        try {
+          executor.addNode(node);
+          logger.debug(`Added node ${node.id} (${graphNode.type}) to executor`);
+        } catch (addError) {
+          logger.error(`Failed to add node ${graphNode.id} (${graphNode.type}) to executor:`, addError);
+          logger.error(`Node validation result: ${node.validate()}`);
+          logger.error(`Node inputs: ${JSON.stringify(node.inputs.map(p => ({ id: p.id, name: p.name, dataType: p.dataType?.name })))}`);
+          logger.error(`Node outputs: ${JSON.stringify(node.outputs.map(p => ({ id: p.id, name: p.name, dataType: p.dataType?.name })))}`);
+          throw new Error(`Failed to add node ${graphNode.id} to executor: ${addError instanceof Error ? addError.message : String(addError)}`);
+        }
       } catch (error) {
         logger.error(`Failed to create node ${graphNode.id} (${graphNode.type}):`, error);
         throw new Error(`Failed to create node ${graphNode.id}: ${error instanceof Error ? error.message : String(error)}`);
@@ -216,6 +227,34 @@ export class GraphExecutionEngine {
 
     for (const connection of graph.data.connections) {
       try {
+        // Get the actual nodes to verify port IDs
+        const fromNode = executor.getNodes().find(n => n.id === connection.fromNode);
+        const toNode = executor.getNodes().find(n => n.id === connection.toNode);
+        
+        if (!fromNode) {
+          throw new Error(`Source node ${connection.fromNode} not found`);
+        }
+        if (!toNode) {
+          throw new Error(`Target node ${connection.toNode} not found`);
+        }
+        
+        // Verify port IDs exist
+        const fromPort = fromNode.outputs.find(p => p.id === connection.fromPort);
+        const toPort = toNode.inputs.find(p => p.id === connection.toPort);
+        
+        if (!fromPort) {
+          const availablePorts = fromNode.outputs.map(p => p.id).join(', ');
+          logger.error(`Output port '${connection.fromPort}' not found on node ${connection.fromNode}`);
+          logger.error(`Available output ports: ${availablePorts}`);
+          throw new Error(`Output port '${connection.fromPort}' not found on node ${connection.fromNode}. Available ports: ${availablePorts}`);
+        }
+        if (!toPort) {
+          const availablePorts = toNode.inputs.map(p => p.id).join(', ');
+          logger.error(`Input port '${connection.toPort}' not found on node ${connection.toNode}`);
+          logger.error(`Available input ports: ${availablePorts}`);
+          throw new Error(`Input port '${connection.toPort}' not found on node ${connection.toNode}. Available ports: ${availablePorts}`);
+        }
+        
         executor.addConnection({
           id: connection.id,
           fromNode: connection.fromNode,

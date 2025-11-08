@@ -31,8 +31,8 @@
         "inputs": [],
         "outputs": [
           {
-            "id": "output",
-            "name": "Output",
+            "id": "result",
+            "name": "Result",
             "dataType": {
               "name": "any",
               "description": "Any type"
@@ -137,7 +137,7 @@
       {
         "id": "conn-1",
         "fromNode": "node-constant-filepath",
-        "fromPort": "output",
+        "fromPort": "result",
         "toNode": "node-read-file",
         "toPort": "path"
       },
