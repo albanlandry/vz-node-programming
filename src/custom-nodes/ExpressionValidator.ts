@@ -9,6 +9,7 @@
  */
 
 import { logger } from '../utils/Logger';
+import { SandboxExecutor } from '../security/SandboxExecutor';
 
 /**
  * Allowed JavaScript functions and operators for expressions
@@ -174,7 +175,7 @@ export class ExpressionValidator {
   }
 
   /**
-   * Compiles a safe expression into a function
+   * Compiles a safe expression into a function using VM2 sandbox
    * 
    * @param expression - The expression to compile
    * @param inputs - Input port IDs for context
@@ -191,43 +192,23 @@ export class ExpressionValidator {
       return null;
     }
 
+    // Check if expression is safe
+    if (!SandboxExecutor.isSafe(expression)) {
+      logger.error('Expression contains unsafe patterns');
+      return null;
+    }
+
     try {
-      // Create a safe execution context
-      const safeInputs = inputs.reduce(
-        (acc, id) => {
-          acc[id] = undefined;
-          return acc;
-        },
-        {} as Record<string, unknown>,
-      );
+      // Create sandbox executor
+      const sandbox = new SandboxExecutor({
+        timeout: 5000,
+        memoryLimit: 64,
+      });
 
-      // Compile with restricted scope
-      const compiledFn = new Function(
-        'inputs',
-        `
-        // Restricted execution context
-        const Math = Math;
-        const Number = Number;
-        const String = String;
-        const Boolean = Boolean;
-        const Array = Array;
-        const Object = Object;
-        const Date = Date;
-        const JSON = JSON;
-        const parseInt = parseInt;
-        const parseFloat = parseFloat;
-        const isNaN = isNaN;
-        const isFinite = isFinite;
-        
-        try {
-          return ${expression};
-        } catch (error) {
-          throw new Error('Expression execution error: ' + error.message);
-        }
-      `,
-      ) as (inputs: Record<string, unknown>) => unknown;
-
-      return compiledFn;
+      // Return a function that uses the sandbox
+      return (inputValues: Record<string, unknown>) => {
+        return sandbox.execute(expression, inputValues);
+      };
     } catch (error) {
       logger.error('Failed to compile expression:', error);
       return null;

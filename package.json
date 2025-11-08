@@ -17,6 +17,9 @@
     "example:build": "tsc",
     "example:run": "node dist/examples/usage-examples.js",
     "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage --maxWorkers=2",
     "lint": "eslint . --ext .ts,.tsx --ignore-pattern 'examples/**'",
     "lint:strict": "eslint . --ext .ts,.tsx --max-warnings 0 --ignore-pattern 'examples/**'",
     "lint:fix": "eslint . --ext .ts,.tsx --fix --ignore-pattern 'examples/**'",
@@ -38,6 +41,7 @@
   "author": "VZ Programming",
   "license": "MIT",
   "devDependencies": {
+    "@types/express-rate-limit": "^5.1.3",
     "@types/jest": "^29.0.0",
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
@@ -61,10 +65,14 @@
   "dependencies": {
     "@types/uuid": "^9.0.0",
     "@xyflow/react": "^12.9.2",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "express-rate-limit": "^8.2.1",
     "lucide-react": "^0.552.0",
     "react-draggable": "^4.5.0",
     "reactflow": "^11.11.4",
     "uuid": "^9.0.0",
+    "vm2": "^3.10.0",
     "zustand": "^5.0.8"
   }
 }
