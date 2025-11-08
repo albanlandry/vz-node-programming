@@ -20,28 +20,42 @@ export async function GET() {
   try {
     const manager = new GraphManager();
     
-    // Initialize test graph if it doesn't exist
+    // Initialize example graphs if they don't exist (test graph + example graphs)
     try {
       const graphs = await manager.listGraphs();
-      const testGraphExists = graphs.some(g => g.id === 'test-live-execution-001');
+      const { GraphStorage } = await import('../../../src/graph-management');
+      const storage = new GraphStorage();
+      const graphsDir = join(process.cwd(), 'data', 'graphs');
       
-      if (!testGraphExists) {
-        const testGraphPath = join(process.cwd(), 'data', 'graphs', 'test-live-execution.json');
+      // List of graphs to auto-initialize
+      const graphsToInit = [
+        { id: 'test-live-execution-001', file: 'test-live-execution.json' },
+        { id: 'graph-interactive-nodes', file: 'interactive-nodes-graph.json' },
+        { id: 'graph-download-image', file: 'download-image-graph.json' },
+        { id: 'graph-download-transform-save', file: 'download-transform-save-graph.json' },
+        { id: 'graph-load-file-display', file: 'load-file-display-graph.json' },
+      ];
+      
+      for (const { id, file } of graphsToInit) {
+        const graphExists = graphs.some(g => g.id === id);
+        if (graphExists) {
+          continue;
+        }
+        
+        const graphPath = join(graphsDir, file);
         try {
-          const graphData = JSON.parse(readFileSync(testGraphPath, 'utf-8')) as GraphDefinition;
+          const graphData = JSON.parse(readFileSync(graphPath, 'utf-8')) as GraphDefinition;
           // Save directly using storage to preserve the ID
-          const { GraphStorage } = await import('../../../src/graph-management');
-          const storage = new GraphStorage();
           await storage.save(graphData);
-          logger.info('Test graph initialized');
+          logger.info(`Graph initialized: ${id}`);
         } catch (fileError) {
-          // Test graph file doesn't exist or can't be read - that's okay
-          logger.debug('Test graph file not found, skipping initialization');
+          // Graph file doesn't exist or can't be read - that's okay
+          logger.debug(`Graph file not found: ${file}, skipping initialization`);
         }
       }
     } catch (initError) {
-      // Ignore initialization errors - test graph is optional
-      logger.debug('Test graph initialization skipped:', initError);
+      // Ignore initialization errors - example graphs are optional
+      logger.debug('Graph initialization skipped:', initError);
     }
     
     const graphs = await manager.listGraphs();

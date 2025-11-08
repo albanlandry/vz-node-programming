@@ -46,5 +46,75 @@
     ],
     "nodeCount": 8,
     "connectionCount": 7
+  },
+  {
+    "id": "graph-interactive-nodes",
+    "name": "Interactive Nodes Example",
+    "description": "A graph demonstrating interactive nodes - user input and image display",
+    "author": "System",
+    "version": "1.0.0",
+    "createdAt": "2025-01-27T00:00:00.000Z",
+    "updatedAt": "2025-01-27T00:00:00.000Z",
+    "tags": [
+      "interactive",
+      "example",
+      "user-input",
+      "image-display"
+    ],
+    "nodeCount": 3,
+    "connectionCount": 1
+  },
+  {
+    "id": "graph-download-image",
+    "name": "Download and Display Image",
+    "description": "Downloads an image from the internet and displays it using interactive node",
+    "author": "System",
+    "version": "1.0.0",
+    "createdAt": "2025-01-27T00:00:00.000Z",
+    "updatedAt": "2025-01-27T00:00:00.000Z",
+    "tags": [
+      "http",
+      "image",
+      "download",
+      "interactive",
+      "example"
+    ],
+    "nodeCount": 3,
+    "connectionCount": 2
+  },
+  {
+    "id": "graph-download-transform-save",
+    "name": "Download, Transform, and Save Text",
+    "description": "Downloads a text file from the internet, transforms it, and saves it to a local file",
+    "author": "System",
+    "version": "1.0.0",
+    "createdAt": "2025-01-27T00:00:00.000Z",
+    "updatedAt": "2025-01-27T00:00:00.000Z",
+    "tags": [
+      "http",
+      "file",
+      "transform",
+      "example"
+    ],
+    "nodeCount": 5,
+    "connectionCount": 4
+  },
+  {
+    "id": "graph-load-file-display",
+    "name": "Load File and Display",
+    "description": "Loads a stored file and displays its content to the user",
+    "author": "System",
+    "version": "1.0.0",
+    "createdAt": "2025-01-27T00:00:00.000Z",
+    "updatedAt": "2025-01-27T00:00:00.000Z",
+    "tags": [
+      "file",
+      "read",
+      "display",
+      "interactive",
+      "example"
+    ],
+    "nodeCount": 3,
+    "connectionCount": 2
   }
 ]

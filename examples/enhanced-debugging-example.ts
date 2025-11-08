@@ -35,17 +35,18 @@ async function main() {
   // Create nodes
   const constantNode = new ConstantNode({
     name: 'Constant',
-    value: 10,
+    properties: {
+      type: 'number',
+      value: '10',
+    },
   });
 
   const mathNode = new MathNode({
     name: 'Math',
-    operation: 'multiply',
   });
 
   const transformNode = new TransformNode({
     name: 'Transform',
-    transform: (value: number) => value * 2,
   });
 
   // Add nodes to executor
@@ -71,7 +72,7 @@ async function main() {
   });
 
   // Create debugger
-  const debugger = new Debugger({
+  const dbg = new Debugger({
     enabled: true,
     createSnapshots: true,
     evaluateWatches: true,
@@ -79,7 +80,7 @@ async function main() {
   });
 
   // Add breakpoint before math node execution
-  debugger.addBreakpoint({
+  dbg.addBreakpoint({
     id: 'bp-1',
     nodeId: mathNode.id,
     type: BreakpointType.BEFORE_EXECUTE,
@@ -87,7 +88,7 @@ async function main() {
   });
 
   // Add conditional breakpoint on transform node
-  debugger.addBreakpoint({
+  dbg.addBreakpoint({
     id: 'bp-2',
     nodeId: transformNode.id,
     type: BreakpointType.BEFORE_EXECUTE,
@@ -96,14 +97,14 @@ async function main() {
   });
 
   // Add watch expressions
-  debugger.addWatchExpression({
+  dbg.addWatchExpression({
     id: 'watch-1',
     expression: 'inputs.get("a")',
     label: 'Math input A',
     breakOnChange: false,
   });
 
-  debugger.addWatchExpression({
+  dbg.addWatchExpression({
     id: 'watch-2',
     expression: 'outputs.get("result")',
     label: 'Math result',
@@ -111,7 +112,7 @@ async function main() {
   });
 
   // Listen to debug events
-  debugger.on('debugEvent', (event) => {
+  dbg.on('debugEvent', (event) => {
     console.log(`[Debug Event] ${event.type}:`, event.data);
   });
 
@@ -138,11 +139,11 @@ async function main() {
     };
 
     // Check breakpoint before execution
-    const shouldBreak = await debugger.checkBreakpointBefore(nodeId, context);
-    if (shouldBreak) {
-      console.log(`⏸️  Execution paused at breakpoint on node ${nodeId}`);
-      await debugger.waitForResume();
-    }
+      const shouldBreak = await dbg.checkBreakpointBefore(nodeId, context);
+      if (shouldBreak) {
+        console.log(`⏸️  Execution paused at breakpoint on node ${nodeId}`);
+        await dbg.waitForResume();
+      }
 
     // Execute node (simplified - in real implementation, this would be more complex)
     try {
@@ -151,7 +152,7 @@ async function main() {
       console.log(`▶️  Executing node ${nodeId}`);
 
       // Evaluate watch expressions
-      await debugger.evaluateWatches(context);
+      await dbg.evaluateWatches(context);
 
       // Check breakpoint after execution
       const result = {
@@ -160,14 +161,14 @@ async function main() {
         executionTime: 10,
       };
       
-      const shouldBreakAfter = await debugger.checkBreakpointAfter(nodeId, context, result);
+      const shouldBreakAfter = await dbg.checkBreakpointAfter(nodeId, context, result);
       if (shouldBreakAfter) {
         console.log(`⏸️  Execution paused at breakpoint after node ${nodeId}`);
-        await debugger.waitForResume();
+        await dbg.waitForResume();
       }
     } catch (error) {
       // Check breakpoint on error
-      await debugger.checkBreakpointOnError(nodeId, context, error as any);
+      await dbg.checkBreakpointOnError(nodeId, context, error as any);
       throw error;
     }
   };
@@ -183,11 +184,11 @@ async function main() {
     console.log('\n✅ Execution completed');
 
     // Display execution history
-    const history = debugger.getHistory();
+    const history = dbg.getHistory();
     console.log(`\n📊 Execution History: ${history.length} entries`);
 
     // Display snapshots
-    const snapshots = debugger.getSnapshotsForExecution('exec-1');
+    const snapshots = dbg.getSnapshotsForExecution('exec-1');
     console.log(`📸 Snapshots: ${snapshots.length} snapshots`);
 
     // Demonstrate time-travel debugging
@@ -196,20 +197,20 @@ async function main() {
       console.log(`Current step: ${snapshots[0].stepNumber}`);
       
       // Step forward
-      const next = debugger.stepForward();
+      const next = dbg.stepForward();
       if (next) {
         console.log(`Stepped forward to step: ${next.stepNumber}`);
       }
 
       // Step backward
-      const prev = debugger.stepBackward();
+      const prev = dbg.stepBackward();
       if (prev) {
         console.log(`Stepped backward to step: ${prev.stepNumber}`);
       }
     }
 
     // Display watch expression results
-    const watches = debugger.getWatchExpressions();
+    const watches = dbg.getWatchExpressions();
     console.log(`\n👀 Watch Expressions: ${watches.length} watches`);
     watches.forEach(watch => {
       console.log(`  - ${watch.label || watch.expression}: ${watch.lastValue}`);

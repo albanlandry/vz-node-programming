@@ -142,7 +142,21 @@ export class HttpRequestNode extends BaseNode {
         body: body ? JSON.stringify(body) : undefined,
       });
 
-      const data = await response.json();
+      // Try to parse as JSON, fallback to text
+      let data: any;
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        data = await response.json();
+      } else if (contentType.includes('text/')) {
+        data = await response.text();
+      } else {
+        // Try JSON first, fallback to text
+        try {
+          data = await response.json();
+        } catch {
+          data = await response.text();
+        }
+      }
 
       this.setOutput(outputs, 'response', {
         status: response.status,

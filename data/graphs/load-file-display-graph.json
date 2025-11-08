@@ -1,0 +1,153 @@
+{
+  "id": "graph-load-file-display",
+  "metadata": {
+    "id": "graph-load-file-display",
+    "name": "Load File and Display",
+    "description": "Loads a stored file and displays its content to the user",
+    "author": "System",
+    "version": "1.0.0",
+    "createdAt": "2025-01-27T00:00:00.000Z",
+    "updatedAt": "2025-01-27T00:00:00.000Z",
+    "tags": ["file", "read", "display", "interactive", "example"],
+    "nodeCount": 3,
+    "connectionCount": 2
+  },
+  "data": {
+    "nodes": [
+      {
+        "id": "node-constant-filepath",
+        "name": "File Path",
+        "type": "utility.constant",
+        "position": {
+          "x": 100,
+          "y": 200
+        },
+        "inputs": [],
+        "outputs": [
+          {
+            "id": "output",
+            "name": "Output",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            }
+          }
+        ],
+        "properties": {
+          "value": "./data/example.txt"
+        }
+      },
+      {
+        "id": "node-read-file",
+        "name": "Read File",
+        "type": "filesystem.read-file",
+        "position": {
+          "x": 350,
+          "y": 200
+        },
+        "inputs": [
+          {
+            "id": "path",
+            "name": "File Path",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "required": true,
+            "description": "Path to the file to read"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "content",
+            "name": "Content",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "description": "File content"
+          },
+          {
+            "id": "filePath",
+            "name": "File Path",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "description": "Path to the read file"
+          },
+          {
+            "id": "exists",
+            "name": "Exists",
+            "dataType": {
+              "name": "boolean",
+              "description": "Boolean value"
+            },
+            "description": "Whether the file exists"
+          }
+        ],
+        "properties": {}
+      },
+      {
+        "id": "node-user-display",
+        "name": "Display Content",
+        "type": "user-input",
+        "position": {
+          "x": 600,
+          "y": 200
+        },
+        "inputs": [],
+        "outputs": [
+          {
+            "id": "value",
+            "name": "Value",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "description": "The user-provided input value"
+          }
+        ],
+        "properties": {
+          "prompt": "File content loaded. Press OK to continue.",
+          "inputType": "confirm",
+          "formSchema": {
+            "title": "File Content",
+            "description": "Displaying file content to user",
+            "fields": [
+              {
+                "id": "content",
+                "label": "Content",
+                "type": "textarea",
+                "required": false,
+                "placeholder": "File content will be displayed here"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "connections": [
+      {
+        "id": "conn-1",
+        "fromNode": "node-constant-filepath",
+        "fromPort": "output",
+        "toNode": "node-read-file",
+        "toPort": "path"
+      },
+      {
+        "id": "conn-2",
+        "fromNode": "node-read-file",
+        "fromPort": "content",
+        "toNode": "node-user-display",
+        "toPort": "value"
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  }
+}
+

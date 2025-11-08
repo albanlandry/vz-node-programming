@@ -1,0 +1,239 @@
+{
+  "id": "graph-download-transform-save",
+  "metadata": {
+    "id": "graph-download-transform-save",
+    "name": "Download, Transform, and Save Text",
+    "description": "Downloads a text file from the internet, transforms it, and saves it to a local file",
+    "author": "System",
+    "version": "1.0.0",
+    "createdAt": "2025-01-27T00:00:00.000Z",
+    "updatedAt": "2025-01-27T00:00:00.000Z",
+    "tags": ["http", "file", "transform", "example"],
+    "nodeCount": 5,
+    "connectionCount": 4
+  },
+  "data": {
+    "nodes": [
+      {
+        "id": "node-constant-url",
+        "name": "Text File URL",
+        "type": "utility.constant",
+        "position": {
+          "x": 100,
+          "y": 200
+        },
+        "inputs": [],
+        "outputs": [
+          {
+            "id": "output",
+            "name": "Output",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            }
+          }
+        ],
+        "properties": {
+          "value": "https://raw.githubusercontent.com/microsoft/vscode/main/README.md"
+        }
+      },
+      {
+        "id": "node-http-request",
+        "name": "HTTP Request",
+        "type": "async.http-request",
+        "position": {
+          "x": 350,
+          "y": 200
+        },
+        "inputs": [
+          {
+            "id": "url",
+            "name": "URL",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "required": true,
+            "description": "URL to make request to"
+          },
+          {
+            "id": "method",
+            "name": "Method",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "description": "HTTP method (GET, POST, PUT, DELETE)"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "response",
+            "name": "Response",
+            "dataType": {
+              "name": "object",
+              "description": "Object value"
+            },
+            "description": "HTTP response"
+          },
+          {
+            "id": "data",
+            "name": "Data",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "description": "Response data"
+          }
+        ],
+        "properties": {
+          "method": "GET"
+        }
+      },
+      {
+        "id": "node-transform",
+        "name": "Transform",
+        "type": "utility.transform",
+        "position": {
+          "x": 600,
+          "y": 200
+        },
+        "inputs": [
+          {
+            "id": "input",
+            "name": "Input",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "required": true
+          }
+        ],
+        "outputs": [
+          {
+            "id": "output",
+            "name": "Output",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            }
+          }
+        ],
+        "properties": {
+          "transform": "value => value.toUpperCase()"
+        }
+      },
+      {
+        "id": "node-constant-filename",
+        "name": "Output Filename",
+        "type": "utility.constant",
+        "position": {
+          "x": 600,
+          "y": 350
+        },
+        "inputs": [],
+        "outputs": [
+          {
+            "id": "output",
+            "name": "Output",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            }
+          }
+        ],
+        "properties": {
+          "value": "./output/transformed-text.txt"
+        }
+      },
+      {
+        "id": "node-write-file",
+        "name": "Write File",
+        "type": "filesystem.write-file",
+        "position": {
+          "x": 850,
+          "y": 275
+        },
+        "inputs": [
+          {
+          "id": "path",
+          "name": "File Path",
+          "dataType": {
+            "name": "string",
+            "description": "String value"
+          },
+          "required": true,
+          "description": "Path to the file to write"
+          },
+          {
+            "id": "content",
+            "name": "Content",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "required": true,
+            "description": "Content to write to the file"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "success",
+            "name": "Success",
+            "dataType": {
+              "name": "boolean",
+              "description": "Boolean value"
+            },
+            "description": "Whether the file was written successfully"
+          },
+          {
+            "id": "filePath",
+            "name": "File Path",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "description": "Path to the written file"
+          }
+        ],
+        "properties": {}
+      }
+    ],
+    "connections": [
+      {
+        "id": "conn-1",
+        "fromNode": "node-constant-url",
+        "fromPort": "output",
+        "toNode": "node-http-request",
+        "toPort": "url"
+      },
+      {
+        "id": "conn-2",
+        "fromNode": "node-http-request",
+        "fromPort": "data",
+        "toNode": "node-transform",
+        "toPort": "input"
+      },
+      {
+        "id": "conn-3",
+        "fromNode": "node-transform",
+        "fromPort": "output",
+        "toNode": "node-write-file",
+        "toPort": "content"
+      },
+      {
+        "id": "conn-4",
+        "fromNode": "node-constant-filename",
+        "fromPort": "output",
+        "toNode": "node-write-file",
+        "toPort": "path"
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  }
+}
+

@@ -20,6 +20,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --coverage --maxWorkers=2",
+    "manage-graphs": "npm run build && node dist/examples/graphs/manage-example-graphs.js",
     "lint": "eslint . --ext .ts,.tsx --ignore-pattern 'examples/**'",
     "lint:strict": "eslint . --ext .ts,.tsx --max-warnings 0 --ignore-pattern 'examples/**'",
     "lint:fix": "eslint . --ext .ts,.tsx --fix --ignore-pattern 'examples/**'",

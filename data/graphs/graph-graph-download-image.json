@@ -1,0 +1,163 @@
+{
+  "id": "graph-download-image",
+  "metadata": {
+    "id": "graph-download-image",
+    "name": "Download and Display Image",
+    "description": "Downloads an image from the internet and displays it using interactive node",
+    "author": "System",
+    "version": "1.0.0",
+    "createdAt": "2025-01-27T00:00:00.000Z",
+    "updatedAt": "2025-01-27T00:00:00.000Z",
+    "tags": [
+      "http",
+      "image",
+      "download",
+      "interactive",
+      "example"
+    ],
+    "nodeCount": 3,
+    "connectionCount": 2
+  },
+  "data": {
+    "nodes": [
+      {
+        "id": "node-constant-url",
+        "name": "Image URL",
+        "type": "utility.constant",
+        "position": {
+          "x": 100,
+          "y": 200
+        },
+        "inputs": [],
+        "outputs": [
+          {
+            "id": "output",
+            "name": "Output",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            }
+          }
+        ],
+        "properties": {
+          "value": "https://picsum.photos/800/600"
+        }
+      },
+      {
+        "id": "node-http-request",
+        "name": "HTTP Request",
+        "type": "async.http-request",
+        "position": {
+          "x": 350,
+          "y": 200
+        },
+        "inputs": [
+          {
+            "id": "url",
+            "name": "URL",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "required": true,
+            "description": "URL to make request to"
+          },
+          {
+            "id": "method",
+            "name": "Method",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "description": "HTTP method (GET, POST, PUT, DELETE)"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "response",
+            "name": "Response",
+            "dataType": {
+              "name": "object",
+              "description": "Object value"
+            },
+            "description": "HTTP response"
+          },
+          {
+            "id": "data",
+            "name": "Data",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "description": "Response data"
+          }
+        ],
+        "properties": {
+          "method": "GET"
+        }
+      },
+      {
+        "id": "node-image-display",
+        "name": "Image Display",
+        "type": "image-display",
+        "position": {
+          "x": 600,
+          "y": 200
+        },
+        "inputs": [
+          {
+            "id": "url",
+            "name": "URL",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "description": "Image URL"
+          },
+          {
+            "id": "base64",
+            "name": "Base64",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "description": "Base64 encoded image data"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "displayed",
+            "name": "Displayed",
+            "dataType": {
+              "name": "boolean",
+              "description": "Boolean value"
+            },
+            "description": "Whether the image was displayed"
+          }
+        ],
+        "properties": {}
+      }
+    ],
+    "connections": [
+      {
+        "id": "conn-1",
+        "fromNode": "node-constant-url",
+        "fromPort": "output",
+        "toNode": "node-http-request",
+        "toPort": "url"
+      },
+      {
+        "id": "conn-2",
+        "fromNode": "node-http-request",
+        "fromPort": "data",
+        "toNode": "node-image-display",
+        "toPort": "url"
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  }
+}

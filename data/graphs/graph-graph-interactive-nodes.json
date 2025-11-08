@@ -1,0 +1,118 @@
+{
+  "id": "graph-interactive-nodes",
+  "metadata": {
+    "id": "graph-interactive-nodes",
+    "name": "Interactive Nodes Example",
+    "description": "A graph demonstrating interactive nodes - user input and image display",
+    "author": "System",
+    "version": "1.0.0",
+    "createdAt": "2025-01-27T00:00:00.000Z",
+    "updatedAt": "2025-01-27T00:00:00.000Z",
+    "tags": [
+      "interactive",
+      "example",
+      "user-input",
+      "image-display"
+    ],
+    "nodeCount": 3,
+    "connectionCount": 2
+  },
+  "data": {
+    "nodes": [
+      {
+        "id": "node-user-input",
+        "name": "User Input",
+        "type": "user-input",
+        "position": {
+          "x": 100,
+          "y": 200
+        },
+        "inputs": [],
+        "outputs": [
+          {
+            "id": "value",
+            "name": "Value",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "description": "The user-provided input value"
+          }
+        ],
+        "properties": {
+          "prompt": "Enter your name:",
+          "inputType": "prompt"
+        }
+      },
+      {
+        "id": "node-constant",
+        "name": "Constant",
+        "type": "utility.constant",
+        "position": {
+          "x": 100,
+          "y": 350
+        },
+        "inputs": [],
+        "outputs": [
+          {
+            "id": "output",
+            "name": "Output",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            }
+          }
+        ],
+        "properties": {
+          "value": "https://via.placeholder.com/400x300.png"
+        }
+      },
+      {
+        "id": "node-image-display",
+        "name": "Image Display",
+        "type": "image-display",
+        "position": {
+          "x": 400,
+          "y": 275
+        },
+        "inputs": [
+          {
+            "id": "url",
+            "name": "URL",
+            "dataType": {
+              "name": "string",
+              "description": "String value"
+            },
+            "description": "Image URL"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "displayed",
+            "name": "Displayed",
+            "dataType": {
+              "name": "boolean",
+              "description": "Boolean value"
+            },
+            "description": "Whether the image was displayed"
+          }
+        ],
+        "properties": {}
+      }
+    ],
+    "connections": [
+      {
+        "id": "conn-1",
+        "fromNode": "node-constant",
+        "fromPort": "output",
+        "toNode": "node-image-display",
+        "toPort": "url"
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  }
+}
