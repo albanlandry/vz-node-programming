@@ -98,4 +98,6 @@ export type {
   NodeError,
   NodeEvent,
   NodeEventType,
+  NodeLifecycleHooks,
+  NodeConfig,
 } from './types';

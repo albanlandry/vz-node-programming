@@ -106,6 +106,51 @@ export interface INode {
 }
 
 /**
+ * Lifecycle hooks for node execution
+ */
+export interface NodeLifecycleHooks {
+  /**
+   * Called before node execution starts
+   * Can be used for resource initialization, validation, or setup
+   * @param context - Execution context
+   * @returns Promise that resolves when initialization is complete
+   */
+  onBeforeExecute?: (context: ExecutionContext) => Promise<void> | void;
+
+  /**
+   * Called after node execution completes successfully
+   * Can be used for cleanup, logging, or post-processing
+   * @param context - Execution context
+   * @param result - Execution result
+   * @returns Promise that resolves when cleanup is complete
+   */
+  onAfterExecute?: (context: ExecutionContext, result: ExecutionResult) => Promise<void> | void;
+
+  /**
+   * Called when node execution fails
+   * Can be used for error handling, cleanup, or recovery
+   * @param context - Execution context
+   * @param error - The error that occurred
+   * @returns Promise that resolves when error handling is complete
+   */
+  onError?: (context: ExecutionContext, error: NodeError) => Promise<void> | void;
+
+  /**
+   * Called when node is initialized (constructor)
+   * Can be used for resource initialization that happens once
+   * @returns Promise that resolves when initialization is complete
+   */
+  onInitialize?: () => Promise<void> | void;
+
+  /**
+   * Called when node is being destroyed/cleaned up
+   * Can be used for resource cleanup, closing connections, etc.
+   * @returns Promise that resolves when cleanup is complete
+   */
+  onCleanup?: () => Promise<void> | void;
+}
+
+/**
  * Configuration for creating a new node
  */
 export interface NodeConfig {
@@ -114,6 +159,8 @@ export interface NodeConfig {
   description?: string;
   inputs?: Port[];
   outputs?: Port[];
+  /** Lifecycle hooks for node execution */
+  lifecycleHooks?: NodeLifecycleHooks;
 }
 
 /**

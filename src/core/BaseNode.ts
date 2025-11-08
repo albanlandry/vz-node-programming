@@ -10,6 +10,7 @@ import {
   Port,
   NodeError,
   DataType,
+  NodeLifecycleHooks,
 } from '../types';
 import { logger } from '../utils/Logger';
 import { ExecutionController } from './ExecutionController';
@@ -25,6 +26,9 @@ export abstract class BaseNode implements INode {
   public readonly inputs: Port[];
   public readonly outputs: Port[];
   protected properties: Map<string, unknown> = new Map();
+  private lifecycleHooks?: NodeLifecycleHooks;
+  private initialized: boolean = false;
+  private resources: Set<{ cleanup: () => Promise<void> | void }> = new Set();
 
   constructor(config: NodeConfig) {
     this.id = config.id ?? uuidv4();
@@ -32,6 +36,43 @@ export abstract class BaseNode implements INode {
     this.description = config.description;
     this.inputs = config.inputs ?? [];
     this.outputs = config.outputs ?? [];
+    this.lifecycleHooks = config.lifecycleHooks;
+  }
+
+  /**
+   * Initialize node resources
+   * Called once on first execution if onInitialize hook is provided
+   */
+  private async initialize(): Promise<void> {
+    if (this.initialized) {
+      return;
+    }
+
+    try {
+      if (this.lifecycleHooks?.onInitialize) {
+        await this.lifecycleHooks.onInitialize();
+      }
+      this.initialized = true;
+    } catch (error) {
+      logger.error(`Failed to initialize node ${this.id}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Register a resource that needs cleanup
+   * @param resource - Resource with cleanup method
+   */
+  protected registerResource(resource: { cleanup: () => Promise<void> | void }): void {
+    this.resources.add(resource);
+  }
+
+  /**
+   * Unregister a resource
+   * @param resource - Resource to unregister
+   */
+  protected unregisterResource(resource: { cleanup: () => Promise<void> | void }): void {
+    this.resources.delete(resource);
   }
 
   /**
@@ -47,7 +88,28 @@ export abstract class BaseNode implements INode {
     const startTime = Date.now();
 
     try {
+      // Initialize node if not already initialized
+      await this.initialize();
+
       // Check for cancellation
+      if (context.abortSignal?.aborted) {
+        throw new NodeError('Execution cancelled', this.id);
+      }
+
+      // Call onBeforeExecute hook
+      if (this.lifecycleHooks?.onBeforeExecute) {
+        try {
+          await this.lifecycleHooks.onBeforeExecute(context);
+        } catch (hookError) {
+          logger.error(`onBeforeExecute hook failed for node ${this.id}:`, hookError);
+          throw new NodeError(
+            `onBeforeExecute hook failed: ${hookError instanceof Error ? hookError.message : String(hookError)}`,
+            this.id,
+          );
+        }
+      }
+
+      // Check for cancellation after before hook
       if (context.abortSignal?.aborted) {
         throw new NodeError('Execution cancelled', this.id);
       }
@@ -82,11 +144,23 @@ export abstract class BaseNode implements INode {
 
       const executionTime = Date.now() - startTime;
 
-      return {
+      const result: ExecutionResult = {
         success: true,
         outputs,
         executionTime,
       };
+
+      // Call onAfterExecute hook
+      if (this.lifecycleHooks?.onAfterExecute) {
+        try {
+          await this.lifecycleHooks.onAfterExecute(context, result);
+        } catch (hookError) {
+          logger.error(`onAfterExecute hook failed for node ${this.id}:`, hookError);
+          // Don't fail execution if after hook fails, just log it
+        }
+      }
+
+      return result;
     } catch (error) {
       const executionTime = Date.now() - startTime;
       const nodeError = error instanceof NodeError
@@ -97,6 +171,16 @@ export abstract class BaseNode implements INode {
           undefined,
           error instanceof Error ? error : undefined,
         );
+
+      // Call onError hook
+      if (this.lifecycleHooks?.onError) {
+        try {
+          await this.lifecycleHooks.onError(context, nodeError);
+        } catch (hookError) {
+          logger.error(`onError hook failed for node ${this.id}:`, hookError);
+          // Don't suppress the original error if error hook fails
+        }
+      }
 
       // Call error handler if provided
       if (context.errorHandler) {
@@ -109,6 +193,41 @@ export abstract class BaseNode implements INode {
         executionTime,
       };
     }
+  }
+
+  /**
+   * Cleanup all registered resources
+   * Should be called when node is being destroyed
+   */
+  public async cleanup(): Promise<void> {
+    // Cleanup all registered resources
+    const cleanupPromises = Array.from(this.resources).map(resource => {
+      try {
+        return Promise.resolve(resource.cleanup());
+      } catch (error) {
+        logger.error(`Resource cleanup failed for node ${this.id}:`, error);
+        return Promise.resolve();
+      }
+    });
+
+    await Promise.all(cleanupPromises);
+    this.resources.clear();
+
+    // Call onCleanup hook
+    if (this.lifecycleHooks?.onCleanup) {
+      try {
+        await this.lifecycleHooks.onCleanup();
+      } catch (error) {
+        logger.error(`onCleanup hook failed for node ${this.id}:`, error);
+      }
+    }
+  }
+
+  /**
+   * Check if node is initialized
+   */
+  public isInitialized(): boolean {
+    return this.initialized;
   }
 
   /**
