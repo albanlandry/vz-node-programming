@@ -5,7 +5,7 @@
  */
 
 import { BaseNode } from '../../core/BaseNode';
-import { DataTypes, ExecutionContext, PortId, NodeError } from '../../types';
+import { DataTypes, ExecutionContext, PortId, NodeError, NodeConfig } from '../../types';
 import { logger } from '../../utils/Logger';
 
 /**
@@ -13,10 +13,11 @@ import { logger } from '../../utils/Logger';
  * Queries JSON data using JSONPath expressions
  */
 export class JsonPathNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
-      name: 'JSON Path',
-      description: 'Queries JSON data using path expressions',
+      id: config?.id,
+      name: config?.name || 'JSON Path',
+      description: config?.description || 'Queries JSON data using path expressions',
       inputs: [
         {
           id: 'data',
@@ -120,9 +121,10 @@ export class JsonPathNode extends BaseNode {
  * Validates data against a schema
  */
 export class DataValidationNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
-      name: 'Data Validation',
+      id: config?.id,
+      name: config?.name || 'Data Validation',
       description: 'Validates data against validation rules',
       inputs: [
         {
@@ -261,9 +263,10 @@ export class DataValidationNode extends BaseNode {
  * Parses JSON string to object
  */
 export class JsonParseNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
-      name: 'JSON Parse',
+      id: config?.id,
+      name: config?.name || 'JSON Parse',
       description: 'Parses a JSON string to an object',
       inputs: [
         {
@@ -319,9 +322,10 @@ export class JsonParseNode extends BaseNode {
  * Converts object to JSON string
  */
 export class JsonStringifyNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
-      name: 'JSON Stringify',
+      id: config?.id,
+      name: config?.name || 'JSON Stringify',
       description: 'Converts an object to a JSON string',
       inputs: [
         {
@@ -378,9 +382,10 @@ export class JsonStringifyNode extends BaseNode {
  * Filters array elements based on a condition
  */
 export class ArrayFilterNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
-      name: 'Array Filter',
+      id: config?.id,
+      name: config?.name || 'Array Filter',
       description: 'Filters array elements based on a condition',
       inputs: [
         {

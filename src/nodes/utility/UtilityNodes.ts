@@ -1,6 +1,7 @@
 import { BaseNode } from '../../core/BaseNode';
 import { ExecutionContext, PortId, DataTypes, NodeConfig } from '../../types';
 import { logger } from '../../utils/Logger';
+import { VM } from 'vm2';
 
 /**
  * Utility and Mixed Paradigm Examples
@@ -299,10 +300,34 @@ export class TransformNode extends BaseNode {
     const outputs = new Map<PortId, any>();
 
     const data = this.getInput<any>(context, 'data');
-    const transformer = this.getInput<Function>(context, 'transformer');
+    let transformer = this.getInput<Function | string>(context, 'transformer');
+
+    // If transformer is a string, compile it to a function using VM2 for safety
+    if (typeof transformer === 'string') {
+      try {
+        // Use VM2 to safely compile the function string
+        // The string should be an arrow function like "value => value.toUpperCase()"
+        const vm = new VM({
+          timeout: 5000,
+          sandbox: {},
+        });
+
+        // Wrap the function string to make it executable
+        // Create a function that takes a value and returns the transformed result
+        const functionCode = `(function(value) {
+          return (${transformer})(value);
+        })`;
+
+        // Compile the function in the VM
+        const compiledFn = vm.run(functionCode) as (value: any) => any;
+        transformer = compiledFn;
+      } catch (error) {
+        throw new Error(`Failed to compile transformer function: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
 
     if (typeof transformer !== 'function') {
-      throw new Error('Transformer must be a function');
+      throw new Error('Transformer must be a function or a string that can be compiled to a function');
     }
 
     try {

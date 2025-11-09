@@ -125,7 +125,7 @@
           }
         ],
         "properties": {
-          "transform": "value => value.toUpperCase()"
+          "transformer": "value => value.toUpperCase()"
         }
       },
       {
@@ -217,7 +217,7 @@
         "fromNode": "node-http-request",
         "fromPort": "data",
         "toNode": "node-transform",
-        "toPort": "input"
+        "toPort": "data"
       },
       {
         "id": "conn-3",

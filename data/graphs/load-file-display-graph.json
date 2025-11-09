@@ -10,7 +10,7 @@
     "updatedAt": "2025-01-27T00:00:00.000Z",
     "tags": ["file", "read", "display", "interactive", "example"],
     "nodeCount": 3,
-    "connectionCount": 2
+    "connectionCount": 1
   },
   "data": {
     "nodes": [
@@ -34,7 +34,7 @@
           }
         ],
         "properties": {
-          "value": "./data/example.txt"
+          "value": "./output/transformed-text.txt"
         }
       },
       {
@@ -134,13 +134,6 @@
         "fromPort": "result",
         "toNode": "node-read-file",
         "toPort": "path"
-      },
-      {
-        "id": "conn-2",
-        "fromNode": "node-read-file",
-        "fromPort": "content",
-        "toNode": "node-user-display",
-        "toPort": "value"
       }
     ],
     "viewport": {

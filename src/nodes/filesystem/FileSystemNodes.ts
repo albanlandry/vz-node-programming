@@ -5,7 +5,7 @@
  */
 
 import { BaseNode } from '../../core/BaseNode';
-import { DataTypes, ExecutionContext, PortId, NodeError } from '../../types';
+import { DataTypes, ExecutionContext, PortId, NodeError, NodeConfig } from '../../types';
 import { promises as fs } from 'fs';
 import { join, dirname } from 'path';
 import { logger } from '../../utils/Logger';
@@ -15,10 +15,11 @@ import { logger } from '../../utils/Logger';
  * Reads content from a file
  */
 export class ReadFileNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
-      name: 'Read File',
-      description: 'Reads content from a file',
+      id: config?.id,
+      name: config?.name || 'Read File',
+      description: config?.description || 'Reads content from a file',
       inputs: [
         {
           id: 'path',
@@ -90,10 +91,11 @@ export class ReadFileNode extends BaseNode {
  * Writes content to a file
  */
 export class WriteFileNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
-      name: 'Write File',
-      description: 'Writes content to a file',
+      id: config?.id,
+      name: config?.name || 'Write File',
+      description: config?.description || 'Writes content to a file',
       inputs: [
         {
           id: 'path',
@@ -121,7 +123,14 @@ export class WriteFileNode extends BaseNode {
           name: 'Create Directory',
           dataType: DataTypes.BOOLEAN,
           required: false,
-          description: 'Create parent directory if it does not exist',
+          description: 'Create parent directory if it does not exist (default: true)',
+        },
+        {
+          id: 'mode',
+          name: 'Write Mode',
+          dataType: DataTypes.STRING,
+          required: false,
+          description: 'Write mode: w (write/overwrite), a (append), a+ (append/read), w+ (write/read), r+ (read/write). Default: w',
         },
       ],
       outputs: [
@@ -147,7 +156,8 @@ export class WriteFileNode extends BaseNode {
     const filePath = this.getInput<string>(context, 'path');
     const content = this.getInput<string>(context, 'content');
     const encoding = (this.getInput<string>(context, 'encoding') || 'utf8') as BufferEncoding;
-    const createDir = this.getInput<boolean>(context, 'createDir') ?? false;
+    const createDir = this.getInput<boolean>(context, 'createDir') ?? true; // Default to true
+    const mode = (this.getInput<string>(context, 'mode') || 'w').toLowerCase();
 
     if (!filePath) {
       throw new NodeError('File path is required', this.id, 'path');
@@ -161,13 +171,50 @@ export class WriteFileNode extends BaseNode {
     const safePath = filePath.replace(/\.\./g, '').replace(/^\/+/, '');
 
     try {
-      // Create directory if needed
+      // Create directory if needed (default behavior)
       if (createDir) {
         const dir = dirname(safePath);
         await fs.mkdir(dir, { recursive: true });
       }
 
-      await fs.writeFile(safePath, content, encoding);
+      // Map mode strings to Node.js file flags
+      const modeFlags: Record<string, string> = {
+        'w': 'w',      // Write (overwrite), create if not exists
+        'a': 'a',      // Append, create if not exists
+        'a+': 'a+',    // Append and read, create if not exists
+        'w+': 'w+',    // Write and read, create if not exists, truncate if exists
+        'r+': 'r+',    // Read and write, file must exist
+        'x': 'x',      // Exclusive write, fail if exists
+        'x+': 'x+',    // Exclusive read/write, fail if exists
+      };
+
+      const flag = modeFlags[mode];
+      if (!flag) {
+        throw new Error(`Invalid write mode: ${mode}. Supported modes: w, a, a+, w+, r+, x, x+`);
+      }
+
+      // Handle different write modes
+      if (mode === 'a' || mode === 'a+') {
+        // Append mode - append to end of file
+        await fs.appendFile(safePath, content, encoding);
+      } else if (mode === 'r+') {
+        // Read/write mode - file must exist, write at the beginning
+        const fileHandle = await fs.open(safePath, flag);
+        try {
+          // Write string at position 0
+          await fileHandle.write(content, 0, encoding);
+          // Truncate to the written size
+          const bytesWritten = Buffer.byteLength(content, encoding);
+          await fileHandle.truncate(bytesWritten);
+        } finally {
+          await fileHandle.close();
+        }
+      } else {
+        // Write modes (w, w+, x, x+)
+        // Use writeFile with flag option
+        await fs.writeFile(safePath, content, { encoding, flag: flag as any });
+      }
+
       const bytesWritten = Buffer.byteLength(content, encoding);
 
       outputs.set('success', true);
@@ -191,10 +238,11 @@ export class WriteFileNode extends BaseNode {
  * Lists files and directories in a path
  */
 export class ListDirectoryNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
-      name: 'List Directory',
-      description: 'Lists files and directories in a path',
+      id: config?.id,
+      name: config?.name || 'List Directory',
+      description: config?.description || 'Lists files and directories in a path',
       inputs: [
         {
           id: 'path',
@@ -278,10 +326,11 @@ export class ListDirectoryNode extends BaseNode {
  * Checks if a file or directory exists
  */
 export class FileExistsNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
-      name: 'File Exists',
-      description: 'Checks if a file or directory exists',
+      id: config?.id,
+      name: config?.name || 'File Exists',
+      description: config?.description || 'Checks if a file or directory exists',
       inputs: [
         {
           id: 'path',

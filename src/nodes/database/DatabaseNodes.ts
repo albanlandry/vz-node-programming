@@ -6,7 +6,7 @@
  */
 
 import { BaseNode } from '../../core/BaseNode';
-import { DataTypes, ExecutionContext, PortId, NodeError } from '../../types';
+import { DataTypes, ExecutionContext, PortId, NodeError, NodeConfig } from '../../types';
 import { logger } from '../../utils/Logger';
 
 /**
@@ -14,9 +14,10 @@ import { logger } from '../../utils/Logger';
  * Executes SQL queries (requires database driver)
  */
 export class SqlQueryNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
-      name: 'SQL Query',
+      id: config?.id,
+      name: config?.name || 'SQL Query',
       description: 'Executes a SQL query (requires database connection)',
       inputs: [
         {
@@ -120,9 +121,10 @@ export class SqlQueryNode extends BaseNode {
  * Tests database connection
  */
 export class DatabaseConnectionTestNode extends BaseNode {
-  constructor() {
+  constructor(config?: Partial<NodeConfig>) {
     super({
-      name: 'Database Connection Test',
+      id: config?.id,
+      name: config?.name || 'Database Connection Test',
       description: 'Tests a database connection',
       inputs: [
         {
