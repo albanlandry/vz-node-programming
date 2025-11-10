@@ -33,10 +33,13 @@ export default function NodeContextMenu({
 
   // Close menu when clicking outside
   useEffect(() => {
+    // Use a small delay to allow menu button clicks to register first
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        onClose();
-      }
+      setTimeout(() => {
+        if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+          onClose();
+        }
+      }, 0);
     };
 
     const handleEscape = (event: KeyboardEvent) => {
@@ -45,11 +48,12 @@ export default function NodeContextMenu({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    // Use click for better UX (fires after mousedown, allowing menu clicks to work)
+    document.addEventListener('click', handleClickOutside, true);
     document.addEventListener('keydown', handleEscape);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside, true);
       document.removeEventListener('keydown', handleEscape);
     };
   }, [onClose]);
@@ -98,7 +102,10 @@ export default function NodeContextMenu({
       }}
     >
       <button
-        onClick={handleCopy}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleCopy();
+        }}
         className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
       >
         <Copy className="w-4 h-4" />
@@ -107,7 +114,10 @@ export default function NodeContextMenu({
       </button>
       
       <button
-        onClick={handleCut}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleCut();
+        }}
         className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
       >
         <Scissors className="w-4 h-4" />
@@ -116,7 +126,10 @@ export default function NodeContextMenu({
       </button>
       
       <button
-        onClick={handlePaste}
+        onClick={(e) => {
+          e.stopPropagation();
+          handlePaste();
+        }}
         disabled={!canPaste()}
         className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
@@ -128,7 +141,10 @@ export default function NodeContextMenu({
       <div className="h-px bg-gray-200 my-1" />
       
       <button
-        onClick={handleDelete}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleDelete();
+        }}
         className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
       >
         <Trash2 className="w-4 h-4" />

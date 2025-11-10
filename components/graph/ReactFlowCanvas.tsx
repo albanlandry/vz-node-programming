@@ -27,6 +27,7 @@ import 'reactflow/dist/style.css';
 
 import ReactFlowNode from './ReactFlowNode';
 import NodeContextMenu from './NodeContextMenu';
+import CanvasContextMenu from './CanvasContextMenu';
 import { useGraphStore, type NodePosition } from '../../store/graphStore';
 import { Port } from '../../src/types';
 import { getConnectionStyle, getConnectionLabel } from './DataFlowVisualization';
@@ -72,9 +73,13 @@ function canConnectPorts(fromPort: Port, toPort: Port): boolean {
  */
 function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
   const reactFlowInstance = useReactFlow();
-  const [contextMenu, setContextMenu] = useState<{
+  const [nodeContextMenu, setNodeContextMenu] = useState<{
     nodeId: string;
     position: { x: number; y: number };
+  } | null>(null);
+  const [canvasContextMenu, setCanvasContextMenu] = useState<{
+    position: { x: number; y: number };
+    flowPosition: { x: number; y: number };
   } | null>(null);
   
   const {
@@ -417,13 +422,15 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
         selectNode(node.id);
       }
       
-      setContextMenu({
+      setNodeContextMenu({
         nodeId: node.id,
         position: {
           x: event.clientX,
           y: event.clientY,
         },
       });
+      // Close canvas context menu if open
+      setCanvasContextMenu(null);
     },
     [selectedNodeIds, selectNode],
   );
@@ -434,10 +441,24 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
   const handlePaneContextMenu = useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault();
-      // Close context menu if open
-      setContextMenu(null);
+      
+      // Convert screen coordinates to flow coordinates
+      const flowPosition = reactFlowInstance.screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+      
+      setCanvasContextMenu({
+        position: {
+          x: event.clientX,
+          y: event.clientY,
+        },
+        flowPosition,
+      });
+      // Close node context menu if open
+      setNodeContextMenu(null);
     },
-    [],
+    [reactFlowInstance],
   );
 
   /**
@@ -550,12 +571,21 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
         Zoom: {(viewport.zoom * 100).toFixed(0)}% | Pan: ({viewport.x.toFixed(0)}, {viewport.y.toFixed(0)})
       </div>
 
-      {/* Context Menu */}
-      {contextMenu && (
+      {/* Node Context Menu */}
+      {nodeContextMenu && (
         <NodeContextMenu
-          nodeId={contextMenu.nodeId}
-          position={contextMenu.position}
-          onClose={() => setContextMenu(null)}
+          nodeId={nodeContextMenu.nodeId}
+          position={nodeContextMenu.position}
+          onClose={() => setNodeContextMenu(null)}
+        />
+      )}
+
+      {/* Canvas Context Menu */}
+      {canvasContextMenu && (
+        <CanvasContextMenu
+          position={canvasContextMenu.position}
+          flowPosition={canvasContextMenu.flowPosition}
+          onClose={() => setCanvasContextMenu(null)}
         />
       )}
     </div>

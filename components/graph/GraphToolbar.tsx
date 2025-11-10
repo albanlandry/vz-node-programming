@@ -991,6 +991,25 @@ export default function GraphToolbar() {
           >
             <Clipboard className="w-5 h-5 text-gray-600 group-hover:text-blue-600 disabled:text-gray-300" />
           </button>
+          
+          <div className="h-6 w-px bg-gray-300 mx-1" />
+          
+          <button
+            onClick={() => {
+              const nodeIds = Array.from(selectedNodeIds);
+              if (nodeIds.length > 0) {
+                const { deleteNode } = useGraphStore.getState();
+                nodeIds.forEach((id) => {
+                  deleteNode(id);
+                });
+              }
+            }}
+            disabled={loading || selectedNodeIds.size === 0}
+            className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Delete (Del)"
+          >
+            <Trash2 className="w-5 h-5 text-gray-600 group-hover:text-red-600 disabled:text-gray-300" />
+          </button>
         </div>
 
         <div className="flex items-center space-x-3">
