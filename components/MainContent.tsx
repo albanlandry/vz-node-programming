@@ -14,7 +14,7 @@ export default function MainContent({ children }: { children: React.ReactNode })
     <div
       className="transition-all duration-300 ease-in-out min-h-screen"
       style={{
-        marginLeft: sidebarCollapsed ? '64px' : '256px',
+        marginLeft: sidebarCollapsed ? '80px' : '256px',
       }}
     >
       {children}
