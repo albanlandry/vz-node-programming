@@ -9,6 +9,7 @@ import { JsonPathNode, DataValidationNode, JsonParseNode, JsonStringifyNode, Arr
 import { SqlQueryNode, DatabaseConnectionTestNode } from '../nodes/database/DatabaseNodes';
 import { UserInputNode } from '../nodes/interactive/UserInputNode';
 import { ImageDisplayNode } from '../nodes/interactive/ImageDisplayNode';
+import { TextDisplayNode } from '../nodes/interactive/TextDisplayNode';
 import { DataTypes, NodeConfig } from '../types';
 
 import { NodeRegistry } from './NodeRegistry';
@@ -1434,6 +1435,86 @@ export function registerBuiltInNodes(): void {
       'Form input: inputType="form" with formSchema',
       'Confirmation: inputType="confirm"',
     ],
+  });
+
+  // Text Display Node
+  const TextDisplayNodeWrapper = class extends TextDisplayNode {
+    constructor(config?: Partial<NodeConfig> & { properties?: { title?: string; format?: string; language?: string } }) {
+      super({
+        id: config?.id,
+        title: config?.properties?.title || 'Text Display',
+        format: (config?.properties?.format as 'plain' | 'markdown' | 'html' | 'json' | 'code') || 'plain',
+        language: config?.properties?.language || 'text',
+      });
+    }
+  };
+
+  registry.register(TextDisplayNodeWrapper as any, {
+    type: 'interactive.text-display',
+    displayName: 'Display Text',
+    category: 'Interactive',
+    description: 'Displays formatted text to the user during execution',
+    version: '1.0.0',
+    author: 'VZ Programming',
+    tags: ['interactive', 'display', 'text', 'format'],
+    icon: '📄',
+    color: '#9B59B6',
+    inputs: [
+      {
+        id: 'text',
+        name: 'Text',
+        dataType: DataTypes.ANY,
+        required: true,
+        description: 'Text content to display (string, object, or any value)',
+      },
+      {
+        id: 'title',
+        name: 'Title',
+        dataType: DataTypes.STRING,
+        required: false,
+        description: 'Optional title for the display',
+      },
+      {
+        id: 'format',
+        name: 'Format',
+        dataType: DataTypes.STRING,
+        required: false,
+        description: 'Display format: plain, markdown, html, json, or code',
+      },
+      {
+        id: 'language',
+        name: 'Language',
+        dataType: DataTypes.STRING,
+        required: false,
+        description: 'Language for code formatting (e.g., javascript, python, json)',
+      },
+    ],
+    outputs: [
+      {
+        id: 'displayed',
+        name: 'Displayed',
+        dataType: DataTypes.BOOLEAN,
+        description: 'Whether the text was displayed',
+      },
+    ],
+    properties: {
+      title: {
+        type: 'string',
+        default: 'Text Display',
+        description: 'Title for the display',
+      },
+      format: {
+        type: 'string',
+        default: 'plain',
+        enum: ['plain', 'markdown', 'html', 'json', 'code'],
+        description: 'Display format',
+      },
+      language: {
+        type: 'string',
+        default: 'text',
+        description: 'Language for code formatting',
+      },
+    },
   });
 
   registry.register(ImageDisplayNodeWrapper as any, {

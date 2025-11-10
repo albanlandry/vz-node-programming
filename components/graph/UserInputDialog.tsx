@@ -301,12 +301,90 @@ export default function UserInputDialog({
               {/* Display content if provided */}
               {request.content !== undefined && request.content !== null && (
                 <div className="bg-gray-50 border border-gray-200 rounded p-4 max-h-96 overflow-y-auto">
-                  <div className="text-sm font-medium text-gray-700 mb-2">Content:</div>
-                  <pre className="text-sm text-gray-900 whitespace-pre-wrap break-words font-mono">
-                    {typeof request.content === 'string' 
-                      ? request.content 
-                      : JSON.stringify(request.content, null, 2)}
-                  </pre>
+                  {(() => {
+                    // Check if content is a formatted text object
+                    const content = request.content as any;
+                    if (content && typeof content === 'object' && content.text !== undefined) {
+                      const { title, format, language, text } = content;
+                      
+                      // Render based on format
+                      if (format === 'html') {
+                        return (
+                          <div>
+                            {title && <h3 className="text-lg font-semibold mb-2 text-gray-800">{title}</h3>}
+                            <div 
+                              className="prose prose-sm max-w-none"
+                              dangerouslySetInnerHTML={{ __html: text }}
+                            />
+                          </div>
+                        );
+                      } else if (format === 'markdown') {
+                        // Simple markdown rendering (for full markdown, consider using a library)
+                        const markdownText = text
+                          .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mb-2">$1</h3>')
+                          .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mb-3">$1</h2>')
+                          .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mb-4">$1</h1>')
+                          .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+                          .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+                          .replace(/`(.*?)`/gim, '<code class="bg-gray-200 px-1 rounded">$1</code>')
+                          .replace(/\n/gim, '<br />');
+                        return (
+                          <div>
+                            {title && <h3 className="text-lg font-semibold mb-2 text-gray-800">{title}</h3>}
+                            <div 
+                              className="prose prose-sm max-w-none"
+                              dangerouslySetInnerHTML={{ __html: markdownText }}
+                            />
+                          </div>
+                        );
+                      } else if (format === 'code') {
+                        return (
+                          <div>
+                            {title && <h3 className="text-lg font-semibold mb-2 text-gray-800">{title}</h3>}
+                            {language && (
+                              <div className="text-xs text-gray-500 mb-1 font-mono">
+                                {language}
+                              </div>
+                            )}
+                            <pre className="whitespace-pre-wrap text-sm text-gray-800 font-mono bg-gray-900 text-gray-100 p-3 rounded">
+                              <code>{text}</code>
+                            </pre>
+                          </div>
+                        );
+                      } else if (format === 'json') {
+                        return (
+                          <div>
+                            {title && <h3 className="text-lg font-semibold mb-2 text-gray-800">{title}</h3>}
+                            <pre className="whitespace-pre-wrap text-sm text-gray-800 font-mono bg-gray-900 text-gray-100 p-3 rounded">
+                              <code>{text}</code>
+                            </pre>
+                          </div>
+                        );
+                      } else {
+                        // Plain text
+                        return (
+                          <div>
+                            {title && <h3 className="text-lg font-semibold mb-2 text-gray-800">{title}</h3>}
+                            <pre className="whitespace-pre-wrap text-sm text-gray-800 font-mono">
+                              {text}
+                            </pre>
+                          </div>
+                        );
+                      }
+                    } else {
+                      // Fallback for simple content
+                      return (
+                        <>
+                          <div className="text-sm font-medium text-gray-700 mb-2">Content:</div>
+                          <pre className="text-sm text-gray-900 whitespace-pre-wrap break-words font-mono">
+                            {typeof request.content === 'string'
+                              ? request.content
+                              : JSON.stringify(request.content, null, 2)}
+                          </pre>
+                        </>
+                      );
+                    }
+                  })()}
                 </div>
               )}
               <div className="flex items-center">

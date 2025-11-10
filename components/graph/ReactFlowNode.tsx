@@ -119,7 +119,7 @@ function ReactFlowNode({ data, selected }: NodeProps<ReactFlowNodeData>) {
               {data.inputs.map((port) => (
                 <div
                   key={port.id}
-                  className="flex items-center gap-4 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+                  className="flex items-center px-2 py-1 rounded hover:bg-gray-100 transition-colors"
                   title={`${port.name} (${port.dataType.name})${port.required ? ' *' : ''}`}
                 >
                   <Handle
@@ -140,7 +140,7 @@ function ReactFlowNode({ data, selected }: NodeProps<ReactFlowNodeData>) {
                         '#6b7280',
                     }}
                   />
-                  <div className="flex-1 text-xs">
+                  <div className="flex-1 text-xs ml-1">
                     <span className="font-medium">{port.name}</span>
                     {port.required && <span className="text-red-500 ml-1">*</span>}
                     <span className="text-gray-500 ml-1">({port.dataType.name})</span>
