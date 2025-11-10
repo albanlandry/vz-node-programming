@@ -106,6 +106,8 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
     redo,
     canUndo,
     canRedo,
+    startDrag,
+    endDrag,
   } = useGraphStore();
 
   /**
@@ -191,14 +193,37 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
     (changes) => {
       onNodesChange(changes);
 
+      // Track drag state
+      let dragStarted = false;
+      let dragEnded = false;
+
       // Handle position changes for multiple nodes
       const positionUpdates: Record<string, NodePosition> = {};
 
       changes.forEach((change) => {
         if (change.type === 'position' && change.position) {
           positionUpdates[change.id] = change.position;
+          
+          // Check if this is a drag operation
+          if (change.dragging === true) {
+            // Drag started
+            if (!useGraphStore.getState().isDragging) {
+              dragStarted = true;
+            }
+          } else if (change.dragging === false) {
+            // Drag ended
+            dragEnded = true;
+          }
         }
       });
+
+      // Handle drag start/end for history tracking
+      if (dragStarted) {
+        startDrag();
+      }
+      if (dragEnded) {
+        endDrag();
+      }
 
       // Batch update positions for multiple nodes
       if (Object.keys(positionUpdates).length > 0) {
@@ -207,10 +232,10 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
           useGraphStore.getState().moveNode(id, position);
         } else {
           moveNodes(positionUpdates);
-            }
-          }
+        }
+      }
     },
-    [onNodesChange, moveNodes],
+    [onNodesChange, moveNodes, startDrag, endDrag],
   );
 
   /**

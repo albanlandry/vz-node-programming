@@ -318,6 +318,7 @@ interface GraphState {
   history: GraphData[];
   historyIndex: number;
   maxHistorySize: number;
+  isDragging: boolean; // Track if nodes are being dragged
   
   // Actions - Undo/Redo
   undo: () => void;
@@ -325,6 +326,8 @@ interface GraphState {
   canUndo: () => boolean;
   canRedo: () => boolean;
   saveToHistory: () => void;
+  startDrag: () => void;
+  endDrag: () => void;
 }
 
 /**
@@ -401,6 +404,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   ],
   historyIndex: 0,
   maxHistorySize: 50,
+  isDragging: false,
   
   // Execution state
   execution: {
@@ -485,6 +489,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
         node.id === id ? { ...node, position } : node,
       ),
     }));
+    // Note: History is saved when drag ends, not during drag
   },
 
   moveNodes: (nodePositions: Record<string, NodePosition>) => {
@@ -1309,6 +1314,25 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   canRedo: () => {
     const state = get();
     return state.historyIndex < state.history.length - 1;
+  },
+  
+  // Track drag operations for history
+  startDrag: () => {
+    const state = get();
+    // Save initial state when drag starts
+    if (!state.isDragging) {
+      state.saveToHistory();
+      set({ isDragging: true });
+    }
+  },
+  
+  endDrag: () => {
+    const state = get();
+    if (state.isDragging) {
+      // Save final state when drag ends
+      state.saveToHistory();
+      set({ isDragging: false });
+    }
   },
 }));
 
