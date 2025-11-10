@@ -5,7 +5,7 @@
  * Main canvas using React Flow library
  */
 
-import { useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo, useEffect, useState } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -26,6 +26,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 
 import ReactFlowNode from './ReactFlowNode';
+import NodeContextMenu from './NodeContextMenu';
 import { useGraphStore, type NodePosition } from '../../store/graphStore';
 import { Port } from '../../src/types';
 import { getConnectionStyle, getConnectionLabel } from './DataFlowVisualization';
@@ -71,6 +72,11 @@ function canConnectPorts(fromPort: Port, toPort: Port): boolean {
  */
 function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
   const reactFlowInstance = useReactFlow();
+  const [contextMenu, setContextMenu] = useState<{
+    nodeId: string;
+    position: { x: number; y: number };
+  } | null>(null);
+  
   const {
     nodes: storeNodes,
     connections: storeConnections,
@@ -87,6 +93,10 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
     showDataFlow,
     showConnectionValues,
     connectionStates,
+    copyNodes,
+    cutNodes,
+    pasteNodes,
+    canPaste,
   } = useGraphStore();
 
   /**
@@ -395,6 +405,98 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
     [selectNodes],
   );
 
+  /**
+   * Handle node context menu (right-click)
+   */
+  const handleNodeContextMenu = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      event.preventDefault();
+      
+      // Select node if not already selected
+      if (!selectedNodeIds.has(node.id)) {
+        selectNode(node.id);
+      }
+      
+      setContextMenu({
+        nodeId: node.id,
+        position: {
+          x: event.clientX,
+          y: event.clientY,
+        },
+      });
+    },
+    [selectedNodeIds, selectNode],
+  );
+
+  /**
+   * Handle canvas context menu (right-click on empty space)
+   */
+  const handlePaneContextMenu = useCallback(
+    (event: React.MouseEvent) => {
+      event.preventDefault();
+      // Close context menu if open
+      setContextMenu(null);
+    },
+    [],
+  );
+
+  /**
+   * Handle keyboard shortcuts
+   */
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Check if we're in an input field
+      const target = event.target as HTMLElement;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      // Ctrl+C or Cmd+C - Copy
+      if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
+        event.preventDefault();
+        const nodeIds = Array.from(selectedNodeIds);
+        if (nodeIds.length > 0) {
+          copyNodes(nodeIds);
+        }
+      }
+
+      // Ctrl+X or Cmd+X - Cut
+      if ((event.ctrlKey || event.metaKey) && event.key === 'x') {
+        event.preventDefault();
+        const nodeIds = Array.from(selectedNodeIds);
+        if (nodeIds.length > 0) {
+          cutNodes(nodeIds);
+        }
+      }
+
+      // Ctrl+V or Cmd+V - Paste
+      if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
+        event.preventDefault();
+        if (canPaste()) {
+          pasteNodes();
+        }
+      }
+
+      // Delete or Backspace - Delete selected nodes
+      if ((event.key === 'Delete' || event.key === 'Backspace') && selectedNodeIds.size > 0) {
+        event.preventDefault();
+        const { deleteNode } = useGraphStore.getState();
+        Array.from(selectedNodeIds).forEach((id) => {
+          deleteNode(id);
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedNodeIds, copyNodes, cutNodes, pasteNodes, canPaste]);
+
   return (
     <div
       className="w-full h-full"
@@ -414,6 +516,8 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
             onNodeDoubleClick(node.id);
           }
         }}
+        onNodeContextMenu={handleNodeContextMenu}
+        onPaneContextMenu={handlePaneContextMenu}
         nodeTypes={nodeTypes}
         fitView
         minZoom={0.1}
@@ -445,6 +549,15 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
       <div className="absolute bottom-4 right-4 bg-white/80 px-3 py-2 rounded text-xs z-10">
         Zoom: {(viewport.zoom * 100).toFixed(0)}% | Pan: ({viewport.x.toFixed(0)}, {viewport.y.toFixed(0)})
       </div>
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <NodeContextMenu
+          nodeId={contextMenu.nodeId}
+          position={contextMenu.position}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
     </div>
   );
 }

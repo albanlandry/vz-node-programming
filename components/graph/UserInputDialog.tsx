@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { X, Check } from 'lucide-react';
 import type { FormSchema, FormField, UserInputRequest } from '../../src/types';
 import { validateForm, getFieldError, validateField, type ValidationResult, type ValidationError } from '../../utils/formValidation';
@@ -45,8 +45,18 @@ export default function UserInputDialog({
       setFormValues(initialValues);
       setTouched(new Set());
       setValidationResult({ isValid: true, errors: [] });
+    } else if (open && request.type === 'confirm') {
+      // Initialize confirm type with false
+      setFormValues({ confirmed: false });
+      setTouched(new Set());
+      setValidationResult({ isValid: true, errors: [] });
     } else if (open && request.defaultValue !== undefined) {
       setFormValues({ value: request.defaultValue });
+      setTouched(new Set());
+      setValidationResult({ isValid: true, errors: [] });
+    } else if (open) {
+      // Initialize empty for prompt type
+      setFormValues({ value: '' });
       setTouched(new Set());
       setValidationResult({ isValid: true, errors: [] });
     }
@@ -80,7 +90,12 @@ export default function UserInputDialog({
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e?: FormEvent<HTMLFormElement>) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
     if (request.formSchema) {
       const result = validateForm(request.formSchema, formValues);
       setValidationResult(result);
@@ -89,9 +104,9 @@ export default function UserInputDialog({
       }
     } else if (request.type === 'prompt') {
       // For prompt type, submit the single value
-      onSubmit(formValues.value ?? request.defaultValue);
+      onSubmit(formValues.value ?? request.defaultValue ?? '');
     } else if (request.type === 'confirm') {
-      // For confirm type, submit boolean
+      // For confirm type, submit boolean (always allow submission)
       onSubmit(formValues.confirmed ?? false);
     } else {
       onSubmit(formValues);
@@ -208,7 +223,8 @@ export default function UserInputDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 max-w-md w-full mx-4 shadow-lg">
+      <div className="bg-white p-6 max-w-md w-full mx-4 shadow-lg rounded-lg">
+        <form onSubmit={handleSubmit} className="w-full">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-gray-900">
@@ -314,20 +330,22 @@ export default function UserInputDialog({
         {/* Actions */}
         <div className="flex justify-end space-x-3">
           <button
+            type="button"
             onClick={onCancel}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors"
           >
             Cancel
           </button>
           <button
-            onClick={handleSubmit}
-            disabled={!validationResult.isValid}
+            type="submit"
+            disabled={request.formSchema ? !validationResult.isValid : false}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
           >
             <Check size={16} />
             <span>Submit</span>
           </button>
         </div>
+        </form>
       </div>
     </div>
   );

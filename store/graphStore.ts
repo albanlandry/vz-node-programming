@@ -300,6 +300,19 @@ interface GraphState {
   
   // Actions - Visualization
   setExecutionTimeline: (timeline: ExecutionTimeline | null) => void;
+  
+  // Clipboard state
+  clipboard: {
+    nodes: GraphNode[];
+    connections: GraphConnection[];
+    isCut: boolean; // true if cut, false if copy
+  } | null;
+  
+  // Actions - Clipboard
+  copyNodes: (nodeIds: string[]) => void;
+  cutNodes: (nodeIds: string[]) => void;
+  pasteNodes: (position?: NodePosition) => void;
+  canPaste: () => boolean;
 }
 
 /**
@@ -1034,6 +1047,127 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   // Visualization actions
   setExecutionTimeline: (timeline) => {
     set({ executionTimeline: timeline });
+  },
+  
+  // Clipboard state
+  clipboard: null,
+  
+  // Clipboard actions
+  copyNodes: (nodeIds) => {
+    const state = get();
+    const nodesToCopy = state.nodes.filter((node) => nodeIds.includes(node.id));
+    
+    if (nodesToCopy.length === 0) {
+      return;
+    }
+    
+    // Get connections between selected nodes
+    const connectionsToCopy = state.connections.filter(
+      (conn) =>
+        nodeIds.includes(conn.fromNode) && nodeIds.includes(conn.toNode),
+    );
+    
+    set({
+      clipboard: {
+        nodes: nodesToCopy.map((node) => ({ ...node })),
+        connections: connectionsToCopy.map((conn) => ({ ...conn })),
+        isCut: false,
+      },
+    });
+  },
+  
+  cutNodes: (nodeIds) => {
+    const state = get();
+    const nodesToCut = state.nodes.filter((node) => nodeIds.includes(node.id));
+    
+    if (nodesToCut.length === 0) {
+      return;
+    }
+    
+    // Get connections between selected nodes
+    const connectionsToCut = state.connections.filter(
+      (conn) =>
+        nodeIds.includes(conn.fromNode) && nodeIds.includes(conn.toNode),
+    );
+    
+    set({
+      clipboard: {
+        nodes: nodesToCut.map((node) => ({ ...node })),
+        connections: connectionsToCut.map((conn) => ({ ...conn })),
+        isCut: true,
+      },
+    });
+    
+    // Delete nodes if cut
+    nodeIds.forEach((id) => {
+      get().deleteNode(id);
+    });
+  },
+  
+  pasteNodes: (position) => {
+    const state = get();
+    
+    if (!state.clipboard || state.clipboard.nodes.length === 0) {
+      return;
+    }
+    
+    // Calculate offset if position is provided, otherwise offset by a small amount
+    const offsetX = position ? position.x - state.clipboard.nodes[0].position.x : 50;
+    const offsetY = position ? position.y - state.clipboard.nodes[0].position.y : 50;
+    
+    // Create new IDs for pasted nodes
+    const idMap = new Map<string, string>();
+    const newNodes: GraphNode[] = [];
+    const newConnections: GraphConnection[] = [];
+    
+    // Create new nodes with new IDs
+    state.clipboard.nodes.forEach((node) => {
+      const newId = generateId();
+      idMap.set(node.id, newId);
+      
+      newNodes.push({
+        ...node,
+        id: newId,
+        position: {
+          x: node.position.x + offsetX,
+          y: node.position.y + offsetY,
+        },
+      });
+    });
+    
+    // Create new connections with new IDs
+    state.clipboard.connections.forEach((conn) => {
+      const newFromNode = idMap.get(conn.fromNode);
+      const newToNode = idMap.get(conn.toNode);
+      
+      if (newFromNode && newToNode) {
+        const newConnId = generateId();
+        newConnections.push({
+          ...conn,
+          id: newConnId,
+          fromNode: newFromNode,
+          toNode: newToNode,
+        });
+      }
+    });
+    
+    // Add nodes to store
+    set((s) => ({
+      nodes: [...s.nodes, ...newNodes],
+      connections: [...s.connections, ...newConnections],
+      selectedNodeIds: new Set(newNodes.map((n) => n.id)),
+      selectedNodeId: newNodes.length === 1 ? newNodes[0].id : null,
+    }));
+    
+    // Clear clipboard if it was a cut operation
+    if (state.clipboard.isCut) {
+      set({ clipboard: null });
+    }
+  },
+  
+  canPaste: () => {
+    const state = get();
+    return state.clipboard !== null && state.clipboard.nodes.length > 0;
   },
 }));
 

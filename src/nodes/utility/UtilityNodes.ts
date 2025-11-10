@@ -593,22 +593,22 @@ export class LoggerNode extends BaseNode {
           id: 'level',
           name: 'Level',
           dataType: DataTypes.STRING,
-          required: true,
-          description: 'Log level: info, warn, error, debug',
+          required: false,
+          description: 'Log level: info, warn, error, debug (default: info)',
         },
         {
           id: 'message',
           name: 'Message',
           dataType: DataTypes.ANY,
-          required: true,
-          description: 'Message to log',
+          required: false,
+          description: 'Message to log (if not provided, uses Data)',
         },
         {
           id: 'data',
           name: 'Data',
           dataType: DataTypes.ANY,
           required: false,
-          description: 'Additional data to log',
+          description: 'Data to log (used as message if message is not provided)',
         },
       ],
       outputs: [
@@ -638,11 +638,19 @@ export class LoggerNode extends BaseNode {
 
     // Map string level to LogLevel enum and use logger
     const logLevel = level?.toLowerCase() || 'info';
-    const logMessage = typeof message === 'string' ? message : JSON.stringify(message);
+    
+    // Use message if provided, otherwise use data as the message
+    // If neither is provided, use a default message
+    const messageValue = message !== undefined && message !== null 
+      ? message 
+      : (data !== undefined && data !== null ? data : 'No message provided');
+    
+    const logMessage = typeof messageValue === 'string' ? messageValue : JSON.stringify(messageValue);
 
     // Format the log text
     let formattedText = `[${logLevel.toUpperCase()}] ${logMessage}`;
-    if (data !== undefined && data !== null) {
+    // Only show additional data if both message and data are provided separately
+    if (message !== undefined && message !== null && data !== undefined && data !== null && message !== data) {
       const dataStr = typeof data === 'string' 
         ? data 
         : JSON.stringify(data, null, 2);
@@ -650,21 +658,26 @@ export class LoggerNode extends BaseNode {
     }
 
     // Log using the logger abstraction
+    // Only include data in metadata if both message and data are provided separately
+    const logMetadata = (message !== undefined && message !== null && data !== undefined && data !== null && message !== data)
+      ? { data }
+      : {};
+    
     switch (logLevel) {
       case 'info':
-        logger.info(logMessage, data !== undefined ? { data } : {});
+        logger.info(logMessage, logMetadata);
         break;
       case 'warn':
-        logger.warn(logMessage, data !== undefined ? { data } : {});
+        logger.warn(logMessage, logMetadata);
         break;
       case 'error':
-        logger.error(logMessage, data !== undefined ? { data } : {});
+        logger.error(logMessage, logMetadata);
         break;
       case 'debug':
-        logger.debug(logMessage, data !== undefined ? { data } : {});
+        logger.debug(logMessage, logMetadata);
         break;
       default:
-        logger.info(logMessage, data !== undefined ? { data } : {});
+        logger.info(logMessage, logMetadata);
     }
 
     this.setOutput(outputs, 'logged', true);

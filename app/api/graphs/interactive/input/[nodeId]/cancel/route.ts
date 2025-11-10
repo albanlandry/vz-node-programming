@@ -14,10 +14,10 @@ import { getActiveExecutors } from '../route';
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { nodeId: string } },
+  { params }: { params: Promise<{ nodeId: string }> },
 ) {
   try {
-    const { nodeId } = params;
+    const { nodeId } = await params;
     const body = await request.json();
     const { executionId } = body as {
       executionId: string;

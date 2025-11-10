@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { Save, FolderOpen, Download, RotateCcw, Trash2, Edit } from 'lucide-react';
+import { Save, FolderOpen, Download, RotateCcw, Trash2, Edit, Copy, Scissors, Clipboard } from 'lucide-react';
 
 import type { GraphMetadata } from '../../src/graph-management/types';
 import { useGraphStore } from '../../store/graphStore';
@@ -286,6 +286,11 @@ export default function GraphToolbar() {
     currentGraphId,
     currentGraphMetadata,
     setCurrentGraph,
+    selectedNodeIds,
+    copyNodes,
+    cutNodes,
+    pasteNodes,
+    canPaste,
   } = useGraphStore();
 
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
@@ -943,6 +948,48 @@ export default function GraphToolbar() {
             title="Reset View"
           >
             <RotateCcw className="w-5 h-5 text-gray-600 group-hover:text-blue-600 disabled:text-gray-300" />
+          </button>
+          
+          {/* Copy/Cut/Paste buttons */}
+          <div className="h-6 w-px bg-gray-300 mx-1" />
+          
+          <button
+            onClick={() => {
+              const nodeIds = Array.from(selectedNodeIds);
+              if (nodeIds.length > 0) {
+                copyNodes(nodeIds);
+              }
+            }}
+            disabled={loading || selectedNodeIds.size === 0}
+            className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Copy (Ctrl+C)"
+          >
+            <Copy className="w-5 h-5 text-gray-600 group-hover:text-blue-600 disabled:text-gray-300" />
+          </button>
+          
+          <button
+            onClick={() => {
+              const nodeIds = Array.from(selectedNodeIds);
+              if (nodeIds.length > 0) {
+                cutNodes(nodeIds);
+              }
+            }}
+            disabled={loading || selectedNodeIds.size === 0}
+            className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Cut (Ctrl+X)"
+          >
+            <Scissors className="w-5 h-5 text-gray-600 group-hover:text-blue-600 disabled:text-gray-300" />
+          </button>
+          
+          <button
+            onClick={() => {
+              pasteNodes();
+            }}
+            disabled={loading || !canPaste()}
+            className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Paste (Ctrl+V)"
+          >
+            <Clipboard className="w-5 h-5 text-gray-600 group-hover:text-blue-600 disabled:text-gray-300" />
           </button>
         </div>
 
