@@ -42,8 +42,16 @@ export default function InteractiveNodeManager() {
   useEffect(() => {
     // Listen for user input requests from streaming execution
     const handleUserInputRequested = (event: any) => {
-      const { nodeId, executionId, request } = event.data;
-      setPendingInput({ nodeId, executionId, request });
+      // Handle both event structures: event.data or event.data.data
+      const eventData = event.data || event;
+      const { nodeId, executionId, request } = eventData;
+      
+      if (nodeId && executionId && request) {
+        console.log('User input requested:', { nodeId, executionId, request });
+        setPendingInput({ nodeId, executionId, request });
+      } else {
+        console.error('Invalid user input request event:', event);
+      }
     };
 
     // Listen for image display requests

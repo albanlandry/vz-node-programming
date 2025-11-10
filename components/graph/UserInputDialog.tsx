@@ -387,7 +387,7 @@ export default function UserInputDialog({
                   })()}
                 </div>
               )}
-              <div className="flex items-center">
+              <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
                   id="confirmed"
@@ -395,12 +395,15 @@ export default function UserInputDialog({
                   onChange={(e) => handleFieldChange('confirmed', e.target.checked)}
                   className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                 />
-                <label htmlFor="confirmed" className="ml-2 text-sm text-gray-700">
+                <label htmlFor="confirmed" className="text-sm text-gray-700 cursor-pointer">
                   {request.content !== undefined && request.content !== null 
                     ? 'I have read and understood the content above' 
                     : 'Confirm'}
                 </label>
               </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Click "OK" to continue (checkbox is optional)
+              </p>
             </div>
           ) : null}
         </div>
@@ -418,9 +421,16 @@ export default function UserInputDialog({
             type="submit"
             disabled={request.formSchema ? !validationResult.isValid : false}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+            onClick={(e) => {
+              // For confirm type, ensure we submit even if checkbox isn't checked
+              if (request.type === 'confirm' && !formValues.confirmed) {
+                e.preventDefault();
+                onSubmit(false);
+              }
+            }}
           >
             <Check size={16} />
-            <span>Submit</span>
+            <span>{request.type === 'confirm' ? 'OK' : 'Submit'}</span>
           </button>
         </div>
         </form>
