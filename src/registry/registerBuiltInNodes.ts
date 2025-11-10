@@ -1413,7 +1413,14 @@ export function registerBuiltInNodes(): void {
     tags: ['interactive', 'user-input', 'form', 'prompt'],
     icon: '📝',
     color: '#E67E22',
-    inputs: [],
+    inputs: [
+      {
+        id: 'content',
+        name: 'Content',
+        dataType: DataTypes.ANY,
+        description: 'Content to display to the user (optional)',
+      },
+    ],
     outputs: [
       {
         id: 'value',

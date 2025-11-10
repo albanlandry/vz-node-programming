@@ -233,22 +233,39 @@ export default function UserInputDialog({
         {/* Form Fields */}
         <div className="space-y-4 mb-6">
           {request.formSchema ? (
-            request.formSchema.fields.map((field) => (
-              <div key={field.id}>
-                {field.type !== 'checkbox' && (
-                  <label htmlFor={field.id} className="block text-sm font-medium text-gray-700 mb-1">
-                    {field.label}
-                    {field.required && <span className="text-red-500 ml-1">*</span>}
-                  </label>
-                )}
-                {renderField(field)}
-                {touched.has(field.id) && getFieldError(field.id, validationResult) && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {getFieldError(field.id, validationResult)}
-                  </p>
-                )}
-              </div>
-            ))
+            <>
+              {/* Display content if provided and form has a single textarea field for display */}
+              {request.content !== undefined && request.content !== null && 
+               request.formSchema.fields.length === 1 && 
+               request.formSchema.fields[0].type === 'textarea' && (
+                <div className="bg-gray-50 border border-gray-200 rounded p-4 max-h-96 overflow-y-auto mb-4">
+                  <div className="text-sm font-medium text-gray-700 mb-2">
+                    {request.formSchema.fields[0].label || 'Content'}:
+                  </div>
+                  <pre className="text-sm text-gray-900 whitespace-pre-wrap break-words font-mono">
+                    {typeof request.content === 'string' 
+                      ? request.content 
+                      : JSON.stringify(request.content, null, 2)}
+                  </pre>
+                </div>
+              )}
+              {request.formSchema.fields.map((field) => (
+                <div key={field.id}>
+                  {field.type !== 'checkbox' && (
+                    <label htmlFor={field.id} className="block text-sm font-medium text-gray-700 mb-1">
+                      {field.label}
+                      {field.required && <span className="text-red-500 ml-1">*</span>}
+                    </label>
+                  )}
+                  {renderField(field)}
+                  {touched.has(field.id) && getFieldError(field.id, validationResult) && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {getFieldError(field.id, validationResult)}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </>
           ) : request.type === 'prompt' ? (
             <div>
               <label htmlFor="value" className="block text-sm font-medium text-gray-700 mb-1">
@@ -264,17 +281,32 @@ export default function UserInputDialog({
               />
             </div>
           ) : request.type === 'confirm' ? (
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="confirmed"
-                checked={(formValues.confirmed as boolean) || false}
-                onChange={(e) => handleFieldChange('confirmed', e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-              />
-              <label htmlFor="confirmed" className="ml-2 text-sm text-gray-700">
-                Confirm
-              </label>
+            <div className="space-y-4">
+              {/* Display content if provided */}
+              {request.content !== undefined && request.content !== null && (
+                <div className="bg-gray-50 border border-gray-200 rounded p-4 max-h-96 overflow-y-auto">
+                  <div className="text-sm font-medium text-gray-700 mb-2">Content:</div>
+                  <pre className="text-sm text-gray-900 whitespace-pre-wrap break-words font-mono">
+                    {typeof request.content === 'string' 
+                      ? request.content 
+                      : JSON.stringify(request.content, null, 2)}
+                  </pre>
+                </div>
+              )}
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="confirmed"
+                  checked={(formValues.confirmed as boolean) || false}
+                  onChange={(e) => handleFieldChange('confirmed', e.target.checked)}
+                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                />
+                <label htmlFor="confirmed" className="ml-2 text-sm text-gray-700">
+                  {request.content !== undefined && request.content !== null 
+                    ? 'I have read and understood the content above' 
+                    : 'Confirm'}
+                </label>
+              </div>
             </div>
           ) : null}
         </div>

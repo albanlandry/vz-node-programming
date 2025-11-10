@@ -16,7 +16,7 @@
       "example"
     ],
     "nodeCount": 3,
-    "connectionCount": 1
+    "connectionCount": 2
   },
   "data": {
     "nodes": [
@@ -102,7 +102,17 @@
           "x": 600,
           "y": 200
         },
-        "inputs": [],
+        "inputs": [
+          {
+            "id": "content",
+            "name": "Content",
+            "dataType": {
+              "name": "any",
+              "description": "Any type"
+            },
+            "description": "Content to display to the user (optional)"
+          }
+        ],
         "outputs": [
           {
             "id": "value",
@@ -140,6 +150,13 @@
         "fromPort": "result",
         "toNode": "node-read-file",
         "toPort": "path"
+      },
+      {
+        "id": "conn-2",
+        "fromNode": "node-read-file",
+        "fromPort": "content",
+        "toNode": "node-user-display",
+        "toPort": "content"
       }
     ],
     "viewport": {

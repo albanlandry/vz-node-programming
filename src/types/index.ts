@@ -206,6 +206,7 @@ export interface UserInputRequest {
   prompt?: string;
   defaultValue?: unknown;
   validation?: ValidationRule[];
+  content?: unknown; // Content to display (for confirm type or display purposes)
 }
 
 /**
