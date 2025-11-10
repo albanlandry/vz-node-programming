@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { Save, FolderOpen, Download, RotateCcw, Trash2, Edit, Copy, Scissors, Clipboard } from 'lucide-react';
+import { Save, FolderOpen, Download, RotateCcw, Trash2, Edit, Copy, Scissors, Clipboard, Undo, Redo } from 'lucide-react';
 
 import type { GraphMetadata } from '../../src/graph-management/types';
 import { useGraphStore } from '../../store/graphStore';
@@ -291,6 +291,10 @@ export default function GraphToolbar() {
     cutNodes,
     pasteNodes,
     canPaste,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   } = useGraphStore();
 
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
@@ -948,6 +952,31 @@ export default function GraphToolbar() {
             title="Reset View"
           >
             <RotateCcw className="w-5 h-5 text-gray-600 group-hover:text-blue-600 disabled:text-gray-300" />
+          </button>
+          
+          {/* Undo/Redo buttons */}
+          <div className="h-6 w-px bg-gray-300 mx-1" />
+          
+          <button
+            onClick={() => {
+              undo();
+            }}
+            disabled={loading || !canUndo()}
+            className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Undo (Ctrl+Z)"
+          >
+            <Undo className="w-5 h-5 text-gray-600 group-hover:text-blue-600 disabled:text-gray-300" />
+          </button>
+          
+          <button
+            onClick={() => {
+              redo();
+            }}
+            disabled={loading || !canRedo()}
+            className="group p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Redo (Ctrl+Shift+Z)"
+          >
+            <Redo className="w-5 h-5 text-gray-600 group-hover:text-blue-600 disabled:text-gray-300" />
           </button>
           
           {/* Copy/Cut/Paste buttons */}

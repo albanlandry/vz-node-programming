@@ -102,6 +102,10 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
     cutNodes,
     pasteNodes,
     canPaste,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   } = useGraphStore();
 
   /**
@@ -510,13 +514,32 @@ function ReactFlowCanvasInner({ onNodeDoubleClick }: ReactFlowCanvasProps) {
           deleteNode(id);
         });
       }
+
+      // Ctrl+Z or Cmd+Z - Undo
+      if ((event.ctrlKey || event.metaKey) && event.key === 'z' && !event.shiftKey) {
+        event.preventDefault();
+        if (canUndo()) {
+          undo();
+        }
+      }
+
+      // Ctrl+Shift+Z or Cmd+Shift+Z or Ctrl+Y or Cmd+Y - Redo
+      if (
+        ((event.ctrlKey || event.metaKey) && event.key === 'z' && event.shiftKey) ||
+        ((event.ctrlKey || event.metaKey) && event.key === 'y')
+      ) {
+        event.preventDefault();
+        if (canRedo()) {
+          redo();
+        }
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [selectedNodeIds, copyNodes, cutNodes, pasteNodes, canPaste]);
+  }, [selectedNodeIds, copyNodes, cutNodes, pasteNodes, canPaste, undo, redo, canUndo, canRedo]);
 
   return (
     <div

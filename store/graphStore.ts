@@ -313,6 +313,18 @@ interface GraphState {
   cutNodes: (nodeIds: string[]) => void;
   pasteNodes: (position?: NodePosition) => void;
   canPaste: () => boolean;
+  
+  // Undo/Redo state
+  history: GraphData[];
+  historyIndex: number;
+  maxHistorySize: number;
+  
+  // Actions - Undo/Redo
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
+  saveToHistory: () => void;
 }
 
 /**
@@ -379,6 +391,17 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   currentGraphId: null,
   currentGraphMetadata: null,
   
+  // Initialize history with empty state
+  history: [
+    {
+      nodes: [],
+      connections: [],
+      viewport: { x: 0, y: 0, zoom: 1 },
+    },
+  ],
+  historyIndex: 0,
+  maxHistorySize: 50,
+  
   // Execution state
   execution: {
     isExecuting: false,
@@ -421,6 +444,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
 
   // Node actions
   addNode: (nodeData) => {
+    get().saveToHistory();
     const id = generateId();
     const newNode: GraphNode = {
       id,
@@ -433,6 +457,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   },
 
   updateNode: (id, updates) => {
+    get().saveToHistory();
     set((state) => ({
       nodes: state.nodes.map((node) =>
         node.id === id ? { ...node, ...updates } : node,
@@ -441,6 +466,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   },
 
   deleteNode: (id) => {
+    get().saveToHistory();
     set((state) => ({
       nodes: state.nodes.filter((node) => node.id !== id),
       connections: state.connections.filter(
@@ -517,6 +543,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
 
   // Connection actions
   addConnection: (connectionData) => {
+    get().saveToHistory();
     const state = get();
     
     // Find ports
@@ -567,6 +594,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   },
 
   deleteConnection: (id) => {
+    get().saveToHistory();
     set((state) => ({
       connections: state.connections.filter((conn) => conn.id !== id),
       selectedConnectionId:
@@ -677,6 +705,12 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   },
 
   loadGraph: (data) => {
+    const snapshot: GraphData = {
+      nodes: data.nodes.map((node) => ({ ...node })),
+      connections: data.connections.map((conn) => ({ ...conn })),
+      viewport: { ...data.viewport },
+    };
+    
     set({
       nodes: data.nodes,
       connections: data.connections,
@@ -685,10 +719,19 @@ export const useGraphStore = create<GraphState>((set, get) => ({
       selectedNodeIds: new Set<string>(),
       selectedConnectionId: null,
       connectionStart: null,
+      // Reset history when loading a new graph
+      history: [snapshot],
+      historyIndex: 0,
     });
   },
 
   clearGraph: () => {
+    const emptyState: GraphData = {
+      nodes: [],
+      connections: [],
+      viewport: { x: 0, y: 0, zoom: 1 },
+    };
+    
     set({
       nodes: [],
       connections: [],
@@ -703,6 +746,9 @@ export const useGraphStore = create<GraphState>((set, get) => ({
       connectionStart: null,
       currentGraphId: null,
       currentGraphMetadata: null,
+      // Reset history
+      history: [emptyState],
+      historyIndex: 0,
     });
   },
 
@@ -1098,10 +1144,20 @@ export const useGraphStore = create<GraphState>((set, get) => ({
       },
     });
     
-    // Delete nodes if cut
-    nodeIds.forEach((id) => {
-      get().deleteNode(id);
-    });
+    // Save to history before deleting (deleteNode will also save, but we want one history entry for the whole cut operation)
+    state.saveToHistory();
+    
+    // Delete nodes if cut (without saving to history again)
+    set((s) => ({
+      nodes: s.nodes.filter((node) => !nodeIds.includes(node.id)),
+      connections: s.connections.filter(
+        (conn) => !nodeIds.includes(conn.fromNode) && !nodeIds.includes(conn.toNode),
+      ),
+      selectedNodeId: nodeIds.includes(s.selectedNodeId || '') ? null : s.selectedNodeId,
+      selectedNodeIds: new Set(
+        Array.from(s.selectedNodeIds).filter((nodeId) => !nodeIds.includes(nodeId)),
+      ),
+    }));
   },
   
   pasteNodes: (position) => {
@@ -1110,6 +1166,9 @@ export const useGraphStore = create<GraphState>((set, get) => ({
     if (!state.clipboard || state.clipboard.nodes.length === 0) {
       return;
     }
+    
+    // Save to history before pasting
+    state.saveToHistory();
     
     // Calculate offset if position is provided, otherwise offset by a small amount
     const offsetX = position ? position.x - state.clipboard.nodes[0].position.x : 50;
@@ -1168,6 +1227,88 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   canPaste: () => {
     const state = get();
     return state.clipboard !== null && state.clipboard.nodes.length > 0;
+  },
+  
+  // Helper function to create a snapshot of current graph state
+  saveToHistory: () => {
+    const state = get();
+    const snapshot: GraphData = {
+      nodes: state.nodes.map((node) => ({ ...node })),
+      connections: state.connections.map((conn) => ({ ...conn })),
+      viewport: { ...state.viewport },
+    };
+    
+    set((s) => {
+      // Remove any history after current index (when undoing and then making a new change)
+      const newHistory = s.history.slice(0, s.historyIndex + 1);
+      
+      // Add new snapshot
+      newHistory.push(snapshot);
+      
+      // Limit history size
+      const limitedHistory = newHistory.slice(-s.maxHistorySize);
+      
+      return {
+        history: limitedHistory,
+        historyIndex: limitedHistory.length - 1,
+      };
+    });
+  },
+  
+  // Undo action
+  undo: () => {
+    const state = get();
+    if (state.historyIndex <= 0) {
+      return; // Nothing to undo
+    }
+    
+    const previousIndex = state.historyIndex - 1;
+    const previousState = state.history[previousIndex];
+    
+    if (previousState) {
+      set({
+        nodes: previousState.nodes.map((node) => ({ ...node })),
+        connections: previousState.connections.map((conn) => ({ ...conn })),
+        viewport: { ...previousState.viewport },
+        historyIndex: previousIndex,
+        selectedNodeId: null,
+        selectedNodeIds: new Set<string>(),
+        selectedConnectionId: null,
+      });
+    }
+  },
+  
+  // Redo action
+  redo: () => {
+    const state = get();
+    if (state.historyIndex >= state.history.length - 1) {
+      return; // Nothing to redo
+    }
+    
+    const nextIndex = state.historyIndex + 1;
+    const nextState = state.history[nextIndex];
+    
+    if (nextState) {
+      set({
+        nodes: nextState.nodes.map((node) => ({ ...node })),
+        connections: nextState.connections.map((conn) => ({ ...conn })),
+        viewport: { ...nextState.viewport },
+        historyIndex: nextIndex,
+        selectedNodeId: null,
+        selectedNodeIds: new Set<string>(),
+        selectedConnectionId: null,
+      });
+    }
+  },
+  
+  canUndo: () => {
+    const state = get();
+    return state.historyIndex > 0;
+  },
+  
+  canRedo: () => {
+    const state = get();
+    return state.historyIndex < state.history.length - 1;
   },
 }));
 
