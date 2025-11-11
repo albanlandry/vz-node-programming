@@ -9,6 +9,7 @@
 
 import React from 'react';
 import type { UIComponent } from '../../src/types/uiDefinition';
+import ValidationPanel from './ValidationPanel';
 
 interface PropertyPanelProps {
   component: UIComponent | null;
@@ -477,6 +478,9 @@ export default function PropertyPanel({ component, onUpdate }: PropertyPanelProp
             </div>
           </div>
         )}
+
+        {/* Validation Panel (Phase 5) */}
+        <ValidationPanel component={component} onUpdate={onUpdate} />
 
         {/* Layout Properties (Phase 4) */}
         <div>

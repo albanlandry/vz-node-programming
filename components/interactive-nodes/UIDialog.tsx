@@ -7,12 +7,13 @@
  * Phase 3: Renders UI definitions and maps data to outputs
  */
 
-import React, { useState, useEffect } from 'react';
-import { X, Check, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Check } from 'lucide-react';
 import { useUIBuilderStore } from '../../store/uiBuilderStore';
 import { useGraphStore } from '../../store/graphStore';
 import UIRenderer from '../ui-runtime/UIRenderer';
-import { mapFormDataToOutputs, validateFormData } from '../../services/uiDataService';
+import { mapFormDataToOutputs } from '../../services/uiDataService';
+import { validateForm } from '../../services/validationService';
 import type { UINodeConfig } from '../../src/types/uiNodeConfig';
 import type { FormData } from '../../src/types/uiDefinition';
 
@@ -34,7 +35,7 @@ export default function UIDialog({
   const { nodes } = useGraphStore();
   const { getDefinition } = useUIBuilderStore();
   const [formData, setFormData] = useState<FormData>({});
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const rendererRef = React.useRef<{ submit: () => void }>(null);
 
   const node = nodes.find((n) => n.id === nodeId);
   const uiConfig = node?.properties?.uiConfig as UINodeConfig | undefined;
@@ -44,7 +45,6 @@ export default function UIDialog({
   useEffect(() => {
     if (open) {
       setFormData({});
-      setValidationErrors({});
     }
   }, [open]);
 
@@ -54,22 +54,20 @@ export default function UIDialog({
 
   const handleFormChange = (data: FormData) => {
     setFormData(data);
-    // Clear validation errors when user types
-    setValidationErrors({});
   };
 
-  const handleSubmit = () => {
-    // Validate if required
+  const handleSubmit = (data: FormData) => {
+    // Validate if required (Phase 5: Use new validation service)
     if (uiConfig.validateBeforeSubmit) {
-      const validation = validateFormData(formData, uiDefinition);
-      if (!validation.valid) {
-        setValidationErrors(validation.errors);
+      const validation = validateForm(uiDefinition.components, data);
+      if (!validation.isValid) {
+        // Validation errors are shown by UIRenderer
         return;
       }
     }
 
     // Map form data to outputs
-    const outputs = mapFormDataToOutputs(formData, uiConfig.outputMapping);
+    const outputs = mapFormDataToOutputs(data, uiConfig.outputMapping);
 
     // Submit the mapped outputs
     // If only one output, send it directly; otherwise send the object
@@ -80,7 +78,7 @@ export default function UIDialog({
       onSubmit(outputs);
     } else {
       // No mapped outputs, submit form data as-is
-      onSubmit(formData);
+      onSubmit(data);
     }
   };
 
@@ -106,31 +104,12 @@ export default function UIDialog({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          {/* Validation Errors */}
-          {Object.keys(validationErrors).length > 0 && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-red-800 mb-2">
-                    Please fix the following errors:
-                  </h3>
-                  <ul className="list-disc list-inside space-y-1">
-                    {Object.entries(validationErrors).map(([field, error]) => (
-                      <li key={field} className="text-sm text-red-700">
-                        {error}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* UI Renderer */}
+          {/* UI Renderer (Phase 5: Validation handled by UIRenderer) */}
           <UIRenderer
+            ref={rendererRef}
             definition={uiDefinition}
             onChange={handleFormChange}
+            onSubmit={handleSubmit}
             initialData={formData}
           />
         </div>
@@ -146,7 +125,12 @@ export default function UIDialog({
           </button>
           <button
             type="button"
-            onClick={handleSubmit}
+            onClick={() => {
+              // Trigger form submit (validation will be handled by UIRenderer)
+              if (rendererRef.current) {
+                rendererRef.current.submit();
+              }
+            }}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors flex items-center gap-2"
           >
             <Check className="w-4 h-4" />

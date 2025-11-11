@@ -5,6 +5,7 @@
 // Export UI Definition types
 export * from './uiDefinition';
 export * from './uiNodeConfig';
+export * from './validation';
 
 export type NodeId = string;
 export type PortId = string;

@@ -4,24 +4,37 @@
  * UI Renderer Component
  * 
  * Renders a UI definition as a functional form
- * Phase 1: Basic rendering with form data collection
+ * Phase 5: Enhanced with validation
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
 import type { UIDefinition, UIComponent, FormData, UIRendererProps } from '../../src/types/uiDefinition';
+import { validateForm, getFieldError } from '../../services/validationService';
+import type { FormValidationResult } from '../../src/types/validation';
+import ValidationDisplay from './ValidationDisplay';
 
-export default function UIRenderer({
+const UIRenderer = forwardRef<{ submit: () => void }, UIRendererProps>(({
   definition,
   onSubmit,
   onChange,
   initialData = {},
   disabled = false,
-}: UIRendererProps) {
+}, ref) => {
+  const formRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState<FormData>(initialData);
+  const [validation, setValidation] = useState<FormValidationResult>({
+    isValid: true,
+    fields: {},
+    errors: {},
+  });
+  const [touched, setTouched] = useState<Set<string>>(new Set());
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   // Update form data when initialData changes
   useEffect(() => {
     setFormData(initialData);
+    setTouched(new Set());
+    setSubmitAttempted(false);
   }, [initialData]);
 
   // Notify parent of changes
@@ -31,27 +44,49 @@ export default function UIRenderer({
     }
   }, [formData, onChange]);
 
+  // Validate form when data changes (if field is touched or submit attempted)
+  useEffect(() => {
+    if (touched.size > 0 || submitAttempted) {
+      const result = validateForm(definition.components, formData);
+      setValidation(result);
+    }
+  }, [formData, definition.components, touched, submitAttempted]);
+
   /**
-   * Handle input change
+   * Handle input change (Phase 5: Mark field as touched)
    */
   const handleChange = useCallback((name: string, value: unknown) => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+    setTouched((prev) => new Set(prev).add(name));
   }, []);
 
   /**
-   * Handle form submission
+   * Handle form submission (Phase 5: Validate before submit)
    */
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      if (onSubmit) {
+      setSubmitAttempted(true);
+      
+      // Validate form
+      const result = validateForm(definition.components, formData);
+      setValidation(result);
+      
+      // Mark all fields as touched
+      const allFieldNames = definition.components
+        .filter((comp) => comp.name && comp.type !== 'button' && comp.type !== 'label')
+        .map((comp) => comp.name);
+      setTouched(new Set(allFieldNames));
+      
+      // Only submit if valid
+      if (result.isValid && onSubmit) {
         onSubmit(formData);
       }
     },
-    [formData, onSubmit]
+    [formData, onSubmit, definition.components]
   );
 
   /**
@@ -85,14 +120,24 @@ export default function UIRenderer({
   }, [definition]);
 
   /**
-   * Render a single component (Phase 4: Support containers)
+   * Render a single component (Phase 5: Support validation)
    */
   const renderComponent = (component: UIComponent, componentMap?: Map<string, UIComponent>): React.ReactNode => {
+    const fieldName = component.name;
+    const isTouched = touched.has(fieldName || '');
+    const showError = (isTouched || submitAttempted) && fieldName;
+    const fieldError = showError ? getFieldError(fieldName, validation) : undefined;
+    const hasError = !!fieldError;
+
     const commonProps = {
       id: component.id,
       name: component.name,
       disabled,
-      className: 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+      className: `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+        hasError
+          ? 'border-red-500 focus:ring-red-500'
+          : 'border-gray-300 focus:ring-blue-500'
+      }`,
     };
 
     switch (component.type) {
@@ -112,8 +157,12 @@ export default function UIRenderer({
               placeholder={component.placeholder}
               value={(formData[component.name] as string) || inputComponent.defaultValue || ''}
               onChange={(e) => handleChange(component.name, e.target.value)}
+              onBlur={() => setTouched((prev) => new Set(prev).add(component.name))}
               required={component.required}
             />
+            {showError && fieldError && (
+              <ValidationDisplay validation={validation} fieldName={fieldName} />
+            )}
           </div>
         );
       }
@@ -134,8 +183,12 @@ export default function UIRenderer({
               placeholder={component.placeholder}
               value={(formData[component.name] as string) || textareaComponent.defaultValue || ''}
               onChange={(e) => handleChange(component.name, e.target.value)}
+              onBlur={() => setTouched((prev) => new Set(prev).add(component.name))}
               required={component.required}
             />
+            {showError && fieldError && (
+              <ValidationDisplay validation={validation} fieldName={fieldName} />
+            )}
           </div>
         );
       }
@@ -190,6 +243,7 @@ export default function UIRenderer({
               {...commonProps}
               value={(formData[component.name] as string) || selectComponent.defaultValue || ''}
               onChange={(e) => handleChange(component.name, e.target.value)}
+              onBlur={() => setTouched((prev) => new Set(prev).add(component.name))}
               required={component.required}
             >
               <option value="">Select an option...</option>
@@ -199,6 +253,9 @@ export default function UIRenderer({
                 </option>
               ))}
             </select>
+            {showError && fieldError && (
+              <ValidationDisplay validation={validation} fieldName={fieldName} />
+            )}
           </div>
         );
       }
@@ -230,22 +287,31 @@ export default function UIRenderer({
       case 'radio': {
         const radioComponent = component as UIComponent & { value: string; checked?: boolean; groupName: string };
         return (
-          <div key={component.id} className="mb-2 flex items-center">
-            <input
-              id={component.id}
-              name={radioComponent.groupName}
-              type="radio"
-              value={radioComponent.value}
-              checked={(formData[radioComponent.groupName] as string) === radioComponent.value}
-              onChange={(e) => handleChange(radioComponent.groupName, e.target.value)}
-              disabled={disabled}
-              className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-              required={component.required}
-            />
-            {component.label && (
-              <label htmlFor={component.id} className="ml-2 text-sm text-gray-700">
-                {component.label}
-              </label>
+          <div key={component.id} className="mb-2">
+            <div className="flex items-center">
+              <input
+                id={component.id}
+                name={radioComponent.groupName}
+                type="radio"
+                value={radioComponent.value}
+                checked={(formData[radioComponent.groupName] as string) === radioComponent.value}
+                onChange={(e) => handleChange(radioComponent.groupName, e.target.value)}
+                onBlur={() => setTouched((prev) => new Set(prev).add(radioComponent.groupName))}
+                disabled={disabled}
+                className={`w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 ${
+                  hasError ? 'border-red-500' : ''
+                }`}
+                required={component.required}
+              />
+              {component.label && (
+                <label htmlFor={component.id} className="ml-2 text-sm text-gray-700">
+                  {component.label}
+                  {component.required && <span className="text-red-500 ml-1">*</span>}
+                </label>
+              )}
+            </div>
+            {showError && fieldError && fieldName === radioComponent.groupName && (
+              <ValidationDisplay validation={validation} fieldName={radioComponent.groupName} />
             )}
           </div>
         );
@@ -343,8 +409,18 @@ export default function UIRenderer({
   const layout = definition.layout || { direction: 'column', gap: 16, padding: 16 };
   const { rootComponents, componentMap } = buildComponentTree();
 
+  // Expose form submit method (Phase 5: For external submit buttons)
+  useImperativeHandle(ref, () => ({
+    submit: () => {
+      if (formRef.current) {
+        formRef.current.requestSubmit();
+      }
+    },
+  }));
+
   return (
     <form
+      ref={formRef}
       onSubmit={handleSubmit}
       style={{
         display: 'flex',
@@ -359,8 +435,27 @@ export default function UIRenderer({
       }}
       className="ui-renderer"
     >
+      {/* Show all validation errors at top if submit attempted (Phase 5) */}
+      {submitAttempted && !validation.isValid && (
+        <ValidationDisplay validation={validation} showAll={true} className="mb-4" />
+      )}
+      
       {rootComponents.map((component) => renderComponent(component, componentMap))}
+      
+      {/* Submit button if not disabled and onSubmit is provided (Phase 5) */}
+      {!disabled && onSubmit && (
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          Submit
+        </button>
+      )}
     </form>
   );
-}
+});
+
+UIRenderer.displayName = 'UIRenderer';
+
+export default UIRenderer;
 

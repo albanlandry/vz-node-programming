@@ -20,6 +20,8 @@ export interface UIComponentBase {
   label?: string; // Display label
   required?: boolean;
   placeholder?: string;
+  // Validation (Phase 5)
+  validation?: import('./validation').ValidationRule[];
   // Layout properties (Phase 4)
   width?: number | string; // Width in pixels or percentage
   height?: number | string; // Height in pixels or percentage
