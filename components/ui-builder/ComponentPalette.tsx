@@ -17,7 +17,10 @@ import {
   ChevronDown,
   List,
   CheckSquare,
-  Circle
+  Circle,
+  Box,
+  Rows,
+  Columns
 } from 'lucide-react';
 import type { UIComponentType } from '../../src/types/uiDefinition';
 
@@ -70,6 +73,25 @@ const COMPONENTS: ComponentItem[] = [
     label: 'Radio',
     icon: Circle,
     description: 'Radio button',
+  },
+  // Layout components (Phase 4)
+  {
+    type: 'container',
+    label: 'Container',
+    icon: Box,
+    description: 'Generic container for grouping',
+  },
+  {
+    type: 'row',
+    label: 'Row',
+    icon: Rows,
+    description: 'Horizontal layout container',
+  },
+  {
+    type: 'column',
+    label: 'Column',
+    icon: Columns,
+    description: 'Vertical layout container',
   },
 ];
 

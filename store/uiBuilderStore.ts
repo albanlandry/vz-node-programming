@@ -44,6 +44,21 @@ interface UIBuilderState {
   updateComponent: (definitionId: string, componentId: string, updates: Partial<UIComponent>) => void;
   deleteComponent: (definitionId: string, componentId: string) => void;
   reorderComponents: (definitionId: string, componentIds: string[]) => void;
+  
+  // Enhanced features (Phase 4)
+  // History management
+  history: Record<string, UIDefinition[]>; // definitionId -> history array
+  historyIndex: Record<string, number>; // definitionId -> current history index
+  saveToHistory: (definitionId: string) => void;
+  undo: (definitionId: string) => boolean;
+  redo: (definitionId: string) => boolean;
+  canUndo: (definitionId: string) => boolean;
+  canRedo: (definitionId: string) => boolean;
+  
+  // Copy/paste
+  copiedComponent: UIComponent | null;
+  copyComponent: (definitionId: string, componentId: string) => void;
+  pasteComponent: (definitionId: string, afterComponentId?: string) => void;
 }
 
 const STORAGE_KEY = 'vz-ui-builder-definitions';
@@ -52,6 +67,9 @@ export const useUIBuilderStore = create<UIBuilderState>()(
   persist(
     (set, get) => ({
       definitions: [],
+      history: {},
+      historyIndex: {},
+      copiedComponent: null,
 
       /**
        * Create a new UI definition
@@ -220,10 +238,192 @@ export const useUIBuilderStore = create<UIBuilderState>()(
           };
         });
       },
+
+      /**
+       * Save current state to history (Phase 4)
+       */
+      saveToHistory: (definitionId: string) => {
+        const definition = get().getDefinition(definitionId);
+        if (!definition) return;
+
+        set((state) => {
+          const history = state.history[definitionId] || [];
+          const currentIndex = state.historyIndex[definitionId] ?? -1;
+          
+          // Remove any future history if we're not at the end
+          const newHistory = history.slice(0, currentIndex + 1);
+          
+          // Add current state (deep clone)
+          newHistory.push(JSON.parse(JSON.stringify(definition)));
+          
+          // Limit history size (keep last 50 states)
+          const limitedHistory = newHistory.slice(-50);
+
+          return {
+            history: {
+              ...state.history,
+              [definitionId]: limitedHistory,
+            },
+            historyIndex: {
+              ...state.historyIndex,
+              [definitionId]: limitedHistory.length - 1,
+            },
+          };
+        });
+      },
+
+      /**
+       * Undo last change (Phase 4)
+       */
+      undo: (definitionId: string) => {
+        const state = get();
+        const history = state.history[definitionId] || [];
+        const currentIndex = state.historyIndex[definitionId] ?? -1;
+
+        if (currentIndex <= 0) return false;
+
+        const previousState = history[currentIndex - 1];
+        if (!previousState) return false;
+
+        // Restore previous state
+        set((s) => ({
+          definitions: s.definitions.map((def) =>
+            def.id === definitionId ? previousState : def
+          ),
+          historyIndex: {
+            ...s.historyIndex,
+            [definitionId]: currentIndex - 1,
+          },
+        }));
+
+        return true;
+      },
+
+      /**
+       * Redo last undone change (Phase 4)
+       */
+      redo: (definitionId: string) => {
+        const state = get();
+        const history = state.history[definitionId] || [];
+        const currentIndex = state.historyIndex[definitionId] ?? -1;
+
+        if (currentIndex >= history.length - 1) return false;
+
+        const nextState = history[currentIndex + 1];
+        if (!nextState) return false;
+
+        // Restore next state
+        set((s) => ({
+          definitions: s.definitions.map((def) =>
+            def.id === definitionId ? nextState : def
+          ),
+          historyIndex: {
+            ...s.historyIndex,
+            [definitionId]: currentIndex + 1,
+          },
+        }));
+
+        return true;
+      },
+
+      /**
+       * Check if undo is possible (Phase 4)
+       */
+      canUndo: (definitionId: string) => {
+        const state = get();
+        const history = state.history[definitionId] || [];
+        const currentIndex = state.historyIndex[definitionId] ?? -1;
+        return currentIndex > 0;
+      },
+
+      /**
+       * Check if redo is possible (Phase 4)
+       */
+      canRedo: (definitionId: string) => {
+        const state = get();
+        const history = state.history[definitionId] || [];
+        const currentIndex = state.historyIndex[definitionId] ?? -1;
+        return currentIndex < history.length - 1;
+      },
+
+      /**
+       * Copy a component (Phase 4)
+       */
+      copyComponent: (definitionId: string, componentId: string) => {
+        const definition = get().getDefinition(definitionId);
+        if (!definition) return;
+
+        const component = definition.components.find((c) => c.id === componentId);
+        if (!component) return;
+
+        // Deep clone component
+        const copied = JSON.parse(JSON.stringify(component));
+        set({ copiedComponent: copied });
+      },
+
+      /**
+       * Paste a copied component (Phase 4)
+       */
+      pasteComponent: (definitionId: string, afterComponentId?: string) => {
+        const state = get();
+        const copied = state.copiedComponent;
+        if (!copied) return;
+
+        // Create new component with new ID
+        const newComponent = {
+          ...copied,
+          id: generateId(),
+          name: `${copied.name}_copy`,
+        };
+
+        // Remove children for container types (will be empty)
+        if (newComponent.type === 'container' || newComponent.type === 'row' || newComponent.type === 'column') {
+          (newComponent as any).children = [];
+        }
+
+        set((s) => {
+          const definition = s.definitions.find((d) => d.id === definitionId);
+          if (!definition) return s;
+
+          let newComponents: UIComponent[];
+          if (afterComponentId) {
+            const index = definition.components.findIndex((c) => c.id === afterComponentId);
+            if (index >= 0) {
+              newComponents = [
+                ...definition.components.slice(0, index + 1),
+                newComponent,
+                ...definition.components.slice(index + 1),
+              ];
+            } else {
+              newComponents = [...definition.components, newComponent];
+            }
+          } else {
+            newComponents = [...definition.components, newComponent];
+          }
+
+          return {
+            definitions: s.definitions.map((def) =>
+              def.id === definitionId
+                ? {
+                    ...def,
+                    components: newComponents,
+                    updatedAt: new Date().toISOString(),
+                  }
+                : def
+            ),
+          };
+        });
+
+        // Save to history
+        get().saveToHistory(definitionId);
+      },
     }),
     {
       name: STORAGE_KEY,
-      partialize: (state) => ({ definitions: state.definitions }),
+      partialize: (state) => ({ 
+        definitions: state.definitions,
+        // Don't persist history and copied component
+      }),
     }
   )
 );

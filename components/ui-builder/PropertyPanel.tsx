@@ -368,6 +368,206 @@ export default function PropertyPanel({ component, onUpdate }: PropertyPanelProp
             </div>
           </div>
         )}
+
+        {/* Container/Row/Column Settings (Phase 4) */}
+        {(component.type === 'container' || component.type === 'row' || component.type === 'column') && (
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">Container Settings</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Background Color
+                </label>
+                <input
+                  type="color"
+                  value={(component as UIComponent & { backgroundColor?: string }).backgroundColor || '#f9fafb'}
+                  onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                  className="w-full h-10 border border-gray-300 rounded-md"
+                />
+              </div>
+              {(component.type === 'container') && (
+                <>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Border
+                    </label>
+                    <input
+                      type="text"
+                      value={(component as UIComponent & { border?: string }).border || ''}
+                      onChange={(e) => handleChange('border', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="1px solid #e5e7eb"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Border Radius
+                    </label>
+                    <input
+                      type="text"
+                      value={(component as UIComponent & { borderRadius?: string }).borderRadius || ''}
+                      onChange={(e) => handleChange('borderRadius', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="8px"
+                    />
+                  </div>
+                </>
+              )}
+              {(component.type === 'row' || component.type === 'column') && (
+                <>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Gap (px)
+                    </label>
+                    <input
+                      type="number"
+                      value={(component as UIComponent & { gap?: number }).gap || 8}
+                      onChange={(e) => handleChange('gap', parseInt(e.target.value) || 0)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      min="0"
+                    />
+                  </div>
+                  {component.type === 'row' && (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Justify Content
+                      </label>
+                      <select
+                        value={(component as UIComponent & { justifyContent?: string }).justifyContent || 'start'}
+                        onChange={(e) => handleChange('justifyContent', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="start">Start</option>
+                        <option value="end">End</option>
+                        <option value="center">Center</option>
+                        <option value="space-between">Space Between</option>
+                        <option value="space-around">Space Around</option>
+                      </select>
+                    </div>
+                  )}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Align Items
+                    </label>
+                    <select
+                      value={(component as UIComponent & { alignItems?: string }).alignItems || 'stretch'}
+                      onChange={(e) => handleChange('alignItems', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="start">Start</option>
+                      <option value="end">End</option>
+                      <option value="center">Center</option>
+                      <option value="stretch">Stretch</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Padding
+                    </label>
+                    <input
+                      type="text"
+                      value={(component as UIComponent & { padding?: string }).padding || ''}
+                      onChange={(e) => handleChange('padding', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="8px"
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Layout Properties (Phase 4) */}
+        <div>
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">Layout</h3>
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Width
+                </label>
+                <input
+                  type="text"
+                  value={component.width ? String(component.width) : ''}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.endsWith('%') || value.endsWith('px')) {
+                      handleChange('width', value);
+                    } else if (value) {
+                      handleChange('width', parseInt(value) || value);
+                    } else {
+                      handleChange('width', undefined);
+                    }
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="auto"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Height
+                </label>
+                <input
+                  type="text"
+                  value={component.height ? String(component.height) : ''}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.endsWith('%') || value.endsWith('px')) {
+                      handleChange('height', value);
+                    } else if (value) {
+                      handleChange('height', parseInt(value) || value);
+                    } else {
+                      handleChange('height', undefined);
+                    }
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="auto"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Margin
+              </label>
+              <input
+                type="text"
+                value={component.margin || ''}
+                onChange={(e) => handleChange('margin', e.target.value || undefined)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="8px"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Padding
+              </label>
+              <input
+                type="text"
+                value={component.padding || ''}
+                onChange={(e) => handleChange('padding', e.target.value || undefined)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="8px"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Align Self
+              </label>
+              <select
+                value={component.alignSelf || 'auto'}
+                onChange={(e) => handleChange('alignSelf', e.target.value || undefined)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="auto">Auto</option>
+                <option value="start">Start</option>
+                <option value="end">End</option>
+                <option value="center">Center</option>
+                <option value="stretch">Stretch</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

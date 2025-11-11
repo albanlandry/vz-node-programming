@@ -55,9 +55,39 @@ export default function UIRenderer({
   );
 
   /**
-   * Render a single component
+   * Build component tree from flat list (Phase 4: Support containers)
    */
-  const renderComponent = (component: UIComponent): React.ReactNode => {
+  const buildComponentTree = useCallback(() => {
+    const rootComponents: UIComponent[] = [];
+    const componentMap = new Map<string, UIComponent>();
+    
+    // Build map
+    definition.components.forEach((comp) => {
+      componentMap.set(comp.id, comp);
+    });
+    
+    // Find root components (not children of any container)
+    const childIds = new Set<string>();
+    definition.components.forEach((comp) => {
+      if (comp.type === 'container' || comp.type === 'row' || comp.type === 'column') {
+        const containerComp = comp as UIComponent & { children?: string[] };
+        containerComp.children?.forEach((childId) => childIds.add(childId));
+      }
+    });
+    
+    definition.components.forEach((comp) => {
+      if (!childIds.has(comp.id)) {
+        rootComponents.push(comp);
+      }
+    });
+    
+    return { rootComponents, componentMap };
+  }, [definition]);
+
+  /**
+   * Render a single component (Phase 4: Support containers)
+   */
+  const renderComponent = (component: UIComponent, componentMap?: Map<string, UIComponent>): React.ReactNode => {
     const commonProps = {
       id: component.id,
       name: component.name,
@@ -221,12 +251,97 @@ export default function UIRenderer({
         );
       }
 
+      // Container components (Phase 4)
+      case 'container': {
+        const containerComponent = component as UIComponent & { children?: string[]; backgroundColor?: string; border?: string; borderRadius?: string };
+        const childComponents = containerComponent.children
+          ? (componentMap ? containerComponent.children.map((id) => componentMap.get(id)).filter(Boolean) as UIComponent[] : [])
+          : [];
+        
+        return (
+          <div
+            key={component.id}
+            style={{
+              backgroundColor: containerComponent.backgroundColor,
+              border: containerComponent.border,
+              borderRadius: containerComponent.borderRadius,
+              width: component.width ? (typeof component.width === 'number' ? `${component.width}px` : component.width) : undefined,
+              height: component.height ? (typeof component.height === 'number' ? `${component.height}px` : component.height) : undefined,
+              margin: component.margin,
+              padding: component.padding,
+              alignSelf: component.alignSelf,
+            }}
+            className="mb-4"
+          >
+            {childComponents.map((child) => renderComponent(child, componentMap))}
+          </div>
+        );
+      }
+
+      case 'row': {
+        const rowComponent = component as UIComponent & { children?: string[]; gap?: number; alignItems?: string; justifyContent?: string; backgroundColor?: string; padding?: string };
+        const childComponents = rowComponent.children
+          ? (componentMap ? rowComponent.children.map((id) => componentMap.get(id)).filter(Boolean) as UIComponent[] : [])
+          : [];
+        
+        return (
+          <div
+            key={component.id}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: `${rowComponent.gap || 8}px`,
+              alignItems: rowComponent.alignItems || 'start',
+              justifyContent: rowComponent.justifyContent || 'start',
+              backgroundColor: rowComponent.backgroundColor,
+              padding: rowComponent.padding,
+              width: component.width ? (typeof component.width === 'number' ? `${component.width}px` : component.width) : undefined,
+              height: component.height ? (typeof component.height === 'number' ? `${component.height}px` : component.height) : undefined,
+              margin: component.margin,
+              alignSelf: component.alignSelf,
+            }}
+            className="mb-4"
+          >
+            {childComponents.map((child) => renderComponent(child, componentMap))}
+          </div>
+        );
+      }
+
+      case 'column': {
+        const columnComponent = component as UIComponent & { children?: string[]; gap?: number; alignItems?: string; backgroundColor?: string; padding?: string };
+        const childComponents = columnComponent.children
+          ? (componentMap ? columnComponent.children.map((id) => componentMap.get(id)).filter(Boolean) as UIComponent[] : [])
+          : [];
+        
+        return (
+          <div
+            key={component.id}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: `${columnComponent.gap || 8}px`,
+              alignItems: columnComponent.alignItems || 'stretch',
+              backgroundColor: columnComponent.backgroundColor,
+              padding: columnComponent.padding,
+              width: component.width ? (typeof component.width === 'number' ? `${component.width}px` : component.width) : undefined,
+              height: component.height ? (typeof component.height === 'number' ? `${component.height}px` : component.height) : undefined,
+              margin: component.margin,
+              alignSelf: component.alignSelf,
+            }}
+            className="mb-4"
+          >
+            {childComponents.map((child) => renderComponent(child, componentMap))}
+          </div>
+        );
+      }
+
       default:
         return null;
     }
   };
 
   const layout = definition.layout || { direction: 'column', gap: 16, padding: 16 };
+  const { rootComponents, componentMap } = buildComponentTree();
 
   return (
     <form
@@ -235,11 +350,16 @@ export default function UIRenderer({
         display: 'flex',
         flexDirection: layout.direction || 'column',
         gap: `${layout.gap || 16}px`,
-        padding: `${layout.padding || 16}px`,
+        padding: typeof layout.padding === 'number' ? `${layout.padding}px` : layout.padding || '16px',
+        alignItems: layout.alignItems,
+        justifyContent: layout.justifyContent,
+        backgroundColor: layout.backgroundColor,
+        maxWidth: layout.maxWidth ? (typeof layout.maxWidth === 'number' ? `${layout.maxWidth}px` : layout.maxWidth) : undefined,
+        minWidth: layout.minWidth ? (typeof layout.minWidth === 'number' ? `${layout.minWidth}px` : layout.minWidth) : undefined,
       }}
       className="ui-renderer"
     >
-      {definition.components.map((component) => renderComponent(component))}
+      {rootComponents.map((component) => renderComponent(component, componentMap))}
     </form>
   );
 }
