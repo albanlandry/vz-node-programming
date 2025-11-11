@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" class="active">System Proposal</a></li>
+      <div class="nav-group-header expanded">Custom Nodes</div>
+      <ul class="nav-submenu expanded">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" class="active">System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,19 +65,20 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Custom Node Creation System - Proposal</h1>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>A system that allows users to dynamically create and register new nodes from the web frontend.</p>
-<h2>Goals</h2>
+<h2 id="goals">Goals</h2>
 <ol>
 <li><strong>Node Creation via Web UI</strong>: Create nodes with minimal or no code writing</li>
 <li><strong>Safe Code Execution</strong>: Security through sandboxing and validation</li>
 <li><strong>Dynamic Registration</strong>: Add nodes at runtime and use them immediately</li>
 <li><strong>Persistent Storage</strong>: Save created nodes to database/file system</li>
 </ol>
-<h2>Architecture Options</h2>
-<h3>Option 1: Template-Based Node Creation (Recommended) ⭐</h3>
+<h2 id="architecture-options">Architecture Options</h2>
+<h3 id="option-1-template-based-node-creation-recommended-">Option 1: Template-Based Node Creation (Recommended) ⭐</h3>
 <p><strong>Concept</strong>: Create nodes using predefined node templates with configuration only</p>
 <p><strong>Structure</strong>:</p>
 <pre><code>CustomNode (extends BaseNode)
@@ -116,7 +114,7 @@
 }
 </code></pre>
 <hr>
-<h3>Option 2: Limited Script Execution (VM2/isolate-vm)</h3>
+<h3 id="option-2-limited-script-execution-vm2isolate-vm">Option 2: Limited Script Execution (VM2/isolate-vm)</h3>
 <p><strong>Concept</strong>: Execute user-provided code in a sandboxed environment</p>
 <p><strong>Structure</strong>:</p>
 <pre><code>CustomNodeExecutor
@@ -146,7 +144,7 @@
 <li>Execution time limits</li>
 </ul>
 <hr>
-<h3>Option 3: Hybrid Approach (Template + Script) ⭐⭐</h3>
+<h3 id="option-3-hybrid-approach-template-script-">Option 3: Hybrid Approach (Template + Script) ⭐⭐</h3>
 <p><strong>Concept</strong>: Simple nodes via templates, complex nodes via scripts</p>
 <p><strong>Structure</strong>:</p>
 <pre><code>Node Creation System
@@ -166,8 +164,8 @@
 <li>❌ Increased complexity</li>
 </ul>
 <hr>
-<h2>Proposed Implementation Strategy</h2>
-<h3>Phase 1: Template-Based System (MVP)</h3>
+<h2 id="proposed-implementation-strategy">Proposed Implementation Strategy</h2>
+<h3 id="phase-1-template-based-system-mvp">Phase 1: Template-Based System (MVP)</h3>
 <p><strong>Features</strong>:</p>
 <ol>
 <li><p>Predefined node templates</p>
@@ -202,7 +200,7 @@
 </ul>
 </li>
 </ol>
-<h3>Phase 2: Script Execution System (Advanced)</h3>
+<h3 id="phase-2-script-execution-system-advanced">Phase 2: Script Execution System (Advanced)</h3>
 <p><strong>Features</strong>:</p>
 <ol>
 <li>VM2-based sandboxing</li>
@@ -211,8 +209,8 @@
 <li>Code editor integration (Monaco Editor)</li>
 </ol>
 <hr>
-<h2>Implementation Details: Phase 1 (Template-Based)</h2>
-<h3>1. Backend Structure</h3>
+<h2 id="implementation-details-phase-1-template-based">Implementation Details: Phase 1 (Template-Based)</h2>
+<h3 id="1-backend-structure">1. Backend Structure</h3>
 <pre><code>src/
 ├── custom-nodes/
 │   ├── CustomNode.ts          # Custom node extending BaseNode
@@ -226,7 +224,7 @@
 │       └── [id]/
 │           └── route.ts       # GET, PUT, DELETE
 </code></pre>
-<h3>2. CustomNode Class</h3>
+<h3 id="2-customnode-class">2. CustomNode Class</h3>
 <pre><code class="language-typescript">export class CustomNode extends BaseNode {
   private template: NodeTemplate;
   private expression: string;
@@ -266,7 +264,7 @@
   }
 }
 </code></pre>
-<h3>3. Template System</h3>
+<h3 id="3-template-system">3. Template System</h3>
 <pre><code class="language-typescript">export enum TemplateType {
   TRANSFORM = &#39;transform&#39;,
   FILTER = &#39;filter&#39;,
@@ -287,7 +285,7 @@ export interface NodeTemplate {
   validateExpression: (expression: string) =&gt; boolean;
 }
 </code></pre>
-<h3>4. API Routes</h3>
+<h3 id="4-api-routes">4. API Routes</h3>
 <pre><code class="language-typescript">// POST /api/custom-nodes
 export async function POST(request: Request) {
   const body = await request.json();
@@ -311,7 +309,7 @@ export async function POST(request: Request) {
   return NextResponse.json({ success: true, node });
 }
 </code></pre>
-<h3>5. Frontend UI</h3>
+<h3 id="5-frontend-ui">5. Frontend UI</h3>
 <pre><code>app/
 ├── custom-nodes/
 │   ├── page.tsx              # Node list
@@ -330,15 +328,15 @@ export async function POST(request: Request) {
     └── CustomNodeCard.tsx
 </code></pre>
 <hr>
-<h2>Security Considerations</h2>
-<h3>Template-Based System</h3>
+<h2 id="security-considerations">Security Considerations</h2>
+<h3 id="template-based-system">Template-Based System</h3>
 <ul>
 <li>✅ Expression validation (AST analysis)</li>
 <li>✅ Only allowed functions can be used</li>
 <li>✅ Block dangerous code patterns</li>
 <li>✅ Execution time limits</li>
 </ul>
-<h3>Script-Based System (Phase 2)</h3>
+<h3 id="script-based-system-phase-2">Script-Based System (Phase 2)</h3>
 <ul>
 <li>VM2 sandboxing</li>
 <li>Resource limits (CPU, memory)</li>
@@ -346,7 +344,7 @@ export async function POST(request: Request) {
 <li>Block file system access</li>
 </ul>
 <hr>
-<h2>Data Model</h2>
+<h2 id="data-model">Data Model</h2>
 <pre><code class="language-typescript">interface CustomNodeConfig {
   id?: string;
   type: string;                    // &#39;custom.user-defined-name&#39;
@@ -375,7 +373,7 @@ export async function POST(request: Request) {
 }
 </code></pre>
 <hr>
-<h2>User Experience Flow</h2>
+<h2 id="user-experience-flow">User Experience Flow</h2>
 <ol>
 <li><p><strong>Access Node Creation Page</strong></p>
 <ul>
@@ -417,8 +415,8 @@ export async function POST(request: Request) {
 </li>
 </ol>
 <hr>
-<h2>API Specification</h2>
-<h3>POST /api/custom-nodes</h3>
+<h2 id="api-specification">API Specification</h2>
+<h3 id="post-apicustom-nodes">POST /api/custom-nodes</h3>
 <p>Create a new custom node</p>
 <p><strong>Request</strong>:</p>
 <pre><code class="language-json">{
@@ -457,16 +455,16 @@ export async function POST(request: Request) {
   }
 }
 </code></pre>
-<h3>GET /api/custom-nodes</h3>
+<h3 id="get-apicustom-nodes">GET /api/custom-nodes</h3>
 <p>List all custom nodes</p>
-<h3>GET /api/custom-nodes/:id</h3>
+<h3 id="get-apicustom-nodesid">GET /api/custom-nodes/:id</h3>
 <p>Get a specific custom node</p>
-<h3>PUT /api/custom-nodes/:id</h3>
+<h3 id="put-apicustom-nodesid">PUT /api/custom-nodes/:id</h3>
 <p>Update a custom node</p>
-<h3>DELETE /api/custom-nodes/:id</h3>
+<h3 id="delete-apicustom-nodesid">DELETE /api/custom-nodes/:id</h3>
 <p>Delete a custom node</p>
 <hr>
-<h2>File Structure</h2>
+<h2 id="file-structure">File Structure</h2>
 <pre><code>src/
 ├── custom-nodes/
 │   ├── CustomNode.ts
@@ -508,7 +506,7 @@ storage/
     └── *.json (JSON file per node)
 </code></pre>
 <hr>
-<h2>Next Steps</h2>
+<h2 id="next-steps">Next Steps</h2>
 <ol>
 <li><p><strong>Phase 1 Implementation</strong> (Template-Based)</p>
 <ul>
@@ -538,7 +536,7 @@ storage/
 </li>
 </ol>
 <hr>
-<h2>Conclusion</h2>
+<h2 id="conclusion">Conclusion</h2>
 <p><strong>Recommended Approach</strong>: <strong>Option 3 (Hybrid)</strong>, implemented in phases</p>
 <ol>
 <li><strong>Phase 1</strong>: Start with template-based system (safe and simple to implement)</li>
@@ -546,19 +544,75 @@ storage/
 </ol>
 <p>This approach provides a fast MVP while maintaining future extensibility.</p>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#overview">Overview</a></li>
+      <li class="toc-h2"><a href="#goals">Goals</a></li>
+      <li class="toc-h2"><a href="#architecture-options">Architecture Options</a></li>
+      <li class="toc-h3"><a href="#option-1-template-based-node-creation-recommended-">Option 1: Template-Based Node Creation (Recommended) ⭐</a></li>
+      <li class="toc-h3"><a href="#option-2-limited-script-execution-vm2isolate-vm">Option 2: Limited Script Execution (VM2/isolate-vm)</a></li>
+      <li class="toc-h3"><a href="#option-3-hybrid-approach-template-script-">Option 3: Hybrid Approach (Template + Script) ⭐⭐</a></li>
+      <li class="toc-h2"><a href="#proposed-implementation-strategy">Proposed Implementation Strategy</a></li>
+      <li class="toc-h3"><a href="#phase-1-template-based-system-mvp">Phase 1: Template-Based System (MVP)</a></li>
+      <li class="toc-h3"><a href="#phase-2-script-execution-system-advanced">Phase 2: Script Execution System (Advanced)</a></li>
+      <li class="toc-h2"><a href="#implementation-details-phase-1-template-based">Implementation Details: Phase 1 (Template-Based)</a></li>
+      <li class="toc-h3"><a href="#1-backend-structure">1. Backend Structure</a></li>
+      <li class="toc-h3"><a href="#2-customnode-class">2. CustomNode Class</a></li>
+      <li class="toc-h3"><a href="#3-template-system">3. Template System</a></li>
+      <li class="toc-h3"><a href="#4-api-routes">4. API Routes</a></li>
+      <li class="toc-h3"><a href="#5-frontend-ui">5. Frontend UI</a></li>
+      <li class="toc-h2"><a href="#security-considerations">Security Considerations</a></li>
+      <li class="toc-h3"><a href="#template-based-system">Template-Based System</a></li>
+      <li class="toc-h3"><a href="#script-based-system-phase-2">Script-Based System (Phase 2)</a></li>
+      <li class="toc-h2"><a href="#data-model">Data Model</a></li>
+      <li class="toc-h2"><a href="#user-experience-flow">User Experience Flow</a></li>
+      <li class="toc-h2"><a href="#api-specification">API Specification</a></li>
+      <li class="toc-h3"><a href="#post-apicustom-nodes">POST /api/custom-nodes</a></li>
+      <li class="toc-h3"><a href="#get-apicustom-nodes">GET /api/custom-nodes</a></li>
+      <li class="toc-h3"><a href="#get-apicustom-nodesid">GET /api/custom-nodes/:id</a></li>
+      <li class="toc-h3"><a href="#put-apicustom-nodesid">PUT /api/custom-nodes/:id</a></li>
+      <li class="toc-h3"><a href="#delete-apicustom-nodesid">DELETE /api/custom-nodes/:id</a></li>
+      <li class="toc-h2"><a href="#file-structure">File Structure</a></li>
+      <li class="toc-h2"><a href="#next-steps">Next Steps</a></li>
+      <li class="toc-h2"><a href="#conclusion">Conclusion</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -571,6 +625,52 @@ storage/
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

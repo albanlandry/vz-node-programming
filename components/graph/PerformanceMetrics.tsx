@@ -8,6 +8,7 @@
 
 import { X, BarChart3, TrendingUp } from 'lucide-react';
 import { useGraphStore } from '../../store/graphStore';
+import DraggableResizablePanel from './DraggableResizablePanel';
 
 interface PerformanceMetricsProps {
   isOpen: boolean;
@@ -28,27 +29,26 @@ export default function PerformanceMetrics({
 
   if (metricsEntries.length === 0) {
     return (
-      <div
-        className="fixed bg-white shadow-2xl border-2 border-gray-300 z-50 w-[700px] max-h-[600px] flex flex-col"
-        style={{
-          left: position?.x ?? '50%',
-          top: position?.y ?? '50%',
-          transform: position ? 'none' : 'translate(-50%, -50%)',
-        }}
-      >
-        <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-3 flex items-center justify-between">
+      <DraggableResizablePanel
+        panelId="performance-metrics"
+        defaultPosition={position}
+        defaultSize={{ width: 700, height: 600 }}
+        minWidth={500}
+        minHeight={300}
+        maxHeight={800}
+        headerClassName="bg-gradient-to-r from-purple-500 to-purple-600"
+        headerContent={
           <div className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4" />
             <h3 className="font-semibold text-sm">Performance Metrics</h3>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-purple-700 transition-colors">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+        }
+        onClose={onClose}
+      >
         <div className="p-4 text-sm text-gray-500">
           No performance metrics available. Execute graphs to collect metrics.
         </div>
-      </div>
+      </DraggableResizablePanel>
     );
   }
 
@@ -58,33 +58,30 @@ export default function PerformanceMetrics({
   );
 
   return (
-    <div
-      className="fixed bg-white shadow-2xl border-2 border-gray-300 z-50 w-[700px] max-h-[600px] flex flex-col"
-      style={{
-        left: position?.x ?? '50%',
-        top: position?.y ?? '50%',
-        transform: position ? 'none' : 'translate(-50%, -50%)',
-      }}
-    >
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+    <DraggableResizablePanel
+      panelId="performance-metrics"
+      defaultPosition={position}
+      defaultSize={{ width: 700, height: 600 }}
+      minWidth={500}
+      minHeight={300}
+      maxHeight={800}
+      headerClassName="bg-gradient-to-r from-purple-500 to-purple-600"
+      headerContent={
+        <div className="flex items-center gap-2 flex-1">
           <BarChart3 className="w-4 h-4" />
           <h3 className="font-semibold text-sm">Performance Metrics</h3>
-        </div>
-        <div className="flex items-center gap-2">
           <button
             onClick={resetPerformanceMetrics}
-            className="px-2 py-1 text-xs bg-purple-700 hover:bg-purple-800 transition-colors"
+            className="ml-auto px-2 py-1 text-xs bg-purple-700 hover:bg-purple-800 transition-colors"
             title="Reset Metrics"
+            onMouseDown={(e) => e.stopPropagation()}
           >
             Reset
           </button>
-          <button onClick={onClose} className="p-1 hover:bg-purple-700 transition-colors">
-            <X className="w-4 h-4" />
-          </button>
         </div>
-      </div>
+      }
+      onClose={onClose}
+    >
 
       {/* Summary */}
       <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 text-xs">
@@ -145,7 +142,7 @@ export default function PerformanceMetrics({
           </tbody>
         </table>
       </div>
-    </div>
+    </DraggableResizablePanel>
   );
 }
 

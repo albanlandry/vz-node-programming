@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" class="active">Error Handling</a></li>
+      <div class="nav-group-header expanded">Error Handling & Logging</div>
+      <ul class="nav-submenu expanded">        <li><a href="ERROR-HANDLING.html" class="active">Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,12 +65,13 @@
     </li>
             </ul>
         </div>
-        <div class="content">
-<h2>AI Model: Claude Sonnet 4.5</h2>
+        <div class="content-wrapper">
+            <div class="content">
+<h2 id="ai-model-claude-sonnet-45">AI Model: Claude Sonnet 4.5</h2>
 <h1>Error Handling Guide</h1>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>The VZ Programming system provides a comprehensive error handling framework with enterprise-grade resilience patterns. This guide covers all error handling features including retry policies, circuit breakers, fallback execution paths, error boundaries, and dead letter queues.</p>
-<h2>Features</h2>
+<h2 id="features">Features</h2>
 <ul>
 <li>✅ <strong>Retry Policies</strong> - Exponential backoff with jitter</li>
 <li>✅ <strong>Circuit Breaker</strong> - Prevent cascading failures  </li>
@@ -82,9 +80,9 @@
 <li>✅ <strong>Dead Letter Queue</strong> - Track and analyze failures</li>
 </ul>
 <hr>
-<h2>Retry Policies</h2>
+<h2 id="retry-policies">Retry Policies</h2>
 <p>Automatically retry failed operations with exponential backoff.</p>
-<h3>Basic Usage</h3>
+<h3 id="basic-usage">Basic Usage</h3>
 <pre><code class="language-typescript">import { RetryPolicy, RetryPolicies, ErrorHandlingNode } from &#39;./src/index&#39;;
 
 // Use predefined policy
@@ -101,7 +99,7 @@ const customRetry = new RetryPolicy({
   useJitter: true
 });
 </code></pre>
-<h3>Predefined Policies</h3>
+<h3 id="predefined-policies">Predefined Policies</h3>
 <pre><code class="language-typescript">// No retry - fail immediately
 RetryPolicies.None
 
@@ -121,7 +119,7 @@ RetryPolicies.Aggressive
 RetryPolicies.Network
 // Config: { maxAttempts: 4, initialDelay: 1000, retryCondition: networkErrors }
 </code></pre>
-<h3>Custom Retry Configuration</h3>
+<h3 id="custom-retry-configuration">Custom Retry Configuration</h3>
 <pre><code class="language-typescript">const customPolicy = new RetryPolicy({
   maxAttempts: 3,
   initialDelay: 1000,
@@ -144,14 +142,14 @@ RetryPolicies.Network
   }
 });
 </code></pre>
-<h3>Exponential Backoff</h3>
+<h3 id="exponential-backoff">Exponential Backoff</h3>
 <p>The retry delay grows exponentially with jitter:</p>
 <pre><code>Attempt 1: 1000ms (±250ms jitter)
 Attempt 2: 2000ms (±500ms jitter)
 Attempt 3: 4000ms (±1000ms jitter)
 </code></pre>
 <p>Formula: <code>delay = min(initialDelay * multiplier^attempt, maxDelay) ± jitter</code></p>
-<h3>API Reference</h3>
+<h3 id="api-reference">API Reference</h3>
 <pre><code class="language-typescript">interface RetryConfig {
   maxAttempts: number;           // Maximum retry attempts
   initialDelay: number;          // Initial delay (ms)
@@ -169,9 +167,9 @@ class RetryPolicy {
 }
 </code></pre>
 <hr>
-<h2>Circuit Breaker</h2>
+<h2 id="circuit-breaker">Circuit Breaker</h2>
 <p>Prevent cascading failures by opening the circuit after repeated failures.</p>
-<h3>How It Works</h3>
+<h3 id="how-it-works">How It Works</h3>
 <pre><code>CLOSED → OPEN → HALF_OPEN → CLOSED
   ↑                           ↓
   └───────────────────────────┘
@@ -196,7 +194,7 @@ const node = new ErrorHandlingNode(config, {
   circuitBreaker
 });
 </code></pre>
-<h3>Configuration</h3>
+<h3 id="configuration">Configuration</h3>
 <pre><code class="language-typescript">interface CircuitBreakerConfig {
   failureThreshold: number;     // Failures to trigger OPEN
   successThreshold: number;     // Successes to return to CLOSED
@@ -208,7 +206,7 @@ const node = new ErrorHandlingNode(config, {
   onClose?: () =&gt; void;
 }
 </code></pre>
-<h3>State Management</h3>
+<h3 id="state-management">State Management</h3>
 <pre><code class="language-typescript">const breaker = new CircuitBreaker(config);
 
 // Get current state
@@ -222,7 +220,7 @@ const stats = breaker.getStats();
 breaker.reset();  // Force CLOSED
 breaker.open();   // Force OPEN
 </code></pre>
-<h3>Circuit Breaker Registry</h3>
+<h3 id="circuit-breaker-registry">Circuit Breaker Registry</h3>
 <p>Manage multiple circuit breakers:</p>
 <pre><code class="language-typescript">import { CircuitBreakerRegistry } from &#39;./src/index&#39;;
 
@@ -241,7 +239,7 @@ const allStats = registry.getAllStats();
 // Reset all breakers
 registry.resetAll();
 </code></pre>
-<h3>Example: Protecting an API</h3>
+<h3 id="example-protecting-an-api">Example: Protecting an API</h3>
 <pre><code class="language-typescript">const apiNode = new ErrorHandlingNode(config, {
   circuitBreaker: new CircuitBreaker({
     failureThreshold: 3,
@@ -254,9 +252,9 @@ registry.resetAll();
 });
 </code></pre>
 <hr>
-<h2>Fallback Execution Paths</h2>
+<h2 id="fallback-execution-paths">Fallback Execution Paths</h2>
 <p>Provide alternative execution strategies when primary operations fail.</p>
-<h3>Function-based Fallback</h3>
+<h3 id="function-based-fallback">Function-based Fallback</h3>
 <pre><code class="language-typescript">const node = new ErrorHandlingNode(config, {
   retryPolicy: RetryPolicies.Standard,
   fallbackFn: async (error, context) =&gt; {
@@ -271,7 +269,7 @@ registry.resetAll();
   }
 });
 </code></pre>
-<h3>Fallback Node</h3>
+<h3 id="fallback-node">Fallback Node</h3>
 <p>Use the built-in <code>FallbackNode</code>:</p>
 <pre><code class="language-typescript">import { FallbackNode } from &#39;./src/index&#39;;
 
@@ -296,7 +294,7 @@ inputs.set(fallback.id, fallbackInputs);
 <li><code>result</code> - Primary value or fallback</li>
 <li><code>usedFallback</code> - Boolean indicating which was used</li>
 </ul>
-<h3>Multi-level Fallback</h3>
+<h3 id="multi-level-fallback">Multi-level Fallback</h3>
 <pre><code class="language-typescript">// Primary → Fallback 1 → Fallback 2 → Default
 
 const primary = new ErrorHandlingNode(config, {
@@ -314,9 +312,9 @@ executor.addConnection({ from: primary, to: fallback1, port: &#39;primary&#39; }
 executor.addConnection({ from: fallback1, to: fallback2, port: &#39;primary&#39; });
 </code></pre>
 <hr>
-<h2>Error Boundaries</h2>
+<h2 id="error-boundaries">Error Boundaries</h2>
 <p>Catch and contain errors from upstream nodes.</p>
-<h3>ErrorBoundaryNode</h3>
+<h3 id="errorboundarynode">ErrorBoundaryNode</h3>
 <pre><code class="language-typescript">import { ErrorBoundaryNode } from &#39;./src/index&#39;;
 
 const errorBoundary = new ErrorBoundaryNode({
@@ -337,7 +335,7 @@ const boundaryInputs = new Map();
 boundaryInputs.set(&#39;defaultValue&#39;, &#39;Safe fallback&#39;);
 inputs.set(errorBoundary.id, boundaryInputs);
 </code></pre>
-<h3>Outputs</h3>
+<h3 id="outputs">Outputs</h3>
 <p>The error boundary provides three outputs:</p>
 <pre><code class="language-typescript">{
   result: any,           // Value or default
@@ -349,7 +347,7 @@ inputs.set(errorBoundary.id, boundaryInputs);
   }
 }
 </code></pre>
-<h3>Example: Error Recovery Pipeline</h3>
+<h3 id="example-error-recovery-pipeline">Example: Error Recovery Pipeline</h3>
 <pre><code class="language-typescript">// Failing Node → Error Boundary → Fallback → Logger
 
 const failing = new UnreliableNode();
@@ -368,7 +366,7 @@ executor.addConnection({ from: boundary, to: fallback });
 executor.addConnection({ from: fallback, to: logger });
 </code></pre>
 <hr>
-<h2>Dead Letter Queue</h2>
+<h2 id="dead-letter-queue">Dead Letter Queue</h2>
 <p>Track and analyze failed executions for debugging and monitoring.</p>
 <h3>Basic Usage</h3>
 <pre><code class="language-typescript">import { DeadLetterQueue } from &#39;./src/index&#39;;
@@ -385,7 +383,7 @@ const stats = dlq.getStats();
 console.log(`Total failures: ${stats.total}`);
 console.log(`Unprocessed: ${stats.unprocessed}`);
 </code></pre>
-<h3>Querying the DLQ</h3>
+<h3 id="querying-the-dlq">Querying the DLQ</h3>
 <pre><code class="language-typescript">const dlq = DeadLetterQueue.getInstance();
 
 // Get all entries
@@ -403,7 +401,7 @@ const executionFailures = dlq.getByExecution(executionId);
 // Get specific entry
 const entry = dlq.get(entryId);
 </code></pre>
-<h3>Entry Structure</h3>
+<h3 id="entry-structure">Entry Structure</h3>
 <pre><code class="language-typescript">interface DeadLetterEntry {
   id: string;
   executionId: string;
@@ -418,7 +416,7 @@ const entry = dlq.get(entryId);
   processed: boolean;
 }
 </code></pre>
-<h3>Processing Failures</h3>
+<h3 id="processing-failures">Processing Failures</h3>
 <pre><code class="language-typescript">const dlq = DeadLetterQueue.getInstance();
 
 // Get unprocessed failures
@@ -436,7 +434,7 @@ for (const entry of failures) {
   dlq.markProcessed(entry.id);
 }
 </code></pre>
-<h3>Statistics</h3>
+<h3 id="statistics">Statistics</h3>
 <pre><code class="language-typescript">const stats = dlq.getStats();
 
 console.log(`Total: ${stats.total}`);
@@ -449,7 +447,7 @@ stats.byNode.forEach((count, nodeId) =&gt; {
   console.log(`Node ${nodeId}: ${count} failures`);
 });
 </code></pre>
-<h3>Export &amp; Analysis</h3>
+<h3 id="export-amp-analysis">Export &amp; Analysis</h3>
 <pre><code class="language-typescript">// Export to JSON
 const json = dlq.export();
 fs.writeFileSync(&#39;failures.json&#39;, json);
@@ -480,7 +478,7 @@ await dlq.load();
 });
 </code></pre>
 <hr>
-<h2>Combined Error Handling</h2>
+<h2 id="combined-error-handling">Combined Error Handling</h2>
 <p>Use all features together for maximum resilience:</p>
 <pre><code class="language-typescript">import {
   ErrorHandlingNode,
@@ -517,7 +515,7 @@ const resilientNode = new ErrorHandlingNode(config, {
   enableDLQ: true
 });
 </code></pre>
-<h3>Execution Flow</h3>
+<h3 id="execution-flow">Execution Flow</h3>
 <pre><code>┌─────────────────┐
 │  Execute Node   │
 └────────┬────────┘
@@ -537,8 +535,8 @@ const resilientNode = new ErrorHandlingNode(config, {
          └──[Error Boundary]───► Catch &amp; contain
 </code></pre>
 <hr>
-<h2>Best Practices</h2>
-<h3>1. Choose Appropriate Retry Policies</h3>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-choose-appropriate-retry-policies">1. Choose Appropriate Retry Policies</h3>
 <pre><code class="language-typescript">// Network calls - aggressive retry
 apiNode.updateErrorConfig({
   retryPolicy: RetryPolicies.Network
@@ -554,7 +552,7 @@ validationNode.updateErrorConfig({
   retryPolicy: RetryPolicies.None
 });
 </code></pre>
-<h3>2. Set Realistic Circuit Breaker Thresholds</h3>
+<h3 id="2-set-realistic-circuit-breaker-thresholds">2. Set Realistic Circuit Breaker Thresholds</h3>
 <pre><code class="language-typescript">// High-traffic service - higher threshold
 new CircuitBreaker({
   failureThreshold: 10,
@@ -567,7 +565,7 @@ new CircuitBreaker({
   failureWindow: 10000  // 10 seconds
 });
 </code></pre>
-<h3>3. Layer Defenses</h3>
+<h3 id="3-layer-defenses">3. Layer Defenses</h3>
 <pre><code class="language-typescript">// Layer 1: Retry
 // Layer 2: Circuit breaker
 // Layer 3: Fallback
@@ -581,7 +579,7 @@ const node = new ErrorHandlingNode(config, {
   enableDLQ: true
 });
 </code></pre>
-<h3>4. Monitor and Alert</h3>
+<h3 id="4-monitor-and-alert">4. Monitor and Alert</h3>
 <pre><code class="language-typescript">const dlq = DeadLetterQueue.getInstance({
   onEntryAdded: (entry) =&gt; {
     // Critical errors
@@ -603,7 +601,7 @@ const breaker = new CircuitBreaker({
   }
 });
 </code></pre>
-<h3>5. Graceful Degradation</h3>
+<h3 id="5-graceful-degradation">5. Graceful Degradation</h3>
 <pre><code class="language-typescript">// Prefer returning partial results over complete failure
 fallbackFn: async (error, context) =&gt; {
   // Try cache
@@ -620,8 +618,8 @@ fallbackFn: async (error, context) =&gt; {
 }
 </code></pre>
 <hr>
-<h2>Examples</h2>
-<h3>Example 1: Resilient API Call</h3>
+<h2 id="examples">Examples</h2>
+<h3 id="example-1-resilient-api-call">Example 1: Resilient API Call</h3>
 <pre><code class="language-typescript">const apiNode = new ErrorHandlingNode({
   name: &#39;Weather API&#39;,
   inputs: [{ id: &#39;city&#39;, name: &#39;City&#39;, dataType: DataTypes.STRING }],
@@ -637,7 +635,7 @@ fallbackFn: async (error, context) =&gt; {
   enableDLQ: true
 });
 </code></pre>
-<h3>Example 2: Database with Retry</h3>
+<h3 id="example-2-database-with-retry">Example 2: Database with Retry</h3>
 <pre><code class="language-typescript">const dbNode = new ErrorHandlingNode({
   name: &#39;User Database&#39;,
   inputs: [{ id: &#39;userId&#39;, name: &#39;User ID&#39;, dataType: DataTypes.STRING }],
@@ -654,7 +652,7 @@ fallbackFn: async (error, context) =&gt; {
   enableDLQ: true
 });
 </code></pre>
-<h3>Example 3: Error Recovery Pipeline</h3>
+<h3 id="example-3-error-recovery-pipeline">Example 3: Error Recovery Pipeline</h3>
 <pre><code class="language-typescript">// Unreliable → Retry → Circuit Breaker → Error Boundary → Fallback
 
 const unreliable = new ErrorHandlingNode(config, {
@@ -674,7 +672,7 @@ executor.addConnection({ from: boundary, to: fallback, port: &#39;primary&#39; }
 </code></pre>
 <hr>
 <h2>API Reference</h2>
-<h3>ErrorHandlingNode</h3>
+<h3 id="errorhandlingnode">ErrorHandlingNode</h3>
 <pre><code class="language-typescript">class ErrorHandlingNode extends BaseNode {
   constructor(
     config: NodeConfig,
@@ -693,7 +691,7 @@ interface ErrorHandlingConfig {
   suppressErrors?: boolean;
 }
 </code></pre>
-<h3>RetryPolicy</h3>
+<h3 id="retrypolicy">RetryPolicy</h3>
 <pre><code class="language-typescript">class RetryPolicy {
   constructor(config?: Partial&lt;RetryConfig&gt;);
   execute&lt;T&gt;(fn: () =&gt; Promise&lt;T&gt;, context?: { nodeId, nodeName }): Promise&lt;T&gt;;
@@ -701,7 +699,7 @@ interface ErrorHandlingConfig {
   updateConfig(config: Partial&lt;RetryConfig&gt;): void;
 }
 </code></pre>
-<h3>CircuitBreaker</h3>
+<h3 id="circuitbreaker">CircuitBreaker</h3>
 <pre><code class="language-typescript">class CircuitBreaker {
   constructor(config?: Partial&lt;CircuitBreakerConfig&gt;, context?: { nodeId, nodeName });
   execute&lt;T&gt;(fn: () =&gt; Promise&lt;T&gt;): Promise&lt;T&gt;;
@@ -711,7 +709,7 @@ interface ErrorHandlingConfig {
   open(): void;
 }
 </code></pre>
-<h3>DeadLetterQueue</h3>
+<h3 id="deadletterqueue">DeadLetterQueue</h3>
 <pre><code class="language-typescript">class DeadLetterQueue {
   static getInstance(config?: Partial&lt;DLQConfig&gt;): DeadLetterQueue;
   
@@ -731,8 +729,8 @@ interface ErrorHandlingConfig {
 }
 </code></pre>
 <hr>
-<h2>Troubleshooting</h2>
-<h3>Retry Not Working</h3>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="retry-not-working">Retry Not Working</h3>
 <pre><code class="language-typescript">// Check retry configuration
 const config = retryPolicy.getConfig();
 console.log(&#39;Max attempts:&#39;, config.maxAttempts);
@@ -744,7 +742,7 @@ retryPolicy.updateConfig({
   }
 });
 </code></pre>
-<h3>Circuit Breaker Always Open</h3>
+<h3 id="circuit-breaker-always-open">Circuit Breaker Always Open</h3>
 <pre><code class="language-typescript">// Check stats
 const stats = breaker.getStats();
 console.log(&#39;State:&#39;, stats.state);
@@ -759,7 +757,7 @@ breaker = new CircuitBreaker({
   failureWindow: 60000   // Longer window
 });
 </code></pre>
-<h3>DLQ Not Recording</h3>
+<h3 id="dlq-not-recording">DLQ Not Recording</h3>
 <pre><code class="language-typescript">// Ensure DLQ is enabled
 node.updateErrorConfig({ enableDLQ: true });
 
@@ -775,7 +773,7 @@ const dlq = DeadLetterQueue.getInstance({
 });
 </code></pre>
 <hr>
-<h2>See Also</h2>
+<h2 id="see-also">See Also</h2>
 <ul>
 <li><a href="../QUICKSTART.html">Quick Start Guide</a></li>
 <li><a href="./NODE-REGISTRY.html">Node Registry</a></li>
@@ -783,19 +781,96 @@ const dlq = DeadLetterQueue.getInstance({
 <li><a href="../examples/error-handling-example.ts">Examples</a></li>
 </ul>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#ai-model-claude-sonnet-45">AI Model: Claude Sonnet 4.5</a></li>
+      <li class="toc-h2"><a href="#overview">Overview</a></li>
+      <li class="toc-h2"><a href="#features">Features</a></li>
+      <li class="toc-h2"><a href="#retry-policies">Retry Policies</a></li>
+      <li class="toc-h3"><a href="#basic-usage">Basic Usage</a></li>
+      <li class="toc-h3"><a href="#predefined-policies">Predefined Policies</a></li>
+      <li class="toc-h3"><a href="#custom-retry-configuration">Custom Retry Configuration</a></li>
+      <li class="toc-h3"><a href="#exponential-backoff">Exponential Backoff</a></li>
+      <li class="toc-h3"><a href="#api-reference">API Reference</a></li>
+      <li class="toc-h2"><a href="#circuit-breaker">Circuit Breaker</a></li>
+      <li class="toc-h3"><a href="#how-it-works">How It Works</a></li>
+      <li class="toc-h3"><a href="#configuration">Configuration</a></li>
+      <li class="toc-h3"><a href="#state-management">State Management</a></li>
+      <li class="toc-h3"><a href="#circuit-breaker-registry">Circuit Breaker Registry</a></li>
+      <li class="toc-h3"><a href="#example-protecting-an-api">Example: Protecting an API</a></li>
+      <li class="toc-h2"><a href="#fallback-execution-paths">Fallback Execution Paths</a></li>
+      <li class="toc-h3"><a href="#function-based-fallback">Function-based Fallback</a></li>
+      <li class="toc-h3"><a href="#fallback-node">Fallback Node</a></li>
+      <li class="toc-h3"><a href="#multi-level-fallback">Multi-level Fallback</a></li>
+      <li class="toc-h2"><a href="#error-boundaries">Error Boundaries</a></li>
+      <li class="toc-h3"><a href="#errorboundarynode">ErrorBoundaryNode</a></li>
+      <li class="toc-h3"><a href="#outputs">Outputs</a></li>
+      <li class="toc-h3"><a href="#example-error-recovery-pipeline">Example: Error Recovery Pipeline</a></li>
+      <li class="toc-h2"><a href="#dead-letter-queue">Dead Letter Queue</a></li>
+      <li class="toc-h3"><a href="#querying-the-dlq">Querying the DLQ</a></li>
+      <li class="toc-h3"><a href="#entry-structure">Entry Structure</a></li>
+      <li class="toc-h3"><a href="#processing-failures">Processing Failures</a></li>
+      <li class="toc-h3"><a href="#statistics">Statistics</a></li>
+      <li class="toc-h3"><a href="#export-amp-analysis">Export &amp; Analysis</a></li>
+      <li class="toc-h2"><a href="#combined-error-handling">Combined Error Handling</a></li>
+      <li class="toc-h3"><a href="#execution-flow">Execution Flow</a></li>
+      <li class="toc-h2"><a href="#best-practices">Best Practices</a></li>
+      <li class="toc-h3"><a href="#1-choose-appropriate-retry-policies">1. Choose Appropriate Retry Policies</a></li>
+      <li class="toc-h3"><a href="#2-set-realistic-circuit-breaker-thresholds">2. Set Realistic Circuit Breaker Thresholds</a></li>
+      <li class="toc-h3"><a href="#3-layer-defenses">3. Layer Defenses</a></li>
+      <li class="toc-h3"><a href="#4-monitor-and-alert">4. Monitor and Alert</a></li>
+      <li class="toc-h3"><a href="#5-graceful-degradation">5. Graceful Degradation</a></li>
+      <li class="toc-h2"><a href="#examples">Examples</a></li>
+      <li class="toc-h3"><a href="#example-1-resilient-api-call">Example 1: Resilient API Call</a></li>
+      <li class="toc-h3"><a href="#example-2-database-with-retry">Example 2: Database with Retry</a></li>
+      <li class="toc-h3"><a href="#example-3-error-recovery-pipeline">Example 3: Error Recovery Pipeline</a></li>
+      <li class="toc-h3"><a href="#errorhandlingnode">ErrorHandlingNode</a></li>
+      <li class="toc-h3"><a href="#retrypolicy">RetryPolicy</a></li>
+      <li class="toc-h3"><a href="#circuitbreaker">CircuitBreaker</a></li>
+      <li class="toc-h3"><a href="#deadletterqueue">DeadLetterQueue</a></li>
+      <li class="toc-h2"><a href="#troubleshooting">Troubleshooting</a></li>
+      <li class="toc-h3"><a href="#retry-not-working">Retry Not Working</a></li>
+      <li class="toc-h3"><a href="#circuit-breaker-always-open">Circuit Breaker Always Open</a></li>
+      <li class="toc-h3"><a href="#dlq-not-recording">DLQ Not Recording</a></li>
+      <li class="toc-h2"><a href="#see-also">See Also</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -808,6 +883,52 @@ const dlq = DeadLetterQueue.getInstance({
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

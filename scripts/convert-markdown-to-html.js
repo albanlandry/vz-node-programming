@@ -11,7 +11,8 @@ marked.setOptions({
   gfm: true,
   breaks: true,
   headerIds: true,
-  mangle: false
+  mangle: false,
+  headerPrefix: ''
 });
 
 // Menu structure with groups and submenus
@@ -83,6 +84,72 @@ const menuStructure = [
   }
 ];
 
+// Extract headers from HTML content
+function extractHeaders(html) {
+  // Try to match headers with IDs first
+  let headerRegex = /<h([2-4])[^>]*id="([^"]+)"[^>]*>(.*?)<\/h[2-4]>/gi;
+  const headers = [];
+  let match;
+  
+  // First pass: headers with IDs
+  while ((match = headerRegex.exec(html)) !== null) {
+    const level = parseInt(match[1]);
+    const id = match[2];
+    const text = match[3].replace(/<[^>]+>/g, ''); // Remove HTML tags from text
+    
+    headers.push({ level, id, text });
+  }
+  
+  // Second pass: headers without IDs - generate IDs from text
+  headerRegex = /<h([2-4])[^>]*>(.*?)<\/h[2-4]>/gi;
+  const processedIds = new Set(headers.map(h => h.id));
+  
+  while ((match = headerRegex.exec(html)) !== null) {
+    const level = parseInt(match[1]);
+    const text = match[2].replace(/<[^>]+>/g, ''); // Remove HTML tags from text
+    const id = text.toLowerCase()
+      .replace(/[^\w\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .trim();
+    
+    // Only add if not already processed and ID is valid
+    if (id && !processedIds.has(id)) {
+      processedIds.add(id);
+      headers.push({ level, id, text });
+      
+      // Add ID to the header in HTML if it doesn't have one
+      const headerTag = match[0];
+      if (!headerTag.includes('id=')) {
+        html = html.replace(headerTag, headerTag.replace(/<h([2-4])/, `<h$1 id="${id}"`));
+      }
+    }
+  }
+  
+  return { headers, html };
+}
+
+// Generate table of contents HTML
+function generateTOC(headers) {
+  if (headers.length === 0) {
+    return '';
+  }
+  
+  let tocHtml = '<div class="toc-sidebar">\n';
+  tocHtml += '    <h3>On This Page</h3>\n';
+  tocHtml += '    <ul class="toc-menu">\n';
+  
+  headers.forEach(header => {
+    const className = header.level === 2 ? 'toc-h2' : header.level === 3 ? 'toc-h3' : 'toc-h4';
+    tocHtml += `      <li class="${className}"><a href="#${header.id}">${header.text}</a></li>\n`;
+  });
+  
+  tocHtml += '    </ul>\n';
+  tocHtml += '</div>\n';
+  
+  return tocHtml;
+}
+
 // Convert markdown to HTML
 function markdownToHtml(markdown) {
   // Convert links from .md to .html
@@ -101,10 +168,21 @@ function markdownToHtml(markdown) {
 function generateNavigation(currentPath) {
   let navHtml = '';
   
-  menuStructure.forEach(group => {
+  // Find which group contains the active page
+  let activeGroupIndex = -1;
+  menuStructure.forEach((group, index) => {
+    if (group.items.some(item => item.path === currentPath)) {
+      activeGroupIndex = index;
+    }
+  });
+  
+  menuStructure.forEach((group, index) => {
+    const isActiveGroup = index === activeGroupIndex;
+    const expandedClass = isActiveGroup ? 'expanded' : '';
+    
     navHtml += `<li class="nav-group">
-      <div class="nav-group-header">${group.title}</div>
-      <ul class="nav-submenu">`;
+      <div class="nav-group-header ${expandedClass}">${group.title}</div>
+      <ul class="nav-submenu ${expandedClass}">`;
     
     group.items.forEach(item => {
       const isActive = item.path === currentPath ? 'class="active"' : '';
@@ -121,6 +199,8 @@ function generateNavigation(currentPath) {
 // Create HTML template
 function createHtmlTemplate(title, content, currentPath) {
   const navHtml = generateNavigation(currentPath);
+  const { headers, html: updatedContent } = extractHeaders(content);
+  const tocHtml = generateTOC(headers);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -133,29 +213,49 @@ function createHtmlTemplate(title, content, currentPath) {
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 ${navHtml}
             </ul>
         </div>
-        <div class="content">
-${content}
+        <div class="content-wrapper">
+            <div class="content">
+${updatedContent}
+            </div>
+${tocHtml}
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -168,6 +268,52 @@ ${content}
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        ${headers.length > 0 ? `
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        ` : ''}
     </script>
 </body>
 </html>`;

@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,23 +65,24 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Interactive Nodes - Phase 1 Implementation</h1>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>This document describes the implementation of Phase 1: Basic Infrastructure for Interactive Nodes support in the VZ Programming system. Phase 1 establishes the foundational architecture that enables nodes to request user input, display images, stream data, and render custom UI components.</p>
-<h2>Implementation Date</h2>
+<h2 id="implementation-date">Implementation Date</h2>
 <p><strong>Completed:</strong> 2025-01-07</p>
-<h2>Phase 1 Goals</h2>
+<h2 id="phase-1-goals">Phase 1 Goals</h2>
 <ol>
 <li>✅ Add type definitions (<code>InteractiveNodeType</code>, <code>UserInputRequest</code>, <code>ImageData</code>, etc.)</li>
 <li>✅ Implement <code>InteractiveExecutionContext</code></li>
 <li>✅ Extend execution engine (detect and handle interactive nodes)</li>
 <li>✅ Build basic event system</li>
 </ol>
-<h2>Files Created/Modified</h2>
-<h3>1. Type Definitions (<code>src/types/index.ts</code>)</h3>
+<h2 id="files-createdmodified">Files Created/Modified</h2>
+<h3 id="1-type-definitions-srctypesindexts">1. Type Definitions (<code>src/types/index.ts</code>)</h3>
 <p>Added comprehensive type definitions for interactive nodes:</p>
-<h4>Interactive Node Types</h4>
+<h4 id="interactive-node-types">Interactive Node Types</h4>
 <pre><code class="language-typescript">export enum InteractiveNodeType {
   USER_INPUT = &#39;user-input&#39;,      // User input request
   IMAGE_DISPLAY = &#39;image-display&#39;, // Image display
@@ -92,18 +90,18 @@
   CUSTOM_UI = &#39;custom-ui&#39;,         // Custom UI component
 }
 </code></pre>
-<h4>User Input Request Types</h4>
+<h4 id="user-input-request-types">User Input Request Types</h4>
 <ul>
 <li><code>UserInputRequest</code>: Defines the structure for requesting user input (form, prompt, or confirm)</li>
 <li><code>FormSchema</code>: Defines form structure with fields, title, and description</li>
 <li><code>FormField</code>: Defines individual form fields with validation rules</li>
 <li><code>ValidationRule</code>: Defines validation rules (required, min, max, pattern, custom)</li>
 </ul>
-<h4>Image Data Type</h4>
+<h4 id="image-data-type">Image Data Type</h4>
 <ul>
 <li><code>ImageData</code>: Supports multiple image formats (URL, base64, Blob) with metadata</li>
 </ul>
-<h4>Interactive Context Interface</h4>
+<h4 id="interactive-context-interface">Interactive Context Interface</h4>
 <ul>
 <li><code>InteractiveExecutionContext</code>: Extends <code>ExecutionContext</code> with interactive methods:<ul>
 <li><code>requestUserInput()</code>: Request user input (pauses execution)</li>
@@ -113,7 +111,7 @@
 </ul>
 </li>
 </ul>
-<h4>Interactive Node Interface</h4>
+<h4 id="interactive-node-interface">Interactive Node Interface</h4>
 <ul>
 <li><code>IInteractiveNode</code>: Extends <code>INode</code> with:<ul>
 <li><code>isInteractive</code>: Boolean flag</li>
@@ -122,7 +120,7 @@
 </ul>
 </li>
 </ul>
-<h4>Event Types</h4>
+<h4 id="event-types">Event Types</h4>
 <ul>
 <li><code>InteractiveNodeEventType</code>: Enum defining all interactive node events:<ul>
 <li><code>USER_INPUT_REQUESTED</code></li>
@@ -135,10 +133,10 @@
 </ul>
 </li>
 </ul>
-<h3>2. Interactive Execution Context (<code>src/core/InteractiveExecutionContext.ts</code>)</h3>
+<h3 id="2-interactive-execution-context-srccoreinteractiveexecutioncontextts">2. Interactive Execution Context (<code>src/core/InteractiveExecutionContext.ts</code>)</h3>
 <p><strong>New File Created</strong></p>
 <p>Implements the <code>InteractiveExecutionContext</code> class that wraps a base <code>ExecutionContext</code> and adds interactive capabilities.</p>
-<h4>Key Features</h4>
+<h4 id="key-features">Key Features</h4>
 <ol>
 <li><p><strong>User Input Management</strong></p>
 <ul>
@@ -159,7 +157,7 @@
 </ul>
 </li>
 </ol>
-<h4>Implementation Details</h4>
+<h4 id="implementation-details">Implementation Details</h4>
 <pre><code class="language-typescript">export class InteractiveExecutionContext implements IInteractiveExecutionContext {
   private inputResolver?: (value: unknown) =&gt; void;
   private inputRejecter?: (error: Error) =&gt; void;
@@ -187,10 +185,10 @@
   // ... other methods
 }
 </code></pre>
-<h3>3. Node Executor Extension (<code>src/core/NodeExecutor.ts</code>)</h3>
+<h3 id="3-node-executor-extension-srccorenodeexecutorts">3. Node Executor Extension (<code>src/core/NodeExecutor.ts</code>)</h3>
 <p><strong>Modified File</strong></p>
 <p>Extended <code>NodeExecutor</code> to detect and handle interactive nodes.</p>
-<h4>Changes Made</h4>
+<h4 id="changes-made">Changes Made</h4>
 <ol>
 <li><p><strong>New Private Fields</strong></p>
 <pre><code class="language-typescript">private interactiveContexts: Map&lt;NodeId, InteractiveExecutionContext&gt; = new Map();
@@ -223,7 +221,7 @@ private pausedNodes: Set&lt;NodeId&gt; = new Set();
 </ul>
 </li>
 </ol>
-<h4>Execution Flow for Interactive Nodes</h4>
+<h4 id="execution-flow-for-interactive-nodes">Execution Flow for Interactive Nodes</h4>
 <pre><code>1. executeNode() called
 2. Check if node is interactive (isInteractiveNode())
 3. If interactive:
@@ -236,8 +234,8 @@ private pausedNodes: Set&lt;NodeId&gt; = new Set();
 4. If not interactive:
    a. Execute normally with base ExecutionContext
 </code></pre>
-<h2>Architecture</h2>
-<h3>Component Relationships</h3>
+<h2 id="architecture">Architecture</h2>
+<h3 id="component-relationships">Component Relationships</h3>
 <pre><code>NodeExecutor (EventEmitter)
   ├─&gt; Detects Interactive Nodes
   ├─&gt; Creates InteractiveExecutionContext
@@ -254,7 +252,7 @@ IInteractiveNode
   ├─&gt; Has isInteractive flag
   └─&gt; Optional executeInteractive() method
 </code></pre>
-<h3>Event Flow</h3>
+<h3 id="event-flow">Event Flow</h3>
 <pre><code>Node calls requestUserInput()
   ↓
 InteractiveExecutionContext emits USER_INPUT_REQUESTED
@@ -275,8 +273,8 @@ InteractiveExecutionContext emits NODE_RESUMED
   ↓
 Execution continues
 </code></pre>
-<h2>Usage Example</h2>
-<h3>Creating an Interactive Node</h3>
+<h2 id="usage-example">Usage Example</h2>
+<h3 id="creating-an-interactive-node">Creating an Interactive Node</h3>
 <pre><code class="language-typescript">import { BaseNode } from &#39;../core/BaseNode&#39;;
 import type { InteractiveExecutionContext, ExecutionResult } from &#39;../types&#39;;
 import { InteractiveNodeType } from &#39;../types&#39;;
@@ -315,7 +313,7 @@ export class UserInputNode extends BaseNode implements IInteractiveNode {
   }
 }
 </code></pre>
-<h3>Providing User Input from External Source</h3>
+<h3 id="providing-user-input-from-external-source">Providing User Input from External Source</h3>
 <pre><code class="language-typescript">// In API route or service
 const executor = new NodeExecutor();
 // ... add nodes and execute ...
@@ -326,10 +324,10 @@ executor.provideUserInput(&#39;node-123&#39;, { name: &#39;John Doe&#39; });
 // Or cancel input
 executor.cancelUserInput(&#39;node-123&#39;, new Error(&#39;User cancelled&#39;));
 </code></pre>
-<h2>Testing</h2>
-<h3>Unit Tests Implemented</h3>
+<h2 id="testing">Testing</h2>
+<h3 id="unit-tests-implemented">Unit Tests Implemented</h3>
 <p>✅ <strong>All Phase 1 unit tests have been implemented and are passing</strong></p>
-<h4>Test Files Created</h4>
+<h4 id="test-files-created">Test Files Created</h4>
 <ol>
 <li><p><strong><code>__tests__/core/InteractiveExecutionContext.test.ts</code></strong> (18 tests)</p>
 <ul>
@@ -359,14 +357,14 @@ executor.cancelUserInput(&#39;node-123&#39;, new Error(&#39;User cancelled&#39;)
 </ul>
 </li>
 </ol>
-<h4>Test Coverage</h4>
+<h4 id="test-coverage">Test Coverage</h4>
 <ul>
 <li><strong>InteractiveExecutionContext</strong>: 100% method coverage</li>
 <li><strong>NodeExecutor Interactive Support</strong>: All interactive features tested</li>
 <li><strong>Event System</strong>: All event types verified</li>
 <li><strong>Error Handling</strong>: Cancellation and error scenarios covered</li>
 </ul>
-<h4>Running Tests</h4>
+<h4 id="running-tests">Running Tests</h4>
 <pre><code class="language-bash"># Run all interactive node tests
 npm test -- __tests__/core/
 
@@ -374,19 +372,19 @@ npm test -- __tests__/core/
 npm test -- __tests__/core/InteractiveExecutionContext.test.ts
 npm test -- __tests__/core/NodeExecutor.interactive.test.ts
 </code></pre>
-<h4>Test Results</h4>
+<h4 id="test-results">Test Results</h4>
 <pre><code>Test Suites: 2 passed, 2 total
 Tests:       35 passed, 35 total
 Time:        ~2.5s
 </code></pre>
-<h2>Known Limitations</h2>
+<h2 id="known-limitations">Known Limitations</h2>
 <ol>
 <li><strong>No Timeout Handling</strong>: User input requests don&#39;t have timeouts yet</li>
 <li><strong>No Session Persistence</strong>: Paused nodes are lost on server restart</li>
 <li><strong>No Input Validation on Backend</strong>: Validation is only on frontend (Phase 2)</li>
 <li><strong>No UI Components</strong>: Frontend components will be implemented in Phase 2-4</li>
 </ol>
-<h2>Next Steps (Phase 2)</h2>
+<h2 id="next-steps-phase-2">Next Steps (Phase 2)</h2>
 <ol>
 <li>✅ Implement <code>UserInputDialog</code> component</li>
 <li>✅ Implement form validation system</li>
@@ -400,7 +398,7 @@ Time:        ~2.5s
 <p>This document describes the implementation of Phase 2: User Input Support for Interactive Nodes. Phase 2 adds the frontend UI components, form validation, backend API endpoints, and example node implementation to enable user input during graph execution.</p>
 <h2>Implementation Date</h2>
 <p><strong>Completed:</strong> 2025-01-07</p>
-<h2>Phase 2 Goals</h2>
+<h2 id="phase-2-goals">Phase 2 Goals</h2>
 <ol>
 <li>✅ Implement <code>UserInputDialog</code> component with form validation</li>
 <li>✅ Implement form validation system</li>
@@ -411,16 +409,16 @@ Time:        ~2.5s
 <li>✅ Create example <code>UserInputNode</code> implementation</li>
 </ol>
 <h2>Files Created/Modified</h2>
-<h3>1. Form Validation Utilities (<code>utils/formValidation.ts</code>)</h3>
+<h3 id="1-form-validation-utilities-utilsformvalidationts">1. Form Validation Utilities (<code>utils/formValidation.ts</code>)</h3>
 <p><strong>New File Created</strong></p>
 <p>Provides validation functions for form fields based on <code>ValidationRule</code>.</p>
-<h4>Key Functions</h4>
+<h4 id="key-functions">Key Functions</h4>
 <ul>
 <li><code>validateField(field, value)</code>: Validates a single field against its validation rules</li>
 <li><code>validateForm(schema, values)</code>: Validates an entire form schema</li>
 <li><code>getFieldError(fieldId, validationResult)</code>: Gets error message for a specific field</li>
 </ul>
-<h4>Validation Rules Supported</h4>
+<h4 id="validation-rules-supported">Validation Rules Supported</h4>
 <ul>
 <li><code>required</code>: Field must have a value</li>
 <li><code>min</code>: Minimum value/length</li>
@@ -428,10 +426,10 @@ Time:        ~2.5s
 <li><code>pattern</code>: Regular expression pattern matching</li>
 <li><code>custom</code>: Custom validator function</li>
 </ul>
-<h3>2. User Input Dialog Component (<code>components/graph/UserInputDialog.tsx</code>)</h3>
+<h3 id="2-user-input-dialog-component-componentsgraphuserinputdialogtsx">2. User Input Dialog Component (<code>components/graph/UserInputDialog.tsx</code>)</h3>
 <p><strong>New File Created</strong></p>
 <p>Modal dialog component for collecting user input based on <code>FormSchema</code> or simple prompt/confirm requests.</p>
-<h4>Features</h4>
+<h4 id="features">Features</h4>
 <ul>
 <li>Supports three input types:<ul>
 <li><code>form</code>: Multi-field form with validation</li>
@@ -444,7 +442,7 @@ Time:        ~2.5s
 <li>Form submission with validation</li>
 <li>Cancel functionality</li>
 </ul>
-<h4>Props</h4>
+<h4 id="props">Props</h4>
 <pre><code class="language-typescript">interface UserInputDialogProps {
   open: boolean;
   nodeId: string;
@@ -454,7 +452,7 @@ Time:        ~2.5s
   onCancel: () =&gt; void;
 }
 </code></pre>
-<h4>Supported Field Types</h4>
+<h4 id="supported-field-types">Supported Field Types</h4>
 <ul>
 <li><code>text</code>, <code>email</code>, <code>password</code>: Text inputs</li>
 <li><code>number</code>: Numeric input</li>
@@ -463,7 +461,7 @@ Time:        ~2.5s
 <li><code>select</code>: Dropdown selection</li>
 <li><code>date</code>: Date picker</li>
 </ul>
-<h3>3. Interactive Node Manager Component (<code>components/graph/InteractiveNodeManager.tsx</code>)</h3>
+<h3 id="3-interactive-node-manager-component-componentsgraphinteractivenodemanagertsx">3. Interactive Node Manager Component (<code>components/graph/InteractiveNodeManager.tsx</code>)</h3>
 <p><strong>New File Created</strong></p>
 <p>Manages interactive node states and handles user input dialogs. Listens for <code>interactive:user-input-requested</code> events from the streaming execution service and displays the appropriate dialog.</p>
 <h4>Features</h4>
@@ -474,8 +472,8 @@ Time:        ~2.5s
 <li>Handles input cancellation</li>
 <li>Automatically displays/hides dialogs</li>
 </ul>
-<h3>4. Backend API Endpoints</h3>
-<h4>User Input Submission (<code>app/api/graphs/interactive/input/[nodeId]/route.ts</code>)</h4>
+<h3 id="4-backend-api-endpoints">4. Backend API Endpoints</h3>
+<h4 id="user-input-submission-appapigraphsinteractiveinputnodeidroutets">User Input Submission (<code>app/api/graphs/interactive/input/[nodeId]/route.ts</code>)</h4>
 <p><strong>New File Created</strong></p>
 <p>Handles user input submission for interactive nodes during execution.</p>
 <p><strong>POST <code>/api/graphs/interactive/input/[nodeId]</code></strong></p>
@@ -485,7 +483,7 @@ Time:        ~2.5s
 <li>Calls <code>executor.provideUserInput(nodeId, value)</code></li>
 <li>Returns success/error response</li>
 </ul>
-<h4>User Input Cancellation (<code>app/api/graphs/interactive/input/[nodeId]/cancel/route.ts</code>)</h4>
+<h4 id="user-input-cancellation-appapigraphsinteractiveinputnodeidcancelroutets">User Input Cancellation (<code>app/api/graphs/interactive/input/[nodeId]/cancel/route.ts</code>)</h4>
 <p><strong>New File Created</strong></p>
 <p>Handles cancellation of user input requests.</p>
 <p><strong>POST <code>/api/graphs/interactive/input/[nodeId]/cancel</code></strong></p>
@@ -495,7 +493,7 @@ Time:        ~2.5s
 <li>Calls <code>executor.cancelUserInput(nodeId, error)</code></li>
 <li>Returns success/error response</li>
 </ul>
-<h4>Executor Registration</h4>
+<h4 id="executor-registration">Executor Registration</h4>
 <p>The input route exports functions to register/unregister executors:</p>
 <ul>
 <li><code>registerExecutor(executionId, executor)</code>: Register an executor for an execution</li>
@@ -503,7 +501,7 @@ Time:        ~2.5s
 <li><code>getActiveExecutors()</code>: Get the active executors map</li>
 </ul>
 <p><strong>Note:</strong> In production, this should be stored in Redis or a similar service for scalability.</p>
-<h3>5. Streaming Execution Updates (<code>app/api/graphs/execute-stream/route.ts</code>)</h3>
+<h3 id="5-streaming-execution-updates-appapigraphsexecute-streamroutets">5. Streaming Execution Updates (<code>app/api/graphs/execute-stream/route.ts</code>)</h3>
 <p><strong>Modified File</strong></p>
 <p>Updated to handle interactive node events and register executors for user input API.</p>
 <h4>Changes Made</h4>
@@ -528,7 +526,7 @@ import { registerExecutor, unregisterExecutor } from &#39;../interactive/input/[
 </ul>
 </li>
 </ol>
-<h3>6. Streaming Execution Service Updates (<code>services/streamingExecutionService.ts</code>)</h3>
+<h3 id="6-streaming-execution-service-updates-servicesstreamingexecutionservicets">6. Streaming Execution Service Updates (<code>services/streamingExecutionService.ts</code>)</h3>
 <p><strong>Modified File</strong></p>
 <p>Added interactive event types to <code>ExecutionEventType</code>:</p>
 <pre><code class="language-typescript">export type ExecutionEventType =
@@ -545,7 +543,7 @@ import { registerExecutor, unregisterExecutor } from &#39;../interactive/input/[
   | &#39;interactive:node-paused&#39;           // NEW
   | &#39;interactive:node-resumed&#39;;         // NEW
 </code></pre>
-<h3>7. Example User Input Node (<code>src/nodes/interactive/UserInputNode.ts</code>)</h3>
+<h3 id="7-example-user-input-node-srcnodesinteractiveuserinputnodets">7. Example User Input Node (<code>src/nodes/interactive/UserInputNode.ts</code>)</h3>
 <p><strong>New File Created</strong></p>
 <p>Example implementation of an interactive node that requests user input.</p>
 <h4>Features</h4>
@@ -555,7 +553,7 @@ import { registerExecutor, unregisterExecutor } from &#39;../interactive/input/[
 <li>Configurable form schema</li>
 <li>Returns user input as output</li>
 </ul>
-<h4>Configuration</h4>
+<h4 id="configuration">Configuration</h4>
 <pre><code class="language-typescript">interface UserInputNodeConfig {
   id?: string;
   prompt?: string;
@@ -591,7 +589,7 @@ import { registerExecutor, unregisterExecutor } from &#39;../interactive/input/[
   },
 });
 </code></pre>
-<h3>8. Graph Editor Integration (<code>app/graph-editor/page.tsx</code>)</h3>
+<h3 id="8-graph-editor-integration-appgraph-editorpagetsx">8. Graph Editor Integration (<code>app/graph-editor/page.tsx</code>)</h3>
 <p><strong>Modified File</strong></p>
 <p>Added <code>InteractiveNodeManager</code> component to the Graph Editor page to handle interactive node dialogs.</p>
 <pre><code class="language-typescript">import InteractiveNodeManager from &#39;../../components/graph/InteractiveNodeManager&#39;;
@@ -600,7 +598,7 @@ import { registerExecutor, unregisterExecutor } from &#39;../interactive/input/[
 &lt;InteractiveNodeManager /&gt;
 </code></pre>
 <h2>Architecture</h2>
-<h3>Component Flow</h3>
+<h3 id="component-flow">Component Flow</h3>
 <pre><code>Graph Execution (SSE Stream)
   ↓
 Interactive Node calls requestUserInput()
@@ -625,7 +623,7 @@ NodeExecutor resolves Promise
   ↓
 Execution continues
 </code></pre>
-<h3>Data Flow</h3>
+<h3 id="data-flow">Data Flow</h3>
 <pre><code>1. Node requests input → InteractiveExecutionContext.requestUserInput()
 2. Event emitted → SSE stream → Frontend
 3. Dialog displayed → User fills form
@@ -635,7 +633,7 @@ Execution continues
 7. Node continues execution → Outputs result
 </code></pre>
 <h2>Usage Example</h2>
-<h3>Creating a Graph with User Input Node</h3>
+<h3 id="creating-a-graph-with-user-input-node">Creating a Graph with User Input Node</h3>
 <pre><code class="language-typescript">import { UserInputNode } from &#39;./nodes/interactive/UserInputNode&#39;;
 import { GraphExecutionEngine } from &#39;./graph-management&#39;;
 
@@ -674,7 +672,7 @@ const userInputNode = new UserInputNode({
 // User fills the form and submits
 // Execution continues with the user-provided values
 </code></pre>
-<h3>Frontend Integration</h3>
+<h3 id="frontend-integration">Frontend Integration</h3>
 <p>The <code>InteractiveNodeManager</code> is automatically included in the Graph Editor. When a graph with interactive nodes is executed:</p>
 <ol>
 <li>Execution starts via <code>ExecutionToolbar</code></li>
@@ -684,7 +682,7 @@ const userInputNode = new UserInputNode({
 <li>User can cancel → Input request cancelled → Execution fails gracefully</li>
 </ol>
 <h2>Testing</h2>
-<h3>Unit Tests</h3>
+<h3 id="unit-tests">Unit Tests</h3>
 <p>✅ <strong>All Phase 2 unit tests have been implemented and are passing</strong></p>
 <h4>Test Files Created</h4>
 <ol>
@@ -719,7 +717,7 @@ npm test -- __tests__/utils/formValidation.test.ts __tests__/nodes/interactive/U
 npm test -- __tests__/utils/formValidation.test.ts
 npm test -- __tests__/nodes/interactive/UserInputNode.test.ts
 </code></pre>
-<h3>Integration Tests</h3>
+<h3 id="integration-tests">Integration Tests</h3>
 <p>Integration tests for the complete flow are planned for future phases:</p>
 <ol>
 <li><strong><code>__tests__/integration/interactive-flow.test.ts</code></strong> (Planned)<ul>
@@ -736,7 +734,7 @@ npm test -- __tests__/nodes/interactive/UserInputNode.test.ts
 <li><strong>Single Execution</strong>: Only one execution can be active per server instance (can be improved with proper session management).</li>
 <li><strong>No Input History</strong>: Previous inputs are not stored or suggested.</li>
 </ol>
-<h2>Next Steps (Phase 3)</h2>
+<h2 id="next-steps-phase-3">Next Steps (Phase 3)</h2>
 <ol>
 <li>✅ Implement <code>ImageDisplayPanel</code> component</li>
 <li>✅ Add image display support to execution engine</li>
@@ -750,7 +748,7 @@ npm test -- __tests__/nodes/interactive/UserInputNode.test.ts
 <p>This document describes the implementation of Phase 3: Image Display Support for Interactive Nodes. Phase 3 adds the ability for nodes to display images (from URL, base64, or Blob) during graph execution.</p>
 <h2>Implementation Date</h2>
 <p><strong>Completed:</strong> 2025-01-07</p>
-<h2>Phase 3 Goals</h2>
+<h2 id="phase-3-goals">Phase 3 Goals</h2>
 <ol>
 <li>✅ Implement <code>ImageDisplayPanel</code> component</li>
 <li>✅ Image data processing (URL, base64, Blob)</li>
@@ -759,7 +757,7 @@ npm test -- __tests__/nodes/interactive/UserInputNode.test.ts
 <li>✅ Create example <code>ImageDisplayNode</code> implementation</li>
 </ol>
 <h2>Files Created/Modified</h2>
-<h3>1. Image Display Panel Component (<code>components/graph/ImageDisplayPanel.tsx</code>)</h3>
+<h3 id="1-image-display-panel-component-componentsgraphimagedisplaypaneltsx">1. Image Display Panel Component (<code>components/graph/ImageDisplayPanel.tsx</code>)</h3>
 <p><strong>New File Created</strong></p>
 <p>Modal panel component for displaying images from various sources.</p>
 <h4>Features</h4>
@@ -790,13 +788,13 @@ npm test -- __tests__/nodes/interactive/UserInputNode.test.ts
   onClose: () =&gt; void;
 }
 </code></pre>
-<h4>Image Data Processing</h4>
+<h4 id="image-data-processing">Image Data Processing</h4>
 <ul>
 <li><strong>URL</strong>: Directly uses the URL as image source</li>
 <li><strong>Base64</strong>: Automatically adds data URI prefix if missing (<code>data:image/{format};base64,{data}</code>)</li>
 <li><strong>Blob</strong>: Creates object URL using <code>URL.createObjectURL()</code> and cleans up on unmount</li>
 </ul>
-<h3>2. Interactive Node Manager Updates (<code>components/graph/InteractiveNodeManager.tsx</code>)</h3>
+<h3 id="2-interactive-node-manager-updates-componentsgraphinteractivenodemanagertsx">2. Interactive Node Manager Updates (<code>components/graph/InteractiveNodeManager.tsx</code>)</h3>
 <p><strong>Modified File</strong></p>
 <p>Extended to handle image display events in addition to user input events.</p>
 <h4>Changes Made</h4>
@@ -823,7 +821,7 @@ const [pendingImage, setPendingImage] = useState&lt;PendingImageDisplay | null&g
 </ul>
 </li>
 </ol>
-<h3>3. Streaming Execution Updates (<code>app/api/graphs/execute-stream/route.ts</code>)</h3>
+<h3 id="3-streaming-execution-updates-appapigraphsexecute-streamroutets">3. Streaming Execution Updates (<code>app/api/graphs/execute-stream/route.ts</code>)</h3>
 <p><strong>Modified File</strong></p>
 <p>Added event listener for <code>IMAGE_DISPLAY_REQUESTED</code> events.</p>
 <h4>Changes Made</h4>
@@ -842,7 +840,7 @@ const [pendingImage, setPendingImage] = useState&lt;PendingImageDisplay | null&g
 <li><p><strong>SSE Event</strong>: Sends <code>interactive:image-display-requested</code> event to frontend with image data</p>
 </li>
 </ol>
-<h3>4. Streaming Execution Service Updates (<code>services/streamingExecutionService.ts</code>)</h3>
+<h3 id="4-streaming-execution-service-updates-servicesstreamingexecutionservicets">4. Streaming Execution Service Updates (<code>services/streamingExecutionService.ts</code>)</h3>
 <p><strong>Modified File</strong></p>
 <p>Added <code>interactive:image-display-requested</code> to <code>ExecutionEventType</code>:</p>
 <pre><code class="language-typescript">export type ExecutionEventType =
@@ -860,7 +858,7 @@ const [pendingImage, setPendingImage] = useState&lt;PendingImageDisplay | null&g
   | &#39;interactive:node-resumed&#39;
   | &#39;interactive:image-display-requested&#39;;  // NEW
 </code></pre>
-<h3>5. Example Image Display Node (<code>src/nodes/interactive/ImageDisplayNode.ts</code>)</h3>
+<h3 id="5-example-image-display-node-srcnodesinteractiveimagedisplaynodets">5. Example Image Display Node (<code>src/nodes/interactive/ImageDisplayNode.ts</code>)</h3>
 <p><strong>New File Created</strong></p>
 <p>Example implementation of an interactive node that displays images.</p>
 <h4>Features</h4>
@@ -922,7 +920,7 @@ User can view, download, or close image
 4. Image rendered → User can interact (download, fullscreen, close)
 </code></pre>
 <h2>Usage Example</h2>
-<h3>Creating a Graph with Image Display Node</h3>
+<h3 id="creating-a-graph-with-image-display-node">Creating a Graph with Image Display Node</h3>
 <pre><code class="language-typescript">import { ImageDisplayNode } from &#39;./nodes/interactive/ImageDisplayNode&#39;;
 import { GraphExecutionEngine } from &#39;./graph-management&#39;;
 
@@ -999,7 +997,7 @@ npm test -- __tests__/nodes/interactive/ImageDisplayNode.test.ts
 <li><strong>No Image Editing</strong>: Users can only view/download images, not edit them</li>
 <li><strong>Format Support</strong>: Only standard web formats are supported (png, jpg, jpeg, gif, webp, svg)</li>
 </ol>
-<h2>Next Steps (Phase 4)</h2>
+<h2 id="next-steps-phase-4">Next Steps (Phase 4)</h2>
 <ol>
 <li>✅ Implement <code>StreamingDataPanel</code> component</li>
 <li>✅ Real-time data update mechanism</li>
@@ -1012,7 +1010,7 @@ npm test -- __tests__/nodes/interactive/ImageDisplayNode.test.ts
 <p>This document describes the implementation of Phase 4: Streaming Data Support for Interactive Nodes. Phase 4 adds the ability for nodes to stream real-time data updates during graph execution, displayed in a dedicated streaming data panel.</p>
 <h2>Implementation Date</h2>
 <p><strong>Completed:</strong> 2025-01-07</p>
-<h2>Phase 4 Goals</h2>
+<h2 id="phase-4-goals">Phase 4 Goals</h2>
 <ol>
 <li>✅ Implement <code>StreamingDataPanel</code> component</li>
 <li>✅ Real-time data update mechanism</li>
@@ -1022,7 +1020,7 @@ npm test -- __tests__/nodes/interactive/ImageDisplayNode.test.ts
 <li>✅ Create example <code>StreamingDataNode</code> implementation</li>
 </ol>
 <h2>Files Created/Modified</h2>
-<h3>1. Streaming Data Panel Component (<code>components/graph/StreamingDataPanel.tsx</code>)</h3>
+<h3 id="1-streaming-data-panel-component-componentsgraphstreamingdatapaneltsx">1. Streaming Data Panel Component (<code>components/graph/StreamingDataPanel.tsx</code>)</h3>
 <p><strong>New File Created</strong></p>
 <p>Real-time streaming data display panel that shows data updates as they arrive.</p>
 <h4>Features</h4>
@@ -1054,7 +1052,7 @@ npm test -- __tests__/nodes/interactive/ImageDisplayNode.test.ts
   onDataUpdate?: (data: unknown) =&gt; void;
 }
 </code></pre>
-<h4>Data Entry Structure</h4>
+<h4 id="data-entry-structure">Data Entry Structure</h4>
 <pre><code class="language-typescript">interface DataEntry {
   timestamp: number;
   data: unknown;
@@ -1126,7 +1124,7 @@ const [streamingNodes, setStreamingNodes] = useState&lt;Map&lt;string, ActiveStr
   | &#39;interactive:image-display-requested&#39;
   | &#39;interactive:streaming-data-update&#39;;  // NEW
 </code></pre>
-<h3>5. Example Streaming Data Node (<code>src/nodes/interactive/StreamingDataNode.ts</code>)</h3>
+<h3 id="5-example-streaming-data-node-srcnodesinteractivestreamingdatanodets">5. Example Streaming Data Node (<code>src/nodes/interactive/StreamingDataNode.ts</code>)</h3>
 <p><strong>New File Created</strong></p>
 <p>Example implementation of an interactive node that streams data updates.</p>
 <h4>Features</h4>
@@ -1196,7 +1194,7 @@ User can pause, clear, download, or close
 5. Execution continues (streaming does not pause execution)
 </code></pre>
 <h2>Usage Example</h2>
-<h3>Creating a Graph with Streaming Data Node</h3>
+<h3 id="creating-a-graph-with-streaming-data-node">Creating a Graph with Streaming Data Node</h3>
 <pre><code class="language-typescript">import { StreamingDataNode } from &#39;./nodes/interactive/StreamingDataNode&#39;;
 import { GraphExecutionEngine } from &#39;./graph-management&#39;;
 
@@ -1269,14 +1267,14 @@ npm test -- __tests__/nodes/interactive/StreamingDataNode.test.ts
 <li><strong>No Data Visualization</strong>: Data is displayed as text/JSON only (no charts/graphs)</li>
 <li><strong>Single Format</strong>: Data is formatted as JSON/string (no custom formatters)</li>
 </ol>
-<h2>Performance Considerations</h2>
+<h2 id="performance-considerations">Performance Considerations</h2>
 <ol>
 <li><strong>Max Entries Limit</strong>: Configurable limit (50, 100, 500) prevents unbounded memory growth</li>
 <li><strong>Auto-scroll Optimization</strong>: Uses <code>setTimeout</code> to batch scroll operations</li>
 <li><strong>Event Filtering</strong>: Only processes events for the specific node</li>
 <li><strong>Pause Mechanism</strong>: Allows pausing data collection without closing panel</li>
 </ol>
-<h2>Next Steps (Future Enhancements)</h2>
+<h2 id="next-steps-future-enhancements">Next Steps (Future Enhancements)</h2>
 <ol>
 <li><strong>Data Visualization</strong>: Add charts/graphs for numeric streaming data</li>
 <li><strong>Data Filtering</strong>: Add search and filter capabilities</li>
@@ -1284,13 +1282,13 @@ npm test -- __tests__/nodes/interactive/StreamingDataNode.test.ts
 <li><strong>Custom Formatters</strong>: Allow custom data formatting functions</li>
 <li><strong>Rate Limiting</strong>: Add configurable rate limiting for high-frequency updates</li>
 </ol>
-<h2>Dependencies</h2>
+<h2 id="dependencies">Dependencies</h2>
 <ul>
 <li><code>lucide-react</code>: Icons for UI components (Pause, Play, Trash2, Download, X)</li>
 <li>Existing Phase 1, 2, and 3 infrastructure</li>
 <li>SSE infrastructure (already in place)</li>
 </ul>
-<h2>Migration Notes</h2>
+<h2 id="migration-notes">Migration Notes</h2>
 <ul>
 <li>No breaking changes to existing code</li>
 <li>Streaming data nodes are opt-in (existing nodes continue to work)</li>
@@ -1298,7 +1296,7 @@ npm test -- __tests__/nodes/interactive/StreamingDataNode.test.ts
 <li>Streaming does not pause execution (unlike user input)</li>
 <li>Multiple streaming panels can be open simultaneously</li>
 </ul>
-<h2>Conclusion</h2>
+<h2 id="conclusion">Conclusion</h2>
 <p>Phase 4 successfully implements streaming data support for interactive nodes. The implementation provides a complete solution for real-time data streaming with user-friendly controls (pause, clear, download, close). The architecture is extensible and ready for future enhancements like data visualization and filtering.</p>
 <hr>
 <h1>Interactive Nodes - Phase 5 Implementation</h1>
@@ -1306,7 +1304,7 @@ npm test -- __tests__/nodes/interactive/StreamingDataNode.test.ts
 <p>This document describes the implementation of Phase 5: Integration and Testing for Interactive Nodes. Phase 5 provides comprehensive integration tests, example graphs, and complete documentation for the interactive nodes system.</p>
 <h2>Implementation Date</h2>
 <p><strong>Completed:</strong> 2025-01-07</p>
-<h2>Phase 5 Goals</h2>
+<h2 id="phase-5-goals">Phase 5 Goals</h2>
 <ol>
 <li>✅ Integrate <code>InteractiveNodeManager</code> (completed in Phase 2)</li>
 <li>✅ Full system integration testing</li>
@@ -1314,7 +1312,7 @@ npm test -- __tests__/nodes/interactive/StreamingDataNode.test.ts
 <li>✅ Example graph creation</li>
 </ol>
 <h2>Files Created/Modified</h2>
-<h3>1. Integration Tests (<code>__tests__/integration/interactive-flow.test.ts</code>)</h3>
+<h3 id="1-integration-tests-__tests__integrationinteractive-flowtestts">1. Integration Tests (<code>__tests__/integration/interactive-flow.test.ts</code>)</h3>
 <p><strong>New File Created</strong></p>
 <p>Comprehensive integration tests for complete interactive node flows.</p>
 <h4>Test Coverage</h4>
@@ -1362,10 +1360,10 @@ npm test -- __tests__/nodes/interactive/StreamingDataNode.test.ts
 Tests:       13 passed, 13 total
 Time:        ~1.5s
 </code></pre>
-<h3>2. Example Graphs (<code>examples/interactive-nodes-example.ts</code>)</h3>
+<h3 id="2-example-graphs-examplesinteractive-nodes-examplets">2. Example Graphs (<code>examples/interactive-nodes-example.ts</code>)</h3>
 <p><strong>New File Created</strong></p>
 <p>Example graphs demonstrating various interactive node use cases.</p>
-<h4>Examples Included</h4>
+<h4 id="examples-included">Examples Included</h4>
 <ol>
 <li><p><strong>Example 1: Simple User Input Flow</strong></p>
 <ul>
@@ -1402,7 +1400,7 @@ Time:        ~1.5s
 </ul>
 </li>
 </ol>
-<h4>Usage</h4>
+<h4 id="usage">Usage</h4>
 <pre><code class="language-typescript">import { runAllExamples } from &#39;./examples/interactive-nodes-example&#39;;
 
 // Run all examples
@@ -1412,8 +1410,8 @@ await runAllExamples();
 import { example1_SimpleUserInput } from &#39;./examples/interactive-nodes-example&#39;;
 await example1_SimpleUserInput();
 </code></pre>
-<h2>Integration Testing Strategy</h2>
-<h3>Test Categories</h3>
+<h2 id="integration-testing-strategy">Integration Testing Strategy</h2>
+<h3 id="test-categories">Test Categories</h3>
 <ol>
 <li><p><strong>Unit Tests</strong>: Test individual components in isolation</p>
 <ul>
@@ -1441,7 +1439,7 @@ await example1_SimpleUserInput();
 </ul>
 </li>
 </ol>
-<h3>Test Coverage Summary</h3>
+<h3 id="test-coverage-summary">Test Coverage Summary</h3>
 <ul>
 <li><strong>Phase 1</strong>: 35 tests (InteractiveExecutionContext, NodeExecutor)</li>
 <li><strong>Phase 2</strong>: 29 tests (Form validation, UserInputNode)</li>
@@ -1450,8 +1448,8 @@ await example1_SimpleUserInput();
 <li><strong>Phase 5</strong>: 13 tests (Integration flows)</li>
 <li><strong>Total</strong>: 110 tests</li>
 </ul>
-<h2>Example Graph Usage</h2>
-<h3>Creating Interactive Graphs</h3>
+<h2 id="example-graph-usage">Example Graph Usage</h2>
+<h3 id="creating-interactive-graphs">Creating Interactive Graphs</h3>
 <pre><code class="language-typescript">import { GraphExecutionEngine } from &#39;./src/graph-management&#39;;
 import { UserInputNode } from &#39;./src/nodes/interactive/UserInputNode&#39;;
 import { ImageDisplayNode } from &#39;./src/nodes/interactive/ImageDisplayNode&#39;;
@@ -1518,7 +1516,7 @@ const engine = new GraphExecutionEngine();
 const executor = await engine.buildExecutor(graph);
 // Execution will pause for user input, then display image
 </code></pre>
-<h2>System Integration</h2>
+<h2 id="system-integration">System Integration</h2>
 <h3>Frontend Integration</h3>
 <p>The <code>InteractiveNodeManager</code> is integrated into the Graph Editor (<code>app/graph-editor/page.tsx</code>):</p>
 <pre><code class="language-typescript">import InteractiveNodeManager from &#39;../../components/graph/InteractiveNodeManager&#39;;
@@ -1526,7 +1524,7 @@ const executor = await engine.buildExecutor(graph);
 // In component render:
 &lt;InteractiveNodeManager /&gt;
 </code></pre>
-<h3>Backend Integration</h3>
+<h3 id="backend-integration">Backend Integration</h3>
 <ol>
 <li><p><strong>Streaming Execution</strong> (<code>app/api/graphs/execute-stream/route.ts</code>)</p>
 <ul>
@@ -1585,8 +1583,8 @@ Phase 4 Tests: 17 passed
 Phase 5 Tests: 13 passed
 Total:         110 passed
 </code></pre>
-<h2>Documentation</h2>
-<h3>Complete Documentation Structure</h3>
+<h2 id="documentation">Documentation</h2>
+<h3 id="complete-documentation-structure">Complete Documentation Structure</h3>
 <ol>
 <li><p><strong>Phase 1</strong>: Basic Infrastructure</p>
 <ul>
@@ -1628,7 +1626,7 @@ Total:         110 passed
 <li><strong>Single Execution</strong>: Only one execution can be active per server instance</li>
 <li><strong>No Input History</strong>: Previous inputs are not stored or suggested</li>
 </ol>
-<h2>Future Enhancements</h2>
+<h2 id="future-enhancements">Future Enhancements</h2>
 <ol>
 <li><p><strong>Phase 4: Streaming Data Support</strong></p>
 <ul>
@@ -1709,19 +1707,136 @@ Total:         110 passed
 <h2>Conclusion</h2>
 <p>Phase 1 successfully establishes the foundation for interactive nodes. The architecture is extensible and allows for incremental addition of features in subsequent phases. The implementation maintains backward compatibility with existing nodes while providing a clear path for interactive node development.</p>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#overview">Overview</a></li>
+      <li class="toc-h2"><a href="#implementation-date">Implementation Date</a></li>
+      <li class="toc-h2"><a href="#phase-1-goals">Phase 1 Goals</a></li>
+      <li class="toc-h2"><a href="#files-createdmodified">Files Created/Modified</a></li>
+      <li class="toc-h3"><a href="#1-type-definitions-srctypesindexts">1. Type Definitions (src/types/index.ts)</a></li>
+      <li class="toc-h4"><a href="#interactive-node-types">Interactive Node Types</a></li>
+      <li class="toc-h4"><a href="#user-input-request-types">User Input Request Types</a></li>
+      <li class="toc-h4"><a href="#image-data-type">Image Data Type</a></li>
+      <li class="toc-h4"><a href="#interactive-context-interface">Interactive Context Interface</a></li>
+      <li class="toc-h4"><a href="#interactive-node-interface">Interactive Node Interface</a></li>
+      <li class="toc-h4"><a href="#event-types">Event Types</a></li>
+      <li class="toc-h3"><a href="#2-interactive-execution-context-srccoreinteractiveexecutioncontextts">2. Interactive Execution Context (src/core/InteractiveExecutionContext.ts)</a></li>
+      <li class="toc-h4"><a href="#key-features">Key Features</a></li>
+      <li class="toc-h4"><a href="#implementation-details">Implementation Details</a></li>
+      <li class="toc-h3"><a href="#3-node-executor-extension-srccorenodeexecutorts">3. Node Executor Extension (src/core/NodeExecutor.ts)</a></li>
+      <li class="toc-h4"><a href="#changes-made">Changes Made</a></li>
+      <li class="toc-h4"><a href="#execution-flow-for-interactive-nodes">Execution Flow for Interactive Nodes</a></li>
+      <li class="toc-h2"><a href="#architecture">Architecture</a></li>
+      <li class="toc-h3"><a href="#component-relationships">Component Relationships</a></li>
+      <li class="toc-h3"><a href="#event-flow">Event Flow</a></li>
+      <li class="toc-h2"><a href="#usage-example">Usage Example</a></li>
+      <li class="toc-h3"><a href="#creating-an-interactive-node">Creating an Interactive Node</a></li>
+      <li class="toc-h3"><a href="#providing-user-input-from-external-source">Providing User Input from External Source</a></li>
+      <li class="toc-h2"><a href="#testing">Testing</a></li>
+      <li class="toc-h3"><a href="#unit-tests-implemented">Unit Tests Implemented</a></li>
+      <li class="toc-h4"><a href="#test-files-created">Test Files Created</a></li>
+      <li class="toc-h4"><a href="#test-coverage">Test Coverage</a></li>
+      <li class="toc-h4"><a href="#running-tests">Running Tests</a></li>
+      <li class="toc-h4"><a href="#test-results">Test Results</a></li>
+      <li class="toc-h2"><a href="#known-limitations">Known Limitations</a></li>
+      <li class="toc-h2"><a href="#next-steps-phase-2">Next Steps (Phase 2)</a></li>
+      <li class="toc-h2"><a href="#phase-2-goals">Phase 2 Goals</a></li>
+      <li class="toc-h3"><a href="#1-form-validation-utilities-utilsformvalidationts">1. Form Validation Utilities (utils/formValidation.ts)</a></li>
+      <li class="toc-h4"><a href="#key-functions">Key Functions</a></li>
+      <li class="toc-h4"><a href="#validation-rules-supported">Validation Rules Supported</a></li>
+      <li class="toc-h3"><a href="#2-user-input-dialog-component-componentsgraphuserinputdialogtsx">2. User Input Dialog Component (components/graph/UserInputDialog.tsx)</a></li>
+      <li class="toc-h4"><a href="#features">Features</a></li>
+      <li class="toc-h4"><a href="#props">Props</a></li>
+      <li class="toc-h4"><a href="#supported-field-types">Supported Field Types</a></li>
+      <li class="toc-h3"><a href="#3-interactive-node-manager-component-componentsgraphinteractivenodemanagertsx">3. Interactive Node Manager Component (components/graph/InteractiveNodeManager.tsx)</a></li>
+      <li class="toc-h3"><a href="#4-backend-api-endpoints">4. Backend API Endpoints</a></li>
+      <li class="toc-h4"><a href="#user-input-submission-appapigraphsinteractiveinputnodeidroutets">User Input Submission (app/api/graphs/interactive/input/[nodeId]/route.ts)</a></li>
+      <li class="toc-h4"><a href="#user-input-cancellation-appapigraphsinteractiveinputnodeidcancelroutets">User Input Cancellation (app/api/graphs/interactive/input/[nodeId]/cancel/route.ts)</a></li>
+      <li class="toc-h4"><a href="#executor-registration">Executor Registration</a></li>
+      <li class="toc-h3"><a href="#5-streaming-execution-updates-appapigraphsexecute-streamroutets">5. Streaming Execution Updates (app/api/graphs/execute-stream/route.ts)</a></li>
+      <li class="toc-h3"><a href="#6-streaming-execution-service-updates-servicesstreamingexecutionservicets">6. Streaming Execution Service Updates (services/streamingExecutionService.ts)</a></li>
+      <li class="toc-h3"><a href="#7-example-user-input-node-srcnodesinteractiveuserinputnodets">7. Example User Input Node (src/nodes/interactive/UserInputNode.ts)</a></li>
+      <li class="toc-h4"><a href="#configuration">Configuration</a></li>
+      <li class="toc-h3"><a href="#8-graph-editor-integration-appgraph-editorpagetsx">8. Graph Editor Integration (app/graph-editor/page.tsx)</a></li>
+      <li class="toc-h3"><a href="#component-flow">Component Flow</a></li>
+      <li class="toc-h3"><a href="#data-flow">Data Flow</a></li>
+      <li class="toc-h3"><a href="#creating-a-graph-with-user-input-node">Creating a Graph with User Input Node</a></li>
+      <li class="toc-h3"><a href="#frontend-integration">Frontend Integration</a></li>
+      <li class="toc-h3"><a href="#unit-tests">Unit Tests</a></li>
+      <li class="toc-h3"><a href="#integration-tests">Integration Tests</a></li>
+      <li class="toc-h2"><a href="#next-steps-phase-3">Next Steps (Phase 3)</a></li>
+      <li class="toc-h2"><a href="#phase-3-goals">Phase 3 Goals</a></li>
+      <li class="toc-h3"><a href="#1-image-display-panel-component-componentsgraphimagedisplaypaneltsx">1. Image Display Panel Component (components/graph/ImageDisplayPanel.tsx)</a></li>
+      <li class="toc-h4"><a href="#image-data-processing">Image Data Processing</a></li>
+      <li class="toc-h3"><a href="#2-interactive-node-manager-updates-componentsgraphinteractivenodemanagertsx">2. Interactive Node Manager Updates (components/graph/InteractiveNodeManager.tsx)</a></li>
+      <li class="toc-h3"><a href="#3-streaming-execution-updates-appapigraphsexecute-streamroutets">3. Streaming Execution Updates (app/api/graphs/execute-stream/route.ts)</a></li>
+      <li class="toc-h3"><a href="#4-streaming-execution-service-updates-servicesstreamingexecutionservicets">4. Streaming Execution Service Updates (services/streamingExecutionService.ts)</a></li>
+      <li class="toc-h3"><a href="#5-example-image-display-node-srcnodesinteractiveimagedisplaynodets">5. Example Image Display Node (src/nodes/interactive/ImageDisplayNode.ts)</a></li>
+      <li class="toc-h3"><a href="#creating-a-graph-with-image-display-node">Creating a Graph with Image Display Node</a></li>
+      <li class="toc-h2"><a href="#next-steps-phase-4">Next Steps (Phase 4)</a></li>
+      <li class="toc-h2"><a href="#phase-4-goals">Phase 4 Goals</a></li>
+      <li class="toc-h3"><a href="#1-streaming-data-panel-component-componentsgraphstreamingdatapaneltsx">1. Streaming Data Panel Component (components/graph/StreamingDataPanel.tsx)</a></li>
+      <li class="toc-h4"><a href="#data-entry-structure">Data Entry Structure</a></li>
+      <li class="toc-h3"><a href="#5-example-streaming-data-node-srcnodesinteractivestreamingdatanodets">5. Example Streaming Data Node (src/nodes/interactive/StreamingDataNode.ts)</a></li>
+      <li class="toc-h3"><a href="#creating-a-graph-with-streaming-data-node">Creating a Graph with Streaming Data Node</a></li>
+      <li class="toc-h2"><a href="#performance-considerations">Performance Considerations</a></li>
+      <li class="toc-h2"><a href="#next-steps-future-enhancements">Next Steps (Future Enhancements)</a></li>
+      <li class="toc-h2"><a href="#dependencies">Dependencies</a></li>
+      <li class="toc-h2"><a href="#migration-notes">Migration Notes</a></li>
+      <li class="toc-h2"><a href="#conclusion">Conclusion</a></li>
+      <li class="toc-h2"><a href="#phase-5-goals">Phase 5 Goals</a></li>
+      <li class="toc-h3"><a href="#1-integration-tests-__tests__integrationinteractive-flowtestts">1. Integration Tests (__tests__/integration/interactive-flow.test.ts)</a></li>
+      <li class="toc-h3"><a href="#2-example-graphs-examplesinteractive-nodes-examplets">2. Example Graphs (examples/interactive-nodes-example.ts)</a></li>
+      <li class="toc-h4"><a href="#examples-included">Examples Included</a></li>
+      <li class="toc-h4"><a href="#usage">Usage</a></li>
+      <li class="toc-h2"><a href="#integration-testing-strategy">Integration Testing Strategy</a></li>
+      <li class="toc-h3"><a href="#test-categories">Test Categories</a></li>
+      <li class="toc-h3"><a href="#test-coverage-summary">Test Coverage Summary</a></li>
+      <li class="toc-h2"><a href="#example-graph-usage">Example Graph Usage</a></li>
+      <li class="toc-h3"><a href="#creating-interactive-graphs">Creating Interactive Graphs</a></li>
+      <li class="toc-h2"><a href="#system-integration">System Integration</a></li>
+      <li class="toc-h3"><a href="#backend-integration">Backend Integration</a></li>
+      <li class="toc-h2"><a href="#documentation">Documentation</a></li>
+      <li class="toc-h3"><a href="#complete-documentation-structure">Complete Documentation Structure</a></li>
+      <li class="toc-h2"><a href="#future-enhancements">Future Enhancements</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -1734,6 +1849,52 @@ Total:         110 passed
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

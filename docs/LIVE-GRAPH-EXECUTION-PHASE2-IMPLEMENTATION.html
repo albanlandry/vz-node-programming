@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header expanded">Live Execution</div>
+      <ul class="nav-submenu expanded">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" class="active">Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,12 +65,13 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Live Graph Execution Phase 2 - Implementation Guide</h1>
-<h2>Implementation Overview</h2>
+<h2 id="implementation-overview">Implementation Overview</h2>
 <p>This document provides detailed implementation steps for Phase 2 features.</p>
-<h2>1. Real-time Streaming (SSE)</h2>
-<h3>1.1 Backend SSE Endpoint</h3>
+<h2 id="1-real-time-streaming-sse">1. Real-time Streaming (SSE)</h2>
+<h3 id="11-backend-sse-endpoint">1.1 Backend SSE Endpoint</h3>
 <p><strong>File</strong>: <code>app/api/graphs/execute-stream/route.ts</code></p>
 <pre><code class="language-typescript">import { NextRequest } from &#39;next/server&#39;;
 import { GraphExecutionEngine } from &#39;../../../../src/graph-management&#39;;
@@ -186,7 +184,7 @@ export async function POST(request: NextRequest) {
   });
 }
 </code></pre>
-<h3>1.2 Frontend SSE Client Service</h3>
+<h3 id="12-frontend-sse-client-service">1.2 Frontend SSE Client Service</h3>
 <p><strong>File</strong>: <code>services/streamingExecutionService.ts</code></p>
 <pre><code class="language-typescript">import type { GraphDefinition } from &#39;../src/graph-management/types&#39;;
 
@@ -342,8 +340,8 @@ export class StreamingExecutionService {
 
 export const streamingExecutionService = new StreamingExecutionService();
 </code></pre>
-<h2>2. Input Configuration Panel</h2>
-<h3>2.1 Store Extension</h3>
+<h2 id="2-input-configuration-panel">2. Input Configuration Panel</h2>
+<h3 id="21-store-extension">2.1 Store Extension</h3>
 <p><strong>File</strong>: <code>store/graphStore.ts</code> (extend existing)</p>
 <pre><code class="language-typescript">// Add to GraphState interface
 interface GraphState {
@@ -377,7 +375,7 @@ clearInputConfig: () =&gt; {
   set({ inputConfig: {} });
 },
 </code></pre>
-<h3>2.2 InputConfigPanel Component</h3>
+<h3 id="22-inputconfigpanel-component">2.2 InputConfigPanel Component</h3>
 <p><strong>File</strong>: <code>components/graph/InputConfigPanel.tsx</code></p>
 <pre><code class="language-typescript">&#39;use client&#39;;
 
@@ -562,8 +560,8 @@ export default function InputConfigPanel({ isOpen, onClose, position }: InputCon
   );
 }
 </code></pre>
-<h2>3. Data Flow Visualization</h2>
-<h3>3.1 Connection State Management</h3>
+<h2 id="3-data-flow-visualization">3. Data Flow Visualization</h2>
+<h3 id="31-connection-state-management">3.1 Connection State Management</h3>
 <p><strong>File</strong>: <code>store/graphStore.ts</code> (extend)</p>
 <pre><code class="language-typescript">interface ConnectionState {
   connectionId: string;
@@ -583,7 +581,7 @@ interface GraphState {
   setShowConnectionValues: (show: boolean) =&gt; void;
 }
 </code></pre>
-<h3>3.2 DataFlowVisualization Component</h3>
+<h3 id="32-dataflowvisualization-component">3.2 DataFlowVisualization Component</h3>
 <p><strong>File</strong>: <code>components/graph/DataFlowVisualization.tsx</code></p>
 <pre><code class="language-typescript">&#39;use client&#39;;
 
@@ -617,8 +615,8 @@ export default function DataFlowVisualization() {
   return null;
 }
 </code></pre>
-<h2>4. Debugging Features</h2>
-<h3>4.1 Breakpoint System</h3>
+<h2 id="4-debugging-features">4. Debugging Features</h2>
+<h3 id="41-breakpoint-system">4.1 Breakpoint System</h3>
 <p><strong>File</strong>: <code>store/graphStore.ts</code> (extend)</p>
 <pre><code class="language-typescript">interface Breakpoint {
   nodeId: string;
@@ -641,7 +639,7 @@ interface GraphState {
   stepExecution: () =&gt; void;
 }
 </code></pre>
-<h3>4.2 DebugPanel Component</h3>
+<h3 id="42-debugpanel-component">4.2 DebugPanel Component</h3>
 <p><strong>File</strong>: <code>components/graph/DebugPanel.tsx</code></p>
 <pre><code class="language-typescript">&#39;use client&#39;;
 
@@ -726,8 +724,8 @@ export default function DebugPanel() {
   );
 }
 </code></pre>
-<h2>Integration Points</h2>
-<h3>Update ExecutionToolbar</h3>
+<h2 id="integration-points">Integration Points</h2>
+<h3 id="update-executiontoolbar">Update ExecutionToolbar</h3>
 <p><strong>File</strong>: <code>components/graph/ExecutionToolbar.tsx</code> (modify)</p>
 <ul>
 <li>Add streaming execution support</li>
@@ -735,29 +733,73 @@ export default function DebugPanel() {
 <li>Add debug panel toggle</li>
 <li>Add data flow visualization toggle</li>
 </ul>
-<h3>Update ReactFlowCanvas</h3>
+<h3 id="update-reactflowcanvas">Update ReactFlowCanvas</h3>
 <p><strong>File</strong>: <code>components/graph/ReactFlowCanvas.tsx</code> (modify)</p>
 <ul>
 <li>Integrate DataFlowVisualization</li>
 <li>Show connection states</li>
 <li>Display connection values when enabled</li>
 </ul>
-<h2>Testing</h2>
+<h2 id="testing">Testing</h2>
 <p>See <code>LIVE-GRAPH-EXECUTION-PHASE2-TESTS.md</code> for detailed test specifications.</p>
+
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#implementation-overview">Implementation Overview</a></li>
+      <li class="toc-h2"><a href="#1-real-time-streaming-sse">1. Real-time Streaming (SSE)</a></li>
+      <li class="toc-h3"><a href="#11-backend-sse-endpoint">1.1 Backend SSE Endpoint</a></li>
+      <li class="toc-h3"><a href="#12-frontend-sse-client-service">1.2 Frontend SSE Client Service</a></li>
+      <li class="toc-h2"><a href="#2-input-configuration-panel">2. Input Configuration Panel</a></li>
+      <li class="toc-h3"><a href="#21-store-extension">2.1 Store Extension</a></li>
+      <li class="toc-h3"><a href="#22-inputconfigpanel-component">2.2 InputConfigPanel Component</a></li>
+      <li class="toc-h2"><a href="#3-data-flow-visualization">3. Data Flow Visualization</a></li>
+      <li class="toc-h3"><a href="#31-connection-state-management">3.1 Connection State Management</a></li>
+      <li class="toc-h3"><a href="#32-dataflowvisualization-component">3.2 DataFlowVisualization Component</a></li>
+      <li class="toc-h2"><a href="#4-debugging-features">4. Debugging Features</a></li>
+      <li class="toc-h3"><a href="#41-breakpoint-system">4.1 Breakpoint System</a></li>
+      <li class="toc-h3"><a href="#42-debugpanel-component">4.2 DebugPanel Component</a></li>
+      <li class="toc-h2"><a href="#integration-points">Integration Points</a></li>
+      <li class="toc-h3"><a href="#update-executiontoolbar">Update ExecutionToolbar</a></li>
+      <li class="toc-h3"><a href="#update-reactflowcanvas">Update ReactFlowCanvas</a></li>
+      <li class="toc-h2"><a href="#testing">Testing</a></li>
+    </ul>
+</div>
 
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -770,6 +812,52 @@ export default function DebugPanel() {
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header expanded">Live Execution</div>
+      <ul class="nav-submenu expanded">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,11 +65,12 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Live Graph Execution Phase 3 - Design &amp; Architecture</h1>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>Phase 3 focuses on performance optimization and advanced visualization features. It includes incremental execution (only re-executing changed nodes) and advanced visualization tools (execution timeline, performance metrics, data flow graphs).</p>
-<h2>Architecture Overview</h2>
+<h2 id="architecture-overview">Architecture Overview</h2>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │                    Frontend (React/Next.js)                  │
 ├─────────────────────────────────────────────────────────────┤
@@ -118,9 +116,9 @@
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
 </code></pre>
-<h2>Component Architecture</h2>
-<h3>1. Incremental Execution</h3>
-<h4>Change Detection</h4>
+<h2 id="component-architecture">Component Architecture</h2>
+<h3 id="1-incremental-execution">1. Incremental Execution</h3>
+<h4 id="change-detection">Change Detection</h4>
 <pre><code class="language-typescript">interface NodeChange {
   nodeId: string;
   type: &#39;added&#39; | &#39;removed&#39; | &#39;modified&#39; | &#39;connection-changed&#39;;
@@ -139,7 +137,7 @@ interface ChangeDetector {
   ): GraphDefinition;
 }
 </code></pre>
-<h4>Result Caching</h4>
+<h4 id="result-caching">Result Caching</h4>
 <pre><code class="language-typescript">interface CachedResult {
   nodeId: string;
   result: ExecutionResult;
@@ -155,7 +153,7 @@ interface ResultCache {
   clear(): void;
 }
 </code></pre>
-<h4>Incremental Executor</h4>
+<h4 id="incremental-executor">Incremental Executor</h4>
 <pre><code class="language-typescript">interface IncrementalExecutionOptions {
   useCache: boolean;
   cacheTTL?: number;
@@ -171,8 +169,8 @@ class IncrementalExecutor {
   ): Promise&lt;ExecutionResponse&gt;;
 }
 </code></pre>
-<h3>2. Advanced Visualization</h3>
-<h4>Execution Timeline</h4>
+<h3 id="2-advanced-visualization">2. Advanced Visualization</h3>
+<h4 id="execution-timeline">Execution Timeline</h4>
 <pre><code class="language-typescript">interface TimelineEvent {
   nodeId: string;
   nodeName: string;
@@ -189,7 +187,7 @@ interface ExecutionTimeline {
   parallelExecution: boolean;
 }
 </code></pre>
-<h4>Performance Metrics</h4>
+<h4 id="performance-metrics">Performance Metrics</h4>
 <pre><code class="language-typescript">interface NodePerformanceMetrics {
   nodeId: string;
   nodeName: string;
@@ -208,7 +206,7 @@ interface GraphPerformanceMetrics {
   averageGraphExecutionTime: number;
 }
 </code></pre>
-<h4>Data Flow Graph</h4>
+<h4 id="data-flow-graph">Data Flow Graph</h4>
 <pre><code class="language-typescript">interface DataFlowNode {
   nodeId: string;
   nodeName: string;
@@ -233,8 +231,8 @@ interface DataFlowGraph {
   timestamp: number;
 }
 </code></pre>
-<h2>Data Flow</h2>
-<h3>Incremental Execution Flow</h3>
+<h2 id="data-flow">Data Flow</h2>
+<h3 id="incremental-execution-flow">Incremental Execution Flow</h3>
 <ol>
 <li><p><strong>Change Detection</strong></p>
 <pre><code>User modifies graph
@@ -258,7 +256,7 @@ interface DataFlowGraph {
 </code></pre>
 </li>
 </ol>
-<h3>Visualization Data Flow</h3>
+<h3 id="visualization-data-flow">Visualization Data Flow</h3>
 <ol>
 <li><p><strong>Timeline Generation</strong></p>
 <pre><code>Execution completes
@@ -277,8 +275,8 @@ interface DataFlowGraph {
 </code></pre>
 </li>
 </ol>
-<h2>State Management</h2>
-<h3>Extended Graph Store</h3>
+<h2 id="state-management">State Management</h2>
+<h3 id="extended-graph-store">Extended Graph Store</h3>
 <pre><code class="language-typescript">interface GraphState {
   // ... existing state
   
@@ -304,8 +302,8 @@ interface DataFlowGraph {
   setDataFlowGraph: (graph: DataFlowGraph) =&gt; void;
 }
 </code></pre>
-<h2>API Design</h2>
-<h3>Incremental Execution Endpoint</h3>
+<h2 id="api-design">API Design</h2>
+<h3 id="incremental-execution-endpoint">Incremental Execution Endpoint</h3>
 <p><strong>POST /api/graphs/execute-incremental</strong></p>
 <p>Request:</p>
 <pre><code class="language-typescript">{
@@ -331,8 +329,8 @@ interface DataFlowGraph {
   logs: string[];
 }
 </code></pre>
-<h2>Component Specifications</h2>
-<h3>1. ExecutionTimeline Component</h3>
+<h2 id="component-specifications">Component Specifications</h2>
+<h3 id="1-executiontimeline-component">1. ExecutionTimeline Component</h3>
 <p><strong>Location</strong>: <code>components/graph/ExecutionTimeline.tsx</code></p>
 <p><strong>Features</strong>:</p>
 <ul>
@@ -342,7 +340,7 @@ interface DataFlowGraph {
 <li>Interactive hover details</li>
 <li>Zoom/pan controls</li>
 </ul>
-<h3>2. PerformanceMetrics Component</h3>
+<h3 id="2-performancemetrics-component">2. PerformanceMetrics Component</h3>
 <p><strong>Location</strong>: <code>components/graph/PerformanceMetrics.tsx</code></p>
 <p><strong>Features</strong>:</p>
 <ul>
@@ -352,7 +350,7 @@ interface DataFlowGraph {
 <li>Performance charts</li>
 <li>Export metrics</li>
 </ul>
-<h3>3. DataFlowGraph Component</h3>
+<h3 id="3-dataflowgraph-component">3. DataFlowGraph Component</h3>
 <p><strong>Location</strong>: <code>components/graph/DataFlowGraph.tsx</code></p>
 <p><strong>Features</strong>:</p>
 <ul>
@@ -362,7 +360,7 @@ interface DataFlowGraph {
 <li>Interactive exploration</li>
 <li>Export data flow</li>
 </ul>
-<h3>4. IncrementalExecutor Service</h3>
+<h3 id="4-incrementalexecutor-service">4. IncrementalExecutor Service</h3>
 <p><strong>Location</strong>: <code>services/incrementalExecutionService.ts</code></p>
 <p><strong>Methods</strong>:</p>
 <pre><code class="language-typescript">class IncrementalExecutionService {
@@ -383,8 +381,8 @@ interface DataFlowGraph {
   ): GraphDefinition;
 }
 </code></pre>
-<h2>Performance Considerations</h2>
-<h3>Caching Strategy</h3>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="caching-strategy">Caching Strategy</h3>
 <ul>
 <li>Hash-based cache keys (node + dependencies)</li>
 <li>TTL-based expiration</li>
@@ -398,23 +396,23 @@ interface DataFlowGraph {
 <li>Dependency graph analysis</li>
 <li>Efficient diff algorithm</li>
 </ul>
-<h3>Visualization Performance</h3>
+<h3 id="visualization-performance">Visualization Performance</h3>
 <ul>
 <li>Virtualized timeline rendering</li>
 <li>Throttled metric updates</li>
 <li>Lazy loading of data flow graphs</li>
 <li>Memoized calculations</li>
 </ul>
-<h2>Security Considerations</h2>
-<h3>Cache Validation</h3>
+<h2 id="security-considerations">Security Considerations</h2>
+<h3 id="cache-validation">Cache Validation</h3>
 <ul>
 <li>Verify cache integrity</li>
 <li>Validate graph hash matches</li>
 <li>Prevent stale cache usage</li>
 <li>Sanitize cached data</li>
 </ul>
-<h2>Testing Strategy</h2>
-<h3>Unit Tests</h3>
+<h2 id="testing-strategy">Testing Strategy</h2>
+<h3 id="unit-tests">Unit Tests</h3>
 <ul>
 <li>Change detection logic</li>
 <li>Cache management</li>
@@ -422,21 +420,21 @@ interface DataFlowGraph {
 <li>Timeline generation</li>
 <li>Performance metrics calculation</li>
 </ul>
-<h3>Integration Tests</h3>
+<h3 id="integration-tests">Integration Tests</h3>
 <ul>
 <li>End-to-end incremental execution</li>
 <li>Cache hit/miss scenarios</li>
 <li>Visualization data accuracy</li>
 <li>Performance under load</li>
 </ul>
-<h3>Performance Tests</h3>
+<h3 id="performance-tests">Performance Tests</h3>
 <ul>
 <li>Large graph incremental execution</li>
 <li>Cache efficiency</li>
 <li>Visualization rendering performance</li>
 <li>Memory usage</li>
 </ul>
-<h2>Migration Path</h2>
+<h2 id="migration-path">Migration Path</h2>
 <ol>
 <li>Add change detection to store (non-breaking)</li>
 <li>Add cache management (non-breaking)</li>
@@ -445,7 +443,7 @@ interface DataFlowGraph {
 <li>Update ExecutionToolbar to use incremental execution</li>
 <li>Add performance metrics collection</li>
 </ol>
-<h2>Success Criteria</h2>
+<h2 id="success-criteria">Success Criteria</h2>
 <ul>
 <li>✅ Incremental execution reduces execution time by 50%+ for unchanged nodes</li>
 <li>✅ Cache hit rate &gt; 80% for repeated executions</li>
@@ -456,19 +454,80 @@ interface DataFlowGraph {
 <li>✅ Change detection accurate and fast (&lt; 10ms for 100 nodes)</li>
 </ul>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#overview">Overview</a></li>
+      <li class="toc-h2"><a href="#architecture-overview">Architecture Overview</a></li>
+      <li class="toc-h2"><a href="#component-architecture">Component Architecture</a></li>
+      <li class="toc-h3"><a href="#1-incremental-execution">1. Incremental Execution</a></li>
+      <li class="toc-h4"><a href="#change-detection">Change Detection</a></li>
+      <li class="toc-h4"><a href="#result-caching">Result Caching</a></li>
+      <li class="toc-h4"><a href="#incremental-executor">Incremental Executor</a></li>
+      <li class="toc-h3"><a href="#2-advanced-visualization">2. Advanced Visualization</a></li>
+      <li class="toc-h4"><a href="#execution-timeline">Execution Timeline</a></li>
+      <li class="toc-h4"><a href="#performance-metrics">Performance Metrics</a></li>
+      <li class="toc-h4"><a href="#data-flow-graph">Data Flow Graph</a></li>
+      <li class="toc-h2"><a href="#data-flow">Data Flow</a></li>
+      <li class="toc-h3"><a href="#incremental-execution-flow">Incremental Execution Flow</a></li>
+      <li class="toc-h3"><a href="#visualization-data-flow">Visualization Data Flow</a></li>
+      <li class="toc-h2"><a href="#state-management">State Management</a></li>
+      <li class="toc-h3"><a href="#extended-graph-store">Extended Graph Store</a></li>
+      <li class="toc-h2"><a href="#api-design">API Design</a></li>
+      <li class="toc-h3"><a href="#incremental-execution-endpoint">Incremental Execution Endpoint</a></li>
+      <li class="toc-h2"><a href="#component-specifications">Component Specifications</a></li>
+      <li class="toc-h3"><a href="#1-executiontimeline-component">1. ExecutionTimeline Component</a></li>
+      <li class="toc-h3"><a href="#2-performancemetrics-component">2. PerformanceMetrics Component</a></li>
+      <li class="toc-h3"><a href="#3-dataflowgraph-component">3. DataFlowGraph Component</a></li>
+      <li class="toc-h3"><a href="#4-incrementalexecutor-service">4. IncrementalExecutor Service</a></li>
+      <li class="toc-h2"><a href="#performance-considerations">Performance Considerations</a></li>
+      <li class="toc-h3"><a href="#caching-strategy">Caching Strategy</a></li>
+      <li class="toc-h3"><a href="#visualization-performance">Visualization Performance</a></li>
+      <li class="toc-h2"><a href="#security-considerations">Security Considerations</a></li>
+      <li class="toc-h3"><a href="#cache-validation">Cache Validation</a></li>
+      <li class="toc-h2"><a href="#testing-strategy">Testing Strategy</a></li>
+      <li class="toc-h3"><a href="#unit-tests">Unit Tests</a></li>
+      <li class="toc-h3"><a href="#integration-tests">Integration Tests</a></li>
+      <li class="toc-h3"><a href="#performance-tests">Performance Tests</a></li>
+      <li class="toc-h2"><a href="#migration-path">Migration Path</a></li>
+      <li class="toc-h2"><a href="#success-criteria">Success Criteria</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -481,6 +540,52 @@ interface DataFlowGraph {
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

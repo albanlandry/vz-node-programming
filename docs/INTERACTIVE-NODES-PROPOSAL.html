@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" class="active">Interactive Nodes</a></li>
+      <div class="nav-group-header expanded">Advanced Topics</div>
+      <ul class="nav-submenu expanded">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" class="active">Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,34 +65,35 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Interactive Nodes Support Strategy</h1>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>This document proposes a strategy for supporting interactive nodes in the VZ Programming system. Interactive nodes are nodes that can request user input during execution or display special types of data (images, streaming, etc.).</p>
-<h2>Goals</h2>
+<h2 id="goals">Goals</h2>
 <ol>
 <li><strong>User Input Nodes</strong>: Display forms to users during execution and receive and validate input</li>
 <li><strong>Image Display Nodes</strong>: Visually display image data</li>
 <li><strong>Streaming Data Nodes</strong>: Display data that updates in real-time</li>
 <li><strong>Extensible Architecture</strong>: Enable future addition of other interactive features</li>
 </ol>
-<h2>Current Architecture Analysis</h2>
-<h3>Current Execution Flow</h3>
+<h2 id="current-architecture-analysis">Current Architecture Analysis</h2>
+<h3 id="current-execution-flow">Current Execution Flow</h3>
 <pre><code>GraphExecutionEngine
   └─&gt; NodeExecutor
        └─&gt; INode.execute(context)
             └─&gt; ExecutionResult (outputs, error, executionTime)
                  └─&gt; ExecutionResultsPanel (text-based display)
 </code></pre>
-<h3>Limitations</h3>
+<h3 id="limitations">Limitations</h3>
 <ol>
 <li><strong>Synchronous Execution</strong>: Nodes wait until the <code>execute()</code> method completes</li>
 <li><strong>Simple Output</strong>: Results are only displayed as text/JSON</li>
 <li><strong>Non-Interactive</strong>: Cannot receive user input</li>
 <li><strong>Static Display</strong>: Only shows results after execution completes</li>
 </ol>
-<h2>Proposed Architecture</h2>
-<h3>1. Interactive Node Interface Extension</h3>
+<h2 id="proposed-architecture">Proposed Architecture</h2>
+<h3 id="1-interactive-node-interface-extension">1. Interactive Node Interface Extension</h3>
 <pre><code class="language-typescript">// src/types/index.ts
 
 /**
@@ -205,7 +203,7 @@ export interface IInteractiveNode extends INode {
   executeInteractive(context: InteractiveExecutionContext): Promise&lt;ExecutionResult&gt;;
 }
 </code></pre>
-<h3>2. Execution Engine Extension</h3>
+<h3 id="2-execution-engine-extension">2. Execution Engine Extension</h3>
 <pre><code class="language-typescript">// src/core/InteractiveNodeExecutor.ts
 
 /**
@@ -310,8 +308,8 @@ export class InteractiveExecutionContext implements InteractiveExecutionContext 
   get errorHandler() { return this.baseContext.errorHandler; }
 }
 </code></pre>
-<h3>3. Frontend Components</h3>
-<h4>3.1 Interactive Node UI Manager</h4>
+<h3 id="3-frontend-components">3. Frontend Components</h3>
+<h4 id="31-interactive-node-ui-manager">3.1 Interactive Node UI Manager</h4>
 <pre><code class="language-typescript">// components/graph/InteractiveNodeManager.tsx
 
 &#39;use client&#39;;
@@ -462,7 +460,7 @@ export default function InteractiveNodeManager() {
   );
 }
 </code></pre>
-<h4>3.2 User Input Dialog</h4>
+<h4 id="32-user-input-dialog">3.2 User Input Dialog</h4>
 <pre><code class="language-typescript">// components/graph/interactive/UserInputDialog.tsx
 
 &#39;use client&#39;;
@@ -683,7 +681,7 @@ export default function UserInputDialog({ request, onSubmit, onCancel }: UserInp
   );
 }
 </code></pre>
-<h4>3.3 Image Display Panel</h4>
+<h4 id="33-image-display-panel">3.3 Image Display Panel</h4>
 <pre><code class="language-typescript">// components/graph/interactive/ImageDisplayPanel.tsx
 
 &#39;use client&#39;;
@@ -732,7 +730,7 @@ export default function ImageDisplayPanel({ nodeId, imageData, onClose }: ImageD
   );
 }
 </code></pre>
-<h4>3.4 Streaming Data Panel</h4>
+<h4 id="34-streaming-data-panel">3.4 Streaming Data Panel</h4>
 <pre><code class="language-typescript">// components/graph/interactive/StreamingDataPanel.tsx
 
 &#39;use client&#39;;
@@ -791,7 +789,7 @@ export default function StreamingDataPanel({ nodeId, data, onClose }: StreamingD
   );
 }
 </code></pre>
-<h3>4. Backend API Extension</h3>
+<h3 id="4-backend-api-extension">4. Backend API Extension</h3>
 <pre><code class="language-typescript">// app/api/graphs/interactive/input/[nodeId]/route.ts
 
 import { NextRequest, NextResponse } from &#39;next/server&#39;;
@@ -829,8 +827,8 @@ export async function POST(
   }
 }
 </code></pre>
-<h3>5. Example Node Implementations</h3>
-<h4>5.1 User Input Node</h4>
+<h3 id="5-example-node-implementations">5. Example Node Implementations</h3>
+<h4 id="51-user-input-node">5.1 User Input Node</h4>
 <pre><code class="language-typescript">// src/nodes/interactive/UserInputNode.ts
 
 import { BaseNode } from &#39;../../core/BaseNode&#39;;
@@ -904,7 +902,7 @@ export class UserInputNode extends BaseNode {
   }
 }
 </code></pre>
-<h4>5.2 Image Display Node</h4>
+<h4 id="52-image-display-node">5.2 Image Display Node</h4>
 <pre><code class="language-typescript">// src/nodes/interactive/ImageDisplayNode.ts
 
 import { BaseNode } from &#39;../../core/BaseNode&#39;;
@@ -939,7 +937,7 @@ export class ImageDisplayNode extends BaseNode {
   }
 }
 </code></pre>
-<h4>5.3 Streaming Data Node</h4>
+<h4 id="53-streaming-data-node">5.3 Streaming Data Node</h4>
 <pre><code class="language-typescript">// src/nodes/interactive/StreamingDataNode.ts
 
 import { BaseNode } from &#39;../../core/BaseNode&#39;;
@@ -981,15 +979,15 @@ export class StreamingDataNode extends BaseNode {
   }
 }
 </code></pre>
-<h2>Implementation Phases</h2>
-<h3>Phase 1: Basic Infrastructure (2-3 weeks)</h3>
+<h2 id="implementation-phases">Implementation Phases</h2>
+<h3 id="phase-1-basic-infrastructure-2-3-weeks">Phase 1: Basic Infrastructure (2-3 weeks)</h3>
 <ol>
 <li>Add type definitions (<code>InteractiveNodeType</code>, <code>UserInputRequest</code>, <code>ImageData</code>, etc.)</li>
 <li>Implement <code>InteractiveExecutionContext</code></li>
 <li>Extend execution engine (detect and handle interactive nodes)</li>
 <li>Build basic event system</li>
 </ol>
-<h3>Phase 2: User Input Support (2 weeks)</h3>
+<h3 id="phase-2-user-input-support-2-weeks">Phase 2: User Input Support (2 weeks)</h3>
 <ol>
 <li>Implement <code>UserInputDialog</code> component</li>
 <li>Implement form validation system</li>
@@ -997,73 +995,131 @@ export class StreamingDataNode extends BaseNode {
 <li>User input wait/resume logic in execution engine</li>
 <li>Example <code>UserInputNode</code> implementation</li>
 </ol>
-<h3>Phase 3: Image Display Support (1 week)</h3>
+<h3 id="phase-3-image-display-support-1-week">Phase 3: Image Display Support (1 week)</h3>
 <ol>
 <li>Implement <code>ImageDisplayPanel</code> component</li>
 <li>Image data processing (URL, base64, Blob)</li>
 <li>Example <code>ImageDisplayNode</code> implementation</li>
 </ol>
-<h3>Phase 4: Streaming Data Support (2 weeks)</h3>
+<h3 id="phase-4-streaming-data-support-2-weeks">Phase 4: Streaming Data Support (2 weeks)</h3>
 <ol>
 <li>Implement <code>StreamingDataPanel</code> component</li>
 <li>Real-time data update mechanism</li>
 <li>WebSocket/SSE integration (if needed)</li>
 <li>Example <code>StreamingDataNode</code> implementation</li>
 </ol>
-<h3>Phase 5: Integration and Testing (1 week)</h3>
+<h3 id="phase-5-integration-and-testing-1-week">Phase 5: Integration and Testing (1 week)</h3>
 <ol>
 <li>Integrate <code>InteractiveNodeManager</code></li>
 <li>Full system integration testing</li>
 <li>Documentation</li>
 <li>Example graph creation</li>
 </ol>
-<h2>Considerations</h2>
-<h3>1. Execution Pause</h3>
+<h2 id="considerations">Considerations</h2>
+<h3 id="1-execution-pause">1. Execution Pause</h3>
 <ul>
 <li>Execution must be paused while a node waits for user input</li>
 <li>Other nodes can continue executing (parallel mode)</li>
 <li>Timeout handling required</li>
 </ul>
-<h3>2. State Management</h3>
+<h3 id="2-state-management">2. State Management</h3>
 <ul>
 <li>Manage <code>InteractiveExecutionContext</code> instances for executing nodes</li>
 <li>Map user input to node IDs</li>
 <li>Session management (on browser refresh)</li>
 </ul>
-<h3>3. Security</h3>
+<h3 id="3-security">3. Security</h3>
 <ul>
 <li>User input validation (XSS prevention)</li>
 <li>Image data size limits</li>
 <li>Streaming data rate limiting</li>
 </ul>
-<h3>4. Performance</h3>
+<h3 id="4-performance">4. Performance</h3>
 <ul>
 <li>Image optimization (thumbnails, lazy loading)</li>
 <li>Streaming data buffering</li>
 <li>UI update optimization (debounce, throttling)</li>
 </ul>
-<h3>5. Extensibility</h3>
+<h3 id="5-extensibility">5. Extensibility</h3>
 <ul>
 <li>Custom UI component plugin system</li>
 <li>Easy addition of new interactive types</li>
 <li>Third-party node developer support</li>
 </ul>
-<h2>Conclusion</h2>
+<h2 id="conclusion">Conclusion</h2>
 <p>This strategy is designed to support interactive nodes with minimal changes to the existing architecture. Through phased implementation, features can be added incrementally, with testing and feedback at each stage.</p>
+
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#overview">Overview</a></li>
+      <li class="toc-h2"><a href="#goals">Goals</a></li>
+      <li class="toc-h2"><a href="#current-architecture-analysis">Current Architecture Analysis</a></li>
+      <li class="toc-h3"><a href="#current-execution-flow">Current Execution Flow</a></li>
+      <li class="toc-h3"><a href="#limitations">Limitations</a></li>
+      <li class="toc-h2"><a href="#proposed-architecture">Proposed Architecture</a></li>
+      <li class="toc-h3"><a href="#1-interactive-node-interface-extension">1. Interactive Node Interface Extension</a></li>
+      <li class="toc-h3"><a href="#2-execution-engine-extension">2. Execution Engine Extension</a></li>
+      <li class="toc-h3"><a href="#3-frontend-components">3. Frontend Components</a></li>
+      <li class="toc-h4"><a href="#31-interactive-node-ui-manager">3.1 Interactive Node UI Manager</a></li>
+      <li class="toc-h4"><a href="#32-user-input-dialog">3.2 User Input Dialog</a></li>
+      <li class="toc-h4"><a href="#33-image-display-panel">3.3 Image Display Panel</a></li>
+      <li class="toc-h4"><a href="#34-streaming-data-panel">3.4 Streaming Data Panel</a></li>
+      <li class="toc-h3"><a href="#4-backend-api-extension">4. Backend API Extension</a></li>
+      <li class="toc-h3"><a href="#5-example-node-implementations">5. Example Node Implementations</a></li>
+      <li class="toc-h4"><a href="#51-user-input-node">5.1 User Input Node</a></li>
+      <li class="toc-h4"><a href="#52-image-display-node">5.2 Image Display Node</a></li>
+      <li class="toc-h4"><a href="#53-streaming-data-node">5.3 Streaming Data Node</a></li>
+      <li class="toc-h2"><a href="#implementation-phases">Implementation Phases</a></li>
+      <li class="toc-h3"><a href="#phase-1-basic-infrastructure-2-3-weeks">Phase 1: Basic Infrastructure (2-3 weeks)</a></li>
+      <li class="toc-h3"><a href="#phase-2-user-input-support-2-weeks">Phase 2: User Input Support (2 weeks)</a></li>
+      <li class="toc-h3"><a href="#phase-3-image-display-support-1-week">Phase 3: Image Display Support (1 week)</a></li>
+      <li class="toc-h3"><a href="#phase-4-streaming-data-support-2-weeks">Phase 4: Streaming Data Support (2 weeks)</a></li>
+      <li class="toc-h3"><a href="#phase-5-integration-and-testing-1-week">Phase 5: Integration and Testing (1 week)</a></li>
+      <li class="toc-h2"><a href="#considerations">Considerations</a></li>
+      <li class="toc-h3"><a href="#1-execution-pause">1. Execution Pause</a></li>
+      <li class="toc-h3"><a href="#2-state-management">2. State Management</a></li>
+      <li class="toc-h3"><a href="#3-security">3. Security</a></li>
+      <li class="toc-h3"><a href="#4-performance">4. Performance</a></li>
+      <li class="toc-h3"><a href="#5-extensibility">5. Extensibility</a></li>
+      <li class="toc-h2"><a href="#conclusion">Conclusion</a></li>
+    </ul>
+</div>
 
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -1076,6 +1132,52 @@ export class StreamingDataNode extends BaseNode {
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

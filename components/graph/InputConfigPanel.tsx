@@ -10,6 +10,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Save, FolderOpen, Trash2 } from 'lucide-react';
 import { useGraphStore } from '../../store/graphStore';
 import type { Port } from '../../src/types';
+import DraggableResizablePanel from './DraggableResizablePanel';
 
 interface InputConfigPanelProps {
   isOpen: boolean;
@@ -138,21 +139,17 @@ export default function InputConfigPanel({ isOpen, onClose, position }: InputCon
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed bg-white shadow-2xl border-2 border-gray-300 z-50 w-96 max-h-[600px] flex flex-col"
-      style={{
-        left: position?.x ?? '50%',
-        top: position?.y ?? '50%',
-        transform: position ? 'none' : 'translate(-50%, -50%)',
-      }}
+    <DraggableResizablePanel
+      panelId="input-config"
+      defaultPosition={position}
+      defaultSize={{ width: 384, height: 600 }}
+      minWidth={300}
+      minHeight={300}
+      maxHeight={800}
+      headerClassName="bg-gradient-to-r from-blue-500 to-blue-600"
+      headerContent={<h3 className="font-semibold text-sm">Input Configuration</h3>}
+      onClose={onClose}
     >
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-3 flex items-center justify-between">
-        <h3 className="font-semibold text-sm">Input Configuration</h3>
-        <button onClick={onClose} className="p-1 hover:bg-blue-700 transition-colors">
-          <X className="w-4 h-4" />
-        </button>
-      </div>
 
       {/* Template Management */}
       {inputTemplates.length > 0 && (
@@ -289,7 +286,7 @@ export default function InputConfigPanel({ isOpen, onClose, position }: InputCon
           })
         )}
       </div>
-    </div>
+    </DraggableResizablePanel>
   );
 }
 

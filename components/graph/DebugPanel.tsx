@@ -9,6 +9,7 @@
 import { useState } from 'react';
 import { Play, Pause, StepForward, X, Bug } from 'lucide-react';
 import { useGraphStore } from '../../store/graphStore';
+import DraggableResizablePanel from './DraggableResizablePanel';
 
 interface DebugPanelProps {
   isOpen: boolean;
@@ -39,25 +40,22 @@ export default function DebugPanel({ isOpen, onClose, position }: DebugPanelProp
   const isExecuting = execution.isExecuting;
 
   return (
-    <div
-      className="fixed bg-white shadow-2xl border-2 border-gray-300 z-50 w-80 max-h-[500px] flex flex-col"
-      style={{
-        left: position?.x ?? 'auto',
-        top: position?.y ?? 'auto',
-        right: position ? 'auto' : '1rem',
-        bottom: position ? 'auto' : '1rem',
-      }}
-    >
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-3 flex items-center justify-between">
+    <DraggableResizablePanel
+      panelId="debug-panel"
+      defaultPosition={position}
+      defaultSize={{ width: 320, height: 500 }}
+      minWidth={280}
+      minHeight={300}
+      maxHeight={800}
+      headerClassName="bg-gradient-to-r from-purple-500 to-purple-600"
+      headerContent={
         <div className="flex items-center gap-2">
           <Bug className="w-4 h-4" />
           <h3 className="font-semibold text-sm">Debug Panel</h3>
         </div>
-        <button onClick={onClose} className="p-1 hover:bg-purple-700 transition-colors">
-          <X className="w-4 h-4" />
-        </button>
-      </div>
+      }
+      onClose={onClose}
+    >
 
       {/* Controls */}
       {isExecuting && (
@@ -166,7 +164,7 @@ export default function DebugPanel({ isOpen, onClose, position }: DebugPanelProp
           </div>
         )}
       </div>
-    </div>
+    </DraggableResizablePanel>
   );
 }
 

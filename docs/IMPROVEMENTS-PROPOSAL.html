@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header expanded">Advanced Topics</div>
+      <ul class="nav-submenu expanded">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" class="active">Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,12 +65,13 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>VZ Programming - Potential Improvements</h1>
 <p>This document outlines potential improvements across various aspects of the VZ Programming project, organized by priority and impact.</p>
-<h2>🚀 High Priority Improvements</h2>
-<h3>1. <strong>Performance Optimizations</strong></h3>
-<h4>Graph Execution Performance</h4>
+<h2 id="-high-priority-improvements">🚀 High Priority Improvements</h2>
+<h3 id="1-performance-optimizations">1. <strong>Performance Optimizations</strong></h3>
+<h4 id="graph-execution-performance">Graph Execution Performance</h4>
 <ul>
 <li><strong>Virtualization for Large Graphs</strong>: Implement virtual scrolling/rendering for graphs with 100+ nodes</li>
 <li><strong>Lazy Node Loading</strong>: Load node definitions on-demand instead of all at startup</li>
@@ -81,7 +79,7 @@
 <li><strong>Batch Processing</strong>: Process multiple graph executions in batches</li>
 <li><strong>Web Workers</strong>: Offload heavy computations to web workers to prevent UI blocking</li>
 </ul>
-<h4>Frontend Performance</h4>
+<h4 id="frontend-performance">Frontend Performance</h4>
 <ul>
 <li><strong>React.memo Optimization</strong>: Memoize expensive components (ReactFlowNode, GraphToolbar)</li>
 <li><strong>Debouncing</strong>: Debounce frequent operations (node movement, search, auto-save)</li>
@@ -89,8 +87,8 @@
 <li><strong>Image Optimization</strong>: Optimize images and use Next.js Image component</li>
 <li><strong>Bundle Size</strong>: Analyze and reduce bundle size (tree-shaking, remove unused dependencies)</li>
 </ul>
-<h3>2. <strong>User Experience Enhancements</strong></h3>
-<h4>Graph Editor UX</h4>
+<h3 id="2-user-experience-enhancements">2. <strong>User Experience Enhancements</strong></h3>
+<h4 id="graph-editor-ux">Graph Editor UX</h4>
 <ul>
 <li><strong>Multi-select Improvements</strong>: <ul>
 <li>Box selection (drag to select multiple nodes)</li>
@@ -111,7 +109,7 @@
 <li><strong>Connection Routing</strong>: Better connection line routing (avoid node overlap)</li>
 <li><strong>Connection Labels</strong>: Show data type or value labels on connections</li>
 </ul>
-<h4>Execution UX</h4>
+<h4 id="execution-ux">Execution UX</h4>
 <ul>
 <li><strong>Progress Indicators</strong>: Better progress visualization for long-running executions</li>
 <li><strong>Execution Speed Control</strong>: Slow down execution for debugging (step delay)</li>
@@ -119,29 +117,29 @@
 <li><strong>Result Preview</strong>: Quick preview of node outputs without full execution</li>
 <li><strong>Execution Comparison</strong>: Compare results from different executions</li>
 </ul>
-<h3>3. <strong>Code Quality &amp; Architecture</strong></h3>
-<h4>Type Safety</h4>
+<h3 id="3-code-quality-amp-architecture">3. <strong>Code Quality &amp; Architecture</strong></h3>
+<h4 id="type-safety">Type Safety</h4>
 <ul>
 <li><strong>Stricter TypeScript</strong>: Enable more strict TypeScript options</li>
 <li><strong>Runtime Type Validation</strong>: Add runtime type checking for node inputs/outputs</li>
 <li><strong>Type Inference</strong>: Better type inference for node connections</li>
 </ul>
-<h4>Error Handling</h4>
+<h4 id="error-handling">Error Handling</h4>
 <ul>
 <li><strong>Global Error Boundary</strong>: React error boundary for frontend</li>
 <li><strong>Error Recovery</strong>: Automatic error recovery strategies</li>
 <li><strong>Error Reporting</strong>: Better error messages with context</li>
 <li><strong>Validation Feedback</strong>: Real-time validation feedback in graph editor</li>
 </ul>
-<h4>Code Organization</h4>
+<h4 id="code-organization">Code Organization</h4>
 <ul>
 <li><strong>Feature-based Structure</strong>: Reorganize code by features instead of file types</li>
 <li><strong>Shared Utilities</strong>: Extract common utilities to shared packages</li>
 <li><strong>Constants Management</strong>: Centralize magic numbers and strings</li>
 <li><strong>Configuration Management</strong>: Environment-based configuration system</li>
 </ul>
-<h3>4. <strong>Testing &amp; Quality Assurance</strong></h3>
-<h4>Test Coverage</h4>
+<h3 id="4-testing-amp-quality-assurance">4. <strong>Testing &amp; Quality Assurance</strong></h3>
+<h4 id="test-coverage">Test Coverage</h4>
 <ul>
 <li><strong>E2E Tests</strong>: Add end-to-end tests with Playwright or Cypress</li>
 <li><strong>Visual Regression Tests</strong>: Test UI components for visual changes</li>
@@ -149,37 +147,37 @@
 <li><strong>Performance Tests</strong>: Benchmark tests for execution performance</li>
 <li><strong>Accessibility Tests</strong>: A11y testing for UI components</li>
 </ul>
-<h4>Testing Infrastructure</h4>
+<h4 id="testing-infrastructure">Testing Infrastructure</h4>
 <ul>
 <li><strong>Test Data Factories</strong>: Create test data factories for consistent test data</li>
 <li><strong>Mock Services</strong>: Better mocking for external services</li>
 <li><strong>Test Utilities</strong>: Reusable test utilities and helpers</li>
 <li><strong>CI/CD Integration</strong>: Automated testing in CI/CD pipeline</li>
 </ul>
-<h3>5. <strong>Security Enhancements</strong></h3>
-<h4>Input Validation</h4>
+<h3 id="5-security-enhancements">5. <strong>Security Enhancements</strong></h3>
+<h4 id="input-validation">Input Validation</h4>
 <ul>
 <li><strong>Sanitization</strong>: Input sanitization for user-generated content</li>
 <li><strong>SQL Injection Prevention</strong>: For database nodes</li>
 <li><strong>XSS Prevention</strong>: For HTML/display nodes</li>
 <li><strong>Rate Limiting</strong>: Enhanced rate limiting per user/IP</li>
 </ul>
-<h4>Authentication &amp; Authorization</h4>
+<h4 id="authentication-amp-authorization">Authentication &amp; Authorization</h4>
 <ul>
 <li><strong>User Authentication</strong>: User login and session management</li>
 <li><strong>Role-based Access Control</strong>: Different permission levels</li>
 <li><strong>Graph Permissions</strong>: Share graphs with specific users</li>
 <li><strong>API Key Management</strong>: Secure API key storage and rotation</li>
 </ul>
-<h4>Data Security</h4>
+<h4 id="data-security">Data Security</h4>
 <ul>
 <li><strong>Encryption</strong>: Encrypt sensitive data at rest</li>
 <li><strong>Secure Storage</strong>: Secure storage for secrets and credentials</li>
 <li><strong>Audit Logging</strong>: Log all user actions for security auditing</li>
 </ul>
-<h2>🎯 Medium Priority Improvements</h2>
-<h3>6. <strong>Feature Enhancements</strong></h3>
-<h4>Graph Editor Features</h4>
+<h2 id="-medium-priority-improvements">🎯 Medium Priority Improvements</h2>
+<h3 id="6-feature-enhancements">6. <strong>Feature Enhancements</strong></h3>
+<h4 id="graph-editor-features">Graph Editor Features</h4>
 <ul>
 <li><strong>Node Templates</strong>: Save and reuse node configurations</li>
 <li><strong>Graph Templates</strong>: Pre-built graph templates for common workflows</li>
@@ -190,7 +188,7 @@
 <li><strong>Connection Validation</strong>: Visual indicators for invalid connections</li>
 <li><strong>Port Hints</strong>: Show available ports when dragging connections</li>
 </ul>
-<h4>Execution Features</h4>
+<h4 id="execution-features">Execution Features</h4>
 <ul>
 <li><strong>Conditional Execution</strong>: Conditional node execution based on data</li>
 <li><strong>Loop Support</strong>: Loop nodes for iterative processing</li>
@@ -199,7 +197,7 @@
 <li><strong>Execution Scheduling</strong>: Schedule graph executions (cron-like)</li>
 <li><strong>Execution Queuing</strong>: Queue multiple executions</li>
 </ul>
-<h4>Node Library Expansion</h4>
+<h4 id="node-library-expansion">Node Library Expansion</h4>
 <ul>
 <li><strong>More Utility Nodes</strong>: <ul>
 <li>Date/Time manipulation nodes</li>
@@ -223,8 +221,8 @@
 </ul>
 </li>
 </ul>
-<h3>7. <strong>Developer Experience</strong></h3>
-<h4>Development Tools</h4>
+<h3 id="7-developer-experience">7. <strong>Developer Experience</strong></h3>
+<h4 id="development-tools">Development Tools</h4>
 <ul>
 <li><strong>Hot Module Replacement</strong>: Faster development with HMR</li>
 <li><strong>Development Mode</strong>: Enhanced debugging in development</li>
@@ -232,7 +230,7 @@
 <li><strong>Graph Formatter</strong>: Auto-format graph JSON files</li>
 <li><strong>Graph Linter</strong>: Lint graphs for best practices</li>
 </ul>
-<h4>Documentation</h4>
+<h4 id="documentation">Documentation</h4>
 <ul>
 <li><strong>Interactive API Docs</strong>: Swagger/OpenAPI documentation</li>
 <li><strong>Video Tutorials</strong>: Video guides for common tasks</li>
@@ -240,14 +238,14 @@
 <li><strong>Best Practices Guide</strong>: Best practices for graph design</li>
 <li><strong>Troubleshooting Guide</strong>: Common issues and solutions</li>
 </ul>
-<h4>IDE Integration</h4>
+<h4 id="ide-integration">IDE Integration</h4>
 <ul>
 <li><strong>VSCode Extension</strong>: VSCode extension for graph editing</li>
 <li><strong>Graph Preview</strong>: Preview graphs in VSCode</li>
 <li><strong>IntelliSense</strong>: Autocomplete for node types and properties</li>
 </ul>
-<h3>8. <strong>Monitoring &amp; Observability</strong></h3>
-<h4>Execution Monitoring</h4>
+<h3 id="8-monitoring-amp-observability">8. <strong>Monitoring &amp; Observability</strong></h3>
+<h4 id="execution-monitoring">Execution Monitoring</h4>
 <ul>
 <li><strong>Execution Dashboard</strong>: Real-time dashboard of active executions</li>
 <li><strong>Performance Metrics</strong>: Detailed performance metrics per node</li>
@@ -255,95 +253,95 @@
 <li><strong>Execution History</strong>: Searchable execution history</li>
 <li><strong>Error Analytics</strong>: Error rate and pattern analysis</li>
 </ul>
-<h4>Logging</h4>
+<h4 id="logging">Logging</h4>
 <ul>
 <li><strong>Structured Logging</strong>: Structured logs with correlation IDs</li>
 <li><strong>Log Levels</strong>: Configurable log levels per component</li>
 <li><strong>Log Aggregation</strong>: Centralized log aggregation</li>
 <li><strong>Log Search</strong>: Search and filter logs</li>
 </ul>
-<h2>🔮 Low Priority / Future Considerations</h2>
-<h3>9. <strong>Advanced Features</strong></h3>
-<h4>Collaboration</h4>
+<h2 id="-low-priority-future-considerations">🔮 Low Priority / Future Considerations</h2>
+<h3 id="9-advanced-features">9. <strong>Advanced Features</strong></h3>
+<h4 id="collaboration">Collaboration</h4>
 <ul>
 <li><strong>Real-time Collaboration</strong>: Multiple users editing same graph</li>
 <li><strong>Comments &amp; Annotations</strong>: Add comments to nodes/graphs</li>
 <li><strong>Change Tracking</strong>: Track who changed what and when</li>
 <li><strong>Graph Sharing</strong>: Share graphs via URL or embed</li>
 </ul>
-<h4>AI/ML Integration</h4>
+<h4 id="aiml-integration">AI/ML Integration</h4>
 <ul>
 <li><strong>AI Node Suggestions</strong>: AI-powered node suggestions</li>
 <li><strong>Auto-connection</strong>: AI suggests connections based on data flow</li>
 <li><strong>Graph Optimization</strong>: AI optimizes graph structure</li>
 <li><strong>Natural Language to Graph</strong>: Convert text descriptions to graphs</li>
 </ul>
-<h4>Advanced Execution</h4>
+<h4 id="advanced-execution">Advanced Execution</h4>
 <ul>
 <li><strong>Distributed Execution</strong>: Execute graphs across multiple servers</li>
 <li><strong>Streaming Execution</strong>: Process data streams in real-time</li>
 <li><strong>Incremental Execution</strong>: Only execute changed parts</li>
 <li><strong>Execution Scheduling</strong>: Advanced scheduling with dependencies</li>
 </ul>
-<h3>10. <strong>Infrastructure</strong></h3>
-<h4>Scalability</h4>
+<h3 id="10-infrastructure">10. <strong>Infrastructure</strong></h3>
+<h4 id="scalability">Scalability</h4>
 <ul>
 <li><strong>Horizontal Scaling</strong>: Scale execution across multiple instances</li>
 <li><strong>Load Balancing</strong>: Distribute execution load</li>
 <li><strong>Database Optimization</strong>: Optimize database queries and indexes</li>
 <li><strong>Caching Layer</strong>: Redis caching for frequently accessed data</li>
 </ul>
-<h4>Deployment</h4>
+<h4 id="deployment">Deployment</h4>
 <ul>
 <li><strong>Docker Support</strong>: Docker containers for easy deployment</li>
 <li><strong>Kubernetes Support</strong>: Kubernetes deployment manifests</li>
 <li><strong>CI/CD Pipeline</strong>: Automated deployment pipeline</li>
 <li><strong>Environment Management</strong>: Staging, production environments</li>
 </ul>
-<h3>11. <strong>Accessibility &amp; Internationalization</strong></h3>
-<h4>Accessibility</h4>
+<h3 id="11-accessibility-amp-internationalization">11. <strong>Accessibility &amp; Internationalization</strong></h3>
+<h4 id="accessibility">Accessibility</h4>
 <ul>
 <li><strong>Screen Reader Support</strong>: Full screen reader compatibility</li>
 <li><strong>Keyboard Navigation</strong>: Complete keyboard navigation</li>
 <li><strong>High Contrast Mode</strong>: High contrast theme option</li>
 <li><strong>Focus Indicators</strong>: Clear focus indicators</li>
 </ul>
-<h4>Internationalization</h4>
+<h4 id="internationalization">Internationalization</h4>
 <ul>
 <li><strong>Multi-language Support</strong>: Support for multiple languages</li>
 <li><strong>Localization</strong>: Date, number formatting per locale</li>
 <li><strong>RTL Support</strong>: Right-to-left language support</li>
 </ul>
-<h2>📊 Recommended Implementation Order</h2>
-<h3>Phase 1: Foundation (Weeks 1-4)</h3>
+<h2 id="-recommended-implementation-order">📊 Recommended Implementation Order</h2>
+<h3 id="phase-1-foundation-weeks-1-4">Phase 1: Foundation (Weeks 1-4)</h3>
 <ol>
 <li>Performance optimizations (virtualization, memoization)</li>
 <li>Enhanced error handling</li>
 <li>Improved test coverage</li>
 <li>Security enhancements (input validation, rate limiting)</li>
 </ol>
-<h3>Phase 2: User Experience (Weeks 5-8)</h3>
+<h3 id="phase-2-user-experience-weeks-5-8">Phase 2: User Experience (Weeks 5-8)</h3>
 <ol>
 <li>Multi-select improvements</li>
 <li>Keyboard shortcuts</li>
 <li>Node alignment tools</li>
 <li>Better execution visualization</li>
 </ol>
-<h3>Phase 3: Features (Weeks 9-12)</h3>
+<h3 id="phase-3-features-weeks-9-12">Phase 3: Features (Weeks 9-12)</h3>
 <ol>
 <li>Node templates</li>
 <li>Graph versioning</li>
 <li>More utility nodes</li>
 <li>Execution scheduling</li>
 </ol>
-<h3>Phase 4: Advanced (Weeks 13+)</h3>
+<h3 id="phase-4-advanced-weeks-13">Phase 4: Advanced (Weeks 13+)</h3>
 <ol>
 <li>Real-time collaboration</li>
 <li>AI integration</li>
 <li>Distributed execution</li>
 <li>Advanced monitoring</li>
 </ol>
-<h2>🎯 Quick Wins (Can be done immediately)</h2>
+<h2 id="-quick-wins-can-be-done-immediately">🎯 Quick Wins (Can be done immediately)</h2>
 <ol>
 <li><strong>Add React.memo to expensive components</strong> (1-2 hours)</li>
 <li><strong>Debounce node movement for undo/redo</strong> (1 hour)</li>
@@ -356,7 +354,7 @@
 <li><strong>Add execution progress indicators</strong> (2-3 hours)</li>
 <li><strong>Implement graph validation warnings</strong> (3-4 hours)</li>
 </ol>
-<h2>📝 Notes</h2>
+<h2 id="-notes">📝 Notes</h2>
 <ul>
 <li>Prioritize based on user feedback and usage patterns</li>
 <li>Some improvements may require breaking changes</li>
@@ -367,19 +365,94 @@
 <hr>
 <p><strong>Last Updated</strong>: 2025-01-XX<br><strong>Status</strong>: Active Planning</p>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#-high-priority-improvements">🚀 High Priority Improvements</a></li>
+      <li class="toc-h3"><a href="#1-performance-optimizations">1. Performance Optimizations</a></li>
+      <li class="toc-h4"><a href="#graph-execution-performance">Graph Execution Performance</a></li>
+      <li class="toc-h4"><a href="#frontend-performance">Frontend Performance</a></li>
+      <li class="toc-h3"><a href="#2-user-experience-enhancements">2. User Experience Enhancements</a></li>
+      <li class="toc-h4"><a href="#graph-editor-ux">Graph Editor UX</a></li>
+      <li class="toc-h4"><a href="#execution-ux">Execution UX</a></li>
+      <li class="toc-h3"><a href="#3-code-quality-amp-architecture">3. Code Quality &amp; Architecture</a></li>
+      <li class="toc-h4"><a href="#type-safety">Type Safety</a></li>
+      <li class="toc-h4"><a href="#error-handling">Error Handling</a></li>
+      <li class="toc-h4"><a href="#code-organization">Code Organization</a></li>
+      <li class="toc-h3"><a href="#4-testing-amp-quality-assurance">4. Testing &amp; Quality Assurance</a></li>
+      <li class="toc-h4"><a href="#test-coverage">Test Coverage</a></li>
+      <li class="toc-h4"><a href="#testing-infrastructure">Testing Infrastructure</a></li>
+      <li class="toc-h3"><a href="#5-security-enhancements">5. Security Enhancements</a></li>
+      <li class="toc-h4"><a href="#input-validation">Input Validation</a></li>
+      <li class="toc-h4"><a href="#authentication-amp-authorization">Authentication &amp; Authorization</a></li>
+      <li class="toc-h4"><a href="#data-security">Data Security</a></li>
+      <li class="toc-h2"><a href="#-medium-priority-improvements">🎯 Medium Priority Improvements</a></li>
+      <li class="toc-h3"><a href="#6-feature-enhancements">6. Feature Enhancements</a></li>
+      <li class="toc-h4"><a href="#graph-editor-features">Graph Editor Features</a></li>
+      <li class="toc-h4"><a href="#execution-features">Execution Features</a></li>
+      <li class="toc-h4"><a href="#node-library-expansion">Node Library Expansion</a></li>
+      <li class="toc-h3"><a href="#7-developer-experience">7. Developer Experience</a></li>
+      <li class="toc-h4"><a href="#development-tools">Development Tools</a></li>
+      <li class="toc-h4"><a href="#documentation">Documentation</a></li>
+      <li class="toc-h4"><a href="#ide-integration">IDE Integration</a></li>
+      <li class="toc-h3"><a href="#8-monitoring-amp-observability">8. Monitoring &amp; Observability</a></li>
+      <li class="toc-h4"><a href="#execution-monitoring">Execution Monitoring</a></li>
+      <li class="toc-h4"><a href="#logging">Logging</a></li>
+      <li class="toc-h2"><a href="#-low-priority-future-considerations">🔮 Low Priority / Future Considerations</a></li>
+      <li class="toc-h3"><a href="#9-advanced-features">9. Advanced Features</a></li>
+      <li class="toc-h4"><a href="#collaboration">Collaboration</a></li>
+      <li class="toc-h4"><a href="#aiml-integration">AI/ML Integration</a></li>
+      <li class="toc-h4"><a href="#advanced-execution">Advanced Execution</a></li>
+      <li class="toc-h3"><a href="#10-infrastructure">10. Infrastructure</a></li>
+      <li class="toc-h4"><a href="#scalability">Scalability</a></li>
+      <li class="toc-h4"><a href="#deployment">Deployment</a></li>
+      <li class="toc-h3"><a href="#11-accessibility-amp-internationalization">11. Accessibility &amp; Internationalization</a></li>
+      <li class="toc-h4"><a href="#accessibility">Accessibility</a></li>
+      <li class="toc-h4"><a href="#internationalization">Internationalization</a></li>
+      <li class="toc-h2"><a href="#-recommended-implementation-order">📊 Recommended Implementation Order</a></li>
+      <li class="toc-h3"><a href="#phase-1-foundation-weeks-1-4">Phase 1: Foundation (Weeks 1-4)</a></li>
+      <li class="toc-h3"><a href="#phase-2-user-experience-weeks-5-8">Phase 2: User Experience (Weeks 5-8)</a></li>
+      <li class="toc-h3"><a href="#phase-3-features-weeks-9-12">Phase 3: Features (Weeks 9-12)</a></li>
+      <li class="toc-h3"><a href="#phase-4-advanced-weeks-13">Phase 4: Advanced (Weeks 13+)</a></li>
+      <li class="toc-h2"><a href="#-quick-wins-can-be-done-immediately">🎯 Quick Wins (Can be done immediately)</a></li>
+      <li class="toc-h2"><a href="#-notes">📝 Notes</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -392,6 +465,52 @@
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

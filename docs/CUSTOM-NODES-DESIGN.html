@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header expanded">Custom Nodes</div>
+      <ul class="nav-submenu expanded">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" class="active">Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,11 +65,12 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Custom Node System - Design Documentation</h1>
-<h2>Architecture Overview</h2>
+<h2 id="architecture-overview">Architecture Overview</h2>
 <p>The Custom Node System is designed to allow users to create nodes dynamically through a web interface, without requiring TypeScript knowledge or direct code access.</p>
-<h3>System Components</h3>
+<h3 id="system-components">System Components</h3>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │                    Web Frontend (Next.js)                    │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
@@ -119,8 +117,8 @@
 │  └────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 </code></pre>
-<h2>Design Patterns</h2>
-<h3>1. Template Pattern</h3>
+<h2 id="design-patterns">Design Patterns</h2>
+<h3 id="1-template-pattern">1. Template Pattern</h3>
 <p>The template system uses the Template Method pattern to provide structure while allowing flexibility:</p>
 <pre><code class="language-typescript">interface NodeTemplate {
   execute(expression, inputs, compiledFn): Promise&lt;Result&gt;
@@ -128,7 +126,7 @@
 }
 </code></pre>
 <p>Each template implements the execution logic specific to its type, while sharing common validation and compilation logic.</p>
-<h3>2. Factory Pattern</h3>
+<h3 id="2-factory-pattern">2. Factory Pattern</h3>
 <p>Custom nodes are created using a factory pattern:</p>
 <pre><code class="language-typescript">CustomNodeManager.registerCustomNode(config, metadata)
   → Creates CustomNode instance
@@ -136,14 +134,14 @@
   → Stores configuration for factory creation
 </code></pre>
 <p>The registry uses a factory function to create node instances on demand.</p>
-<h3>3. Strategy Pattern</h3>
+<h3 id="3-strategy-pattern">3. Strategy Pattern</h3>
 <p>Expression validation uses the Strategy pattern:</p>
 <ul>
 <li>Different validation strategies for different templates</li>
 <li>Template-specific validation rules</li>
 <li>Extensible for new templates</li>
 </ul>
-<h3>4. Repository Pattern</h3>
+<h3 id="4-repository-pattern">4. Repository Pattern</h3>
 <p>Storage layer uses Repository pattern:</p>
 <pre><code class="language-typescript">CustomNodeStorage
   - save(node)
@@ -153,8 +151,8 @@
   - findByType(type)
 </code></pre>
 <p>This abstraction allows easy migration from file-based to database storage.</p>
-<h2>Data Flow</h2>
-<h3>Creating a Custom Node</h3>
+<h2 id="data-flow">Data Flow</h2>
+<h3 id="creating-a-custom-node">Creating a Custom Node</h3>
 <pre><code>User Input (UI)
     │
     ▼
@@ -183,7 +181,7 @@ CustomNodeStorage.save()
     ▼
 Response (Node created)
 </code></pre>
-<h3>Executing a Custom Node</h3>
+<h3 id="executing-a-custom-node">Executing a Custom Node</h3>
 <pre><code>NodeExecutor.execute()
     │
     ▼
@@ -205,8 +203,8 @@ Map results to output ports
     ▼
 Return ExecutionResult
 </code></pre>
-<h2>Security Architecture</h2>
-<h3>Defense in Depth</h3>
+<h2 id="security-architecture">Security Architecture</h2>
+<h3 id="defense-in-depth">Defense in Depth</h3>
 <p>Multiple layers of security:</p>
 <ol>
 <li><p><strong>Input Validation</strong> (Frontend)</p>
@@ -239,7 +237,7 @@ Return ExecutionResult
 </ul>
 </li>
 </ol>
-<h3>Security Model</h3>
+<h3 id="security-model">Security Model</h3>
 <pre><code>┌─────────────────────────────────────┐
 │     User Expression                 │
 └─────────────────────────────────────┘
@@ -266,8 +264,8 @@ Return ExecutionResult
 │  - Type conversion                   │
 └─────────────────────────────────────┘
 </code></pre>
-<h2>Template System Design</h2>
-<h3>Template Hierarchy</h3>
+<h2 id="template-system-design">Template System Design</h2>
+<h3 id="template-hierarchy">Template Hierarchy</h3>
 <pre><code>NodeTemplate (interface)
     │
     ├── TransformTemplate
@@ -285,7 +283,7 @@ Return ExecutionResult
     └── StringOpTemplate
         └── Executes: string inputs → string operation → string output
 </code></pre>
-<h3>Template Execution Flow</h3>
+<h3 id="template-execution-flow">Template Execution Flow</h3>
 <pre><code>Template.execute()
     │
     ├── Convert inputs Map → object
@@ -305,8 +303,8 @@ Return ExecutionResult
     │
     └── Return execution result
 </code></pre>
-<h2>Storage Design</h2>
-<h3>File Structure</h3>
+<h2 id="storage-design">Storage Design</h2>
+<h3 id="file-structure">File Structure</h3>
 <pre><code>storage/custom-nodes/
 ├── index.json              # Node index
 │   {
@@ -322,14 +320,14 @@ Return ExecutionResult
       &quot;metadata&quot;: {...}
     }
 </code></pre>
-<h3>Index Strategy</h3>
+<h3 id="index-strategy">Index Strategy</h3>
 <p>The index file provides:</p>
 <ul>
 <li>Quick lookup of all node IDs</li>
 <li>Efficient listing without reading all files</li>
 <li>Easy deletion tracking</li>
 </ul>
-<h3>Future Migration Path</h3>
+<h3 id="future-migration-path">Future Migration Path</h3>
 <p>The repository pattern allows easy migration:</p>
 <pre><code class="language-typescript">// Current: FileRepository
 class FileCustomNodeStorage implements CustomNodeStorage { ... }
@@ -337,8 +335,8 @@ class FileCustomNodeStorage implements CustomNodeStorage { ... }
 // Future: DatabaseRepository
 class DatabaseCustomNodeStorage implements CustomNodeStorage { ... }
 </code></pre>
-<h2>API Design</h2>
-<h3>RESTful Endpoints</h3>
+<h2 id="api-design">API Design</h2>
+<h3 id="restful-endpoints">RESTful Endpoints</h3>
 <table>
 <thead>
 <tr>
@@ -383,8 +381,8 @@ class DatabaseCustomNodeStorage implements CustomNodeStorage { ... }
 <td>Validate expression</td>
 </tr>
 </tbody></table>
-<h3>Request/Response Formats</h3>
-<h4>Create Node (POST)</h4>
+<h3 id="requestresponse-formats">Request/Response Formats</h3>
+<h4 id="create-node-post">Create Node (POST)</h4>
 <p><strong>Request</strong>:</p>
 <pre><code class="language-json">{
   &quot;type&quot;: &quot;custom.my-node&quot;,
@@ -409,8 +407,8 @@ class DatabaseCustomNodeStorage implements CustomNodeStorage { ... }
   }
 }
 </code></pre>
-<h2>Error Handling</h2>
-<h3>Error Types</h3>
+<h2 id="error-handling">Error Handling</h2>
+<h3 id="error-types">Error Types</h3>
 <ol>
 <li><p><strong>Validation Errors</strong></p>
 <ul>
@@ -435,15 +433,15 @@ class DatabaseCustomNodeStorage implements CustomNodeStorage { ... }
 </ul>
 </li>
 </ol>
-<h3>Error Response Format</h3>
+<h3 id="error-response-format">Error Response Format</h3>
 <pre><code class="language-json">{
   &quot;error&quot;: &quot;Error message&quot;,
   &quot;message&quot;: &quot;Detailed error message&quot;,
   &quot;details&quot;: [&quot;Error detail 1&quot;, &quot;Error detail 2&quot;]
 }
 </code></pre>
-<h2>Performance Considerations</h2>
-<h3>Optimization Strategies</h3>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="optimization-strategies">Optimization Strategies</h3>
 <ol>
 <li><p><strong>Expression Compilation</strong></p>
 <ul>
@@ -467,35 +465,35 @@ class DatabaseCustomNodeStorage implements CustomNodeStorage { ... }
 </ul>
 </li>
 </ol>
-<h3>Performance Metrics</h3>
+<h3 id="performance-metrics">Performance Metrics</h3>
 <ul>
 <li>Node creation: &lt; 100ms</li>
 <li>Expression validation: &lt; 50ms</li>
 <li>Node execution: &lt; 10ms (excluding expression execution time)</li>
 <li>Storage save: &lt; 50ms</li>
 </ul>
-<h2>Extensibility</h2>
-<h3>Adding New Templates</h3>
+<h2 id="extensibility">Extensibility</h2>
+<h3 id="adding-new-templates">Adding New Templates</h3>
 <ol>
 <li>Create new template class extending <code>NodeTemplate</code></li>
 <li>Implement <code>execute()</code> and <code>validateExpression()</code> methods</li>
 <li>Register in <code>TemplateRegistry.initialize()</code></li>
 <li>Add to API template list</li>
 </ol>
-<h3>Adding New Validation Rules</h3>
+<h3 id="adding-new-validation-rules">Adding New Validation Rules</h3>
 <ol>
 <li>Add pattern to <code>DANGEROUS_PATTERNS</code> in <code>ExpressionValidator</code></li>
 <li>Add template-specific rules in <code>validateForTemplate()</code></li>
 <li>Update validation logic as needed</li>
 </ol>
-<h3>Migrating to Database</h3>
+<h3 id="migrating-to-database">Migrating to Database</h3>
 <ol>
 <li>Create database repository implementing <code>CustomNodeStorage</code> interface</li>
 <li>Update <code>CustomNodeStorage</code> to use database</li>
 <li>Migrate existing JSON files to database</li>
 <li>Update index to use database queries</li>
 </ol>
-<h2>Conclusion</h2>
+<h2 id="conclusion">Conclusion</h2>
 <p>The Custom Node System is designed with:</p>
 <ul>
 <li><strong>Security</strong>: Multiple layers of validation and restriction</li>
@@ -506,19 +504,81 @@ class DatabaseCustomNodeStorage implements CustomNodeStorage { ... }
 </ul>
 <p>The design supports Phase 1 requirements while providing a foundation for Phase 2 enhancements.</p>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#architecture-overview">Architecture Overview</a></li>
+      <li class="toc-h3"><a href="#system-components">System Components</a></li>
+      <li class="toc-h2"><a href="#design-patterns">Design Patterns</a></li>
+      <li class="toc-h3"><a href="#1-template-pattern">1. Template Pattern</a></li>
+      <li class="toc-h3"><a href="#2-factory-pattern">2. Factory Pattern</a></li>
+      <li class="toc-h3"><a href="#3-strategy-pattern">3. Strategy Pattern</a></li>
+      <li class="toc-h3"><a href="#4-repository-pattern">4. Repository Pattern</a></li>
+      <li class="toc-h2"><a href="#data-flow">Data Flow</a></li>
+      <li class="toc-h3"><a href="#creating-a-custom-node">Creating a Custom Node</a></li>
+      <li class="toc-h3"><a href="#executing-a-custom-node">Executing a Custom Node</a></li>
+      <li class="toc-h2"><a href="#security-architecture">Security Architecture</a></li>
+      <li class="toc-h3"><a href="#defense-in-depth">Defense in Depth</a></li>
+      <li class="toc-h3"><a href="#security-model">Security Model</a></li>
+      <li class="toc-h2"><a href="#template-system-design">Template System Design</a></li>
+      <li class="toc-h3"><a href="#template-hierarchy">Template Hierarchy</a></li>
+      <li class="toc-h3"><a href="#template-execution-flow">Template Execution Flow</a></li>
+      <li class="toc-h2"><a href="#storage-design">Storage Design</a></li>
+      <li class="toc-h3"><a href="#file-structure">File Structure</a></li>
+      <li class="toc-h3"><a href="#index-strategy">Index Strategy</a></li>
+      <li class="toc-h3"><a href="#future-migration-path">Future Migration Path</a></li>
+      <li class="toc-h2"><a href="#api-design">API Design</a></li>
+      <li class="toc-h3"><a href="#restful-endpoints">RESTful Endpoints</a></li>
+      <li class="toc-h3"><a href="#requestresponse-formats">Request/Response Formats</a></li>
+      <li class="toc-h4"><a href="#create-node-post">Create Node (POST)</a></li>
+      <li class="toc-h2"><a href="#error-handling">Error Handling</a></li>
+      <li class="toc-h3"><a href="#error-types">Error Types</a></li>
+      <li class="toc-h3"><a href="#error-response-format">Error Response Format</a></li>
+      <li class="toc-h2"><a href="#performance-considerations">Performance Considerations</a></li>
+      <li class="toc-h3"><a href="#optimization-strategies">Optimization Strategies</a></li>
+      <li class="toc-h3"><a href="#performance-metrics">Performance Metrics</a></li>
+      <li class="toc-h2"><a href="#extensibility">Extensibility</a></li>
+      <li class="toc-h3"><a href="#adding-new-templates">Adding New Templates</a></li>
+      <li class="toc-h3"><a href="#adding-new-validation-rules">Adding New Validation Rules</a></li>
+      <li class="toc-h3"><a href="#migrating-to-database">Migrating to Database</a></li>
+      <li class="toc-h2"><a href="#conclusion">Conclusion</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -531,6 +591,52 @@ class DatabaseCustomNodeStorage implements CustomNodeStorage { ... }
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

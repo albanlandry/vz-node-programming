@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,18 +65,19 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Node ID Mismatch in Graph Execution</h1>
-<h2>Error Summary</h2>
+<h2 id="error-summary">Error Summary</h2>
 <p><strong>Date</strong>: December 2024<br><strong>Severity</strong>: High<br><strong>Status</strong>: Resolved</p>
-<h2>Error Description</h2>
+<h2 id="error-description">Error Description</h2>
 <p>When executing saved graphs, nodes were being created with auto-generated UUIDs instead of using the IDs specified in the graph definition. This caused connection validation to fail because connections referenced nodes by their graph IDs (e.g., <code>math-add</code>, <code>logger-1</code>), but the executor contained nodes with different IDs (e.g., <code>de003f12-40bc-42c3-8163-3c72998e3328</code>).</p>
-<h3>Error Messages</h3>
+<h3 id="error-messages">Error Messages</h3>
 <pre><code>[WARN] Node ID mismatch: expected math-add, got de003f12-40bc-42c3-8163-3c72998e3328. Using expected ID.
 [ERROR] Some nodes were not added to executor. Missing: math-add, math-multiply, string-upper, logger-1, logger-2
 [ERROR] Failed to add connection: Target node math-add not found
 </code></pre>
-<h3>Affected Nodes</h3>
+<h3 id="affected-nodes">Affected Nodes</h3>
 <ul>
 <li><code>MathNode</code> (utility.math)</li>
 <li><code>StringNode</code> (utility.string)</li>
@@ -90,13 +88,13 @@
 <li><code>ObjectNode</code> (utility.object)</li>
 <li><code>CalculatorNode</code> (oop.calculator)</li>
 </ul>
-<h3>Working Nodes</h3>
+<h3 id="working-nodes">Working Nodes</h3>
 <ul>
 <li><code>ConstantNode</code> (utility.constant) - Already accepted config parameter</li>
 </ul>
-<h2>Root Cause</h2>
+<h2 id="root-cause">Root Cause</h2>
 <p>The node class constructors did not accept configuration parameters, so when <code>NodeRegistry.create()</code> was called with a config containing an <code>id</code>, the constructor couldn&#39;t receive it. The <code>BaseNode</code> constructor then generated a new UUID as a fallback.</p>
-<h3>Code Flow</h3>
+<h3 id="code-flow">Code Flow</h3>
 <ol>
 <li><code>GraphExecutionEngine.buildExecutor()</code> calls <code>registry.create(graphNode.type, { id: graphNode.id, ... })</code></li>
 <li><code>NodeRegistry.create()</code> calls <code>new nodeClass(config)</code></li>
@@ -105,7 +103,7 @@
 <li><code>BaseNode</code> constructor uses <code>config.id ?? uuidv4()</code>, but <code>config</code> is undefined</li>
 <li>New UUID is generated instead of using the provided ID</li>
 </ol>
-<h3>Example of Problematic Code</h3>
+<h3 id="example-of-problematic-code">Example of Problematic Code</h3>
 <pre><code class="language-typescript">// ❌ Before - doesn&#39;t accept config
 export class MathNode extends BaseNode {
   constructor() {
@@ -116,10 +114,10 @@ export class MathNode extends BaseNode {
   }
 }
 </code></pre>
-<h2>Resolution</h2>
-<h3>Solution</h3>
+<h2 id="resolution">Resolution</h2>
+<h3 id="solution">Solution</h3>
 <p>Modified all node constructors to accept an optional <code>config?: Partial&lt;NodeConfig&gt;</code> parameter and pass it to <code>super()</code>. This allows the <code>id</code> and other configuration to be properly passed through to <code>BaseNode</code>.</p>
-<h3>Code Changes</h3>
+<h3 id="code-changes">Code Changes</h3>
 <p><strong>Before:</strong></p>
 <pre><code class="language-typescript">export class MathNode extends BaseNode {
   constructor() {
@@ -145,7 +143,7 @@ export class MathNode extends BaseNode {
   }
 }
 </code></pre>
-<h3>Files Modified</h3>
+<h3 id="files-modified">Files Modified</h3>
 <ol>
 <li><p><code>src/nodes/utility/UtilityNodes.ts</code></p>
 <ul>
@@ -169,8 +167,8 @@ export class MathNode extends BaseNode {
 </ul>
 </li>
 </ol>
-<h2>Verification</h2>
-<h3>Test Steps</h3>
+<h2 id="verification">Verification</h2>
+<h3 id="test-steps">Test Steps</h3>
 <ol>
 <li>Load a saved graph with multiple node types</li>
 <li>Execute the graph</li>
@@ -178,14 +176,14 @@ export class MathNode extends BaseNode {
 <li>Verify connections are successfully added</li>
 <li>Verify execution completes without errors</li>
 </ol>
-<h3>Expected Behavior</h3>
+<h3 id="expected-behavior">Expected Behavior</h3>
 <ul>
 <li>All nodes should be created with IDs matching the graph definition</li>
 <li>No &quot;Node ID mismatch&quot; warnings</li>
 <li>All connections should be successfully added</li>
 <li>Graph execution should complete successfully</li>
 </ul>
-<h3>Log Output (After Fix)</h3>
+<h3 id="log-output-after-fix">Log Output (After Fix)</h3>
 <pre><code>[DEBUG] Added node constant-1 (utility.constant) to executor
 [DEBUG] Added node constant-2 (utility.constant) to executor
 [DEBUG] Added node math-add (utility.math) to executor
@@ -197,8 +195,8 @@ export class MathNode extends BaseNode {
 [DEBUG] Added connection conn-2: constant-2 -&gt; math-add
 ...
 </code></pre>
-<h2>Prevention</h2>
-<h3>Best Practices</h3>
+<h2 id="prevention">Prevention</h2>
+<h3 id="best-practices">Best Practices</h3>
 <ol>
 <li><p><strong>Always accept config in node constructors</strong>: All node classes should accept <code>config?: Partial&lt;NodeConfig&gt;</code> to allow ID and other configuration to be passed.</p>
 </li>
@@ -217,24 +215,24 @@ export class MathNode extends BaseNode {
 <li><p><strong>Add validation</strong>: The <code>GraphExecutionEngine</code> now verifies all nodes are added with correct IDs before adding connections.</p>
 </li>
 </ol>
-<h2>Related Issues</h2>
+<h2 id="related-issues">Related Issues</h2>
 <ul>
 <li>Graph execution failing with &quot;Target node not found&quot; errors</li>
 <li>Connections not being created during graph execution</li>
 <li>Node ID mismatches in execution logs</li>
 </ul>
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ul>
 <li><code>src/core/BaseNode.ts</code> - Base node class with ID handling</li>
 <li><code>src/registry/NodeRegistry.ts</code> - Node factory creation</li>
 <li><code>src/graph-management/GraphExecutionEngine.ts</code> - Graph execution engine</li>
 <li><code>src/nodes/utility/UtilityNodes.ts</code> - Utility node implementations</li>
 </ul>
-<h2>Resolution Date</h2>
+<h2 id="resolution-date">Resolution Date</h2>
 <p>December 2024</p>
-<h2>Implementation Status</h2>
+<h2 id="implementation-status">Implementation Status</h2>
 <p>✅ <strong>RESOLVED</strong> - All node constructors have been updated to accept and use the provided <code>id</code> from the graph definition.</p>
-<h3>Changes Made</h3>
+<h3 id="changes-made">Changes Made</h3>
 <ol>
 <li><p><strong>Updated Node Constructors</strong>:</p>
 <ul>
@@ -253,7 +251,7 @@ export class MathNode extends BaseNode {
 <li><p><strong>Added imports</strong>: Added <code>NodeConfig</code> import to <code>ObjectOrientedNodes.ts</code>.</p>
 </li>
 </ol>
-<h3>Testing</h3>
+<h3 id="testing">Testing</h3>
 <p>After the fix, graph execution should:</p>
 <ul>
 <li>Create all nodes with their graph-defined IDs</li>
@@ -261,7 +259,7 @@ export class MathNode extends BaseNode {
 <li>Execute without &quot;Target node not found&quot; errors</li>
 <li>Complete execution successfully</li>
 </ul>
-<h3>Verification Commands</h3>
+<h3 id="verification-commands">Verification Commands</h3>
 <pre><code class="language-bash"># Build to verify no TypeScript errors
 npm run build
 
@@ -270,19 +268,71 @@ npm run build
 # Check logs for successful node creation and connection addition
 </code></pre>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#error-summary">Error Summary</a></li>
+      <li class="toc-h2"><a href="#error-description">Error Description</a></li>
+      <li class="toc-h3"><a href="#error-messages">Error Messages</a></li>
+      <li class="toc-h3"><a href="#affected-nodes">Affected Nodes</a></li>
+      <li class="toc-h3"><a href="#working-nodes">Working Nodes</a></li>
+      <li class="toc-h2"><a href="#root-cause">Root Cause</a></li>
+      <li class="toc-h3"><a href="#code-flow">Code Flow</a></li>
+      <li class="toc-h3"><a href="#example-of-problematic-code">Example of Problematic Code</a></li>
+      <li class="toc-h2"><a href="#resolution">Resolution</a></li>
+      <li class="toc-h3"><a href="#solution">Solution</a></li>
+      <li class="toc-h3"><a href="#code-changes">Code Changes</a></li>
+      <li class="toc-h3"><a href="#files-modified">Files Modified</a></li>
+      <li class="toc-h2"><a href="#verification">Verification</a></li>
+      <li class="toc-h3"><a href="#test-steps">Test Steps</a></li>
+      <li class="toc-h3"><a href="#expected-behavior">Expected Behavior</a></li>
+      <li class="toc-h3"><a href="#log-output-after-fix">Log Output (After Fix)</a></li>
+      <li class="toc-h2"><a href="#prevention">Prevention</a></li>
+      <li class="toc-h3"><a href="#best-practices">Best Practices</a></li>
+      <li class="toc-h2"><a href="#related-issues">Related Issues</a></li>
+      <li class="toc-h2"><a href="#references">References</a></li>
+      <li class="toc-h2"><a href="#resolution-date">Resolution Date</a></li>
+      <li class="toc-h2"><a href="#implementation-status">Implementation Status</a></li>
+      <li class="toc-h3"><a href="#changes-made">Changes Made</a></li>
+      <li class="toc-h3"><a href="#testing">Testing</a></li>
+      <li class="toc-h3"><a href="#verification-commands">Verification Commands</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -295,6 +345,52 @@ npm run build
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

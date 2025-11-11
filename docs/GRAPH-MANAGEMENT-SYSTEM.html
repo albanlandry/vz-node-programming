@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header expanded">Graph Editor</div>
+      <ul class="nav-submenu expanded">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,51 +65,52 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Graph Management System Design</h1>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>The Graph Management System is a complete CRUD system that allows users to save, manage, and execute graphs they create.</p>
-<h2>Functional Requirements</h2>
-<h3>1. Graph Creation (Create)</h3>
+<h2 id="functional-requirements">Functional Requirements</h2>
+<h3 id="1-graph-creation-create">1. Graph Creation (Create)</h3>
 <ul>
 <li>Enter name and description</li>
 <li>Save current graph from graph editor with a new name</li>
 <li>Store metadata (author, creation date, modification date)</li>
 </ul>
-<h3>2. Graph Update (Update)</h3>
+<h3 id="2-graph-update-update">2. Graph Update (Update)</h3>
 <ul>
 <li>Modify existing graphs</li>
 <li>Version management</li>
 <li>Update modification date</li>
 </ul>
-<h3>3. Graph Deletion (Delete)</h3>
+<h3 id="3-graph-deletion-delete">3. Graph Deletion (Delete)</h3>
 <ul>
 <li>Delete graphs (with confirmation dialog)</li>
 <li>Permanent deletion</li>
 </ul>
-<h3>4. Graph Listing (List)</h3>
+<h3 id="4-graph-listing-list">4. Graph Listing (List)</h3>
 <ul>
 <li>Display list of all saved graphs</li>
 <li>Filtering and search</li>
 <li>Sorting (by name, creation date, modification date)</li>
 <li>Display metadata (node count, connection count)</li>
 </ul>
-<h3>5. Graph Execution (Execute)</h3>
+<h3 id="5-graph-execution-execute">5. Graph Execution (Execute)</h3>
 <ul>
 <li>Load and execute saved graphs</li>
 <li>Set input parameters</li>
 <li>Display execution results</li>
 <li>Execution logs and error handling</li>
 </ul>
-<h2>Architecture</h2>
-<h3>Backend Structure</h3>
+<h2 id="architecture">Architecture</h2>
+<h3 id="backend-structure">Backend Structure</h3>
 <pre><code>src/graph-management/
 ├── GraphStorage.ts          # Graph storage (JSON file-based)
 ├── GraphManager.ts          # Graph management logic
 ├── GraphExecutionEngine.ts  # Graph execution engine
 └── types.ts                 # Type definitions
 </code></pre>
-<h3>API Endpoints</h3>
+<h3 id="api-endpoints">API Endpoints</h3>
 <pre><code>GET    /api/graphs              # List graphs
 GET    /api/graphs/:id          # Get graph details
 POST   /api/graphs              # Create graph
@@ -120,7 +118,7 @@ PUT    /api/graphs/:id          # Update graph
 DELETE /api/graphs/:id          # Delete graph
 POST   /api/graphs/:id/execute  # Execute graph
 </code></pre>
-<h3>Frontend Structure</h3>
+<h3 id="frontend-structure">Frontend Structure</h3>
 <pre><code>app/
 ├── graphs/
 │   ├── page.tsx              # Graph list page
@@ -137,8 +135,8 @@ components/
     ├── GraphExecutionPanel.tsx # Execution panel
     └── ExecutionResults.tsx  # Execution results display
 </code></pre>
-<h2>Data Model</h2>
-<h3>GraphMetadata</h3>
+<h2 id="data-model">Data Model</h2>
+<h3 id="graphmetadata">GraphMetadata</h3>
 <pre><code class="language-typescript">interface GraphMetadata {
   id: string;
   name: string;
@@ -152,7 +150,7 @@ components/
   connectionCount: number;
 }
 </code></pre>
-<h3>GraphDefinition</h3>
+<h3 id="graphdefinition">GraphDefinition</h3>
 <pre><code class="language-typescript">interface GraphDefinition {
   id: string;
   metadata: GraphMetadata;
@@ -163,7 +161,7 @@ components/
   };
 }
 </code></pre>
-<h3>ExecutionRequest</h3>
+<h3 id="executionrequest">ExecutionRequest</h3>
 <pre><code class="language-typescript">interface ExecutionRequest {
   inputs?: Record&lt;string, unknown&gt;; // Node ID -&gt; input value map
   options?: {
@@ -172,7 +170,7 @@ components/
   };
 }
 </code></pre>
-<h3>ExecutionResponse</h3>
+<h3 id="executionresponse">ExecutionResponse</h3>
 <pre><code class="language-typescript">interface ExecutionResponse {
   success: boolean;
   results?: Map&lt;string, ExecutionResult&gt;;
@@ -181,14 +179,14 @@ components/
   logs?: string[];
 }
 </code></pre>
-<h2>Storage Structure</h2>
-<h3>File System</h3>
+<h2 id="storage-structure">Storage Structure</h2>
+<h3 id="file-system">File System</h3>
 <pre><code>data/
 └── graphs/
     ├── graph-{id}.json       # Individual graph files
     └── index.json             # Graph index (metadata only)
 </code></pre>
-<h3>GraphStorage API</h3>
+<h3 id="graphstorage-api">GraphStorage API</h3>
 <pre><code class="language-typescript">class GraphStorage {
   async save(graph: GraphDefinition): Promise&lt;void&gt;;
   async load(id: string): Promise&lt;GraphDefinition&gt;;
@@ -198,8 +196,8 @@ components/
   async getStats(): Promise&lt;GraphStats&gt;;
 }
 </code></pre>
-<h2>Execution Engine</h2>
-<h3>GraphExecutionEngine</h3>
+<h2 id="execution-engine">Execution Engine</h2>
+<h3 id="graphexecutionengine">GraphExecutionEngine</h3>
 <pre><code class="language-typescript">class GraphExecutionEngine {
   constructor(
     private registry: NodeRegistry,
@@ -218,21 +216,21 @@ components/
   private validateGraph(graph: GraphDefinition): ValidationResult;
 }
 </code></pre>
-<h2>UI/UX Flow</h2>
-<h3>Graph List Page</h3>
+<h2 id="uiux-flow">UI/UX Flow</h2>
+<h3 id="graph-list-page">Graph List Page</h3>
 <ol>
 <li>Display list of saved graphs</li>
 <li>Search and filtering</li>
 <li>New graph creation button</li>
 <li>Actions for each graph (edit, execute, delete)</li>
 </ol>
-<h3>Graph Edit Page</h3>
+<h3 id="graph-edit-page">Graph Edit Page</h3>
 <ol>
 <li>Load graph into graph editor</li>
 <li>Save after editing</li>
 <li>Execute button</li>
 </ol>
-<h3>Graph Execution Page</h3>
+<h3 id="graph-execution-page">Graph Execution Page</h3>
 <ol>
 <li>Display graph information</li>
 <li>Set input parameters</li>
@@ -240,14 +238,14 @@ components/
 <li>Display execution results</li>
 <li>Display logs and errors</li>
 </ol>
-<h2>Security Considerations</h2>
+<h2 id="security-considerations">Security Considerations</h2>
 <ol>
 <li>Input validation: Validate all user inputs</li>
 <li>File system access control</li>
 <li>Execution timeout settings</li>
 <li>Resource limits (memory, CPU)</li>
 </ol>
-<h2>Extensibility</h2>
+<h2 id="extensibility">Extensibility</h2>
 <ol>
 <li>Graph versioning</li>
 <li>Graph sharing and collaboration</li>
@@ -256,19 +254,73 @@ components/
 <li>Execution history</li>
 </ol>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#overview">Overview</a></li>
+      <li class="toc-h2"><a href="#functional-requirements">Functional Requirements</a></li>
+      <li class="toc-h3"><a href="#1-graph-creation-create">1. Graph Creation (Create)</a></li>
+      <li class="toc-h3"><a href="#2-graph-update-update">2. Graph Update (Update)</a></li>
+      <li class="toc-h3"><a href="#3-graph-deletion-delete">3. Graph Deletion (Delete)</a></li>
+      <li class="toc-h3"><a href="#4-graph-listing-list">4. Graph Listing (List)</a></li>
+      <li class="toc-h3"><a href="#5-graph-execution-execute">5. Graph Execution (Execute)</a></li>
+      <li class="toc-h2"><a href="#architecture">Architecture</a></li>
+      <li class="toc-h3"><a href="#backend-structure">Backend Structure</a></li>
+      <li class="toc-h3"><a href="#api-endpoints">API Endpoints</a></li>
+      <li class="toc-h3"><a href="#frontend-structure">Frontend Structure</a></li>
+      <li class="toc-h2"><a href="#data-model">Data Model</a></li>
+      <li class="toc-h3"><a href="#graphmetadata">GraphMetadata</a></li>
+      <li class="toc-h3"><a href="#graphdefinition">GraphDefinition</a></li>
+      <li class="toc-h3"><a href="#executionrequest">ExecutionRequest</a></li>
+      <li class="toc-h3"><a href="#executionresponse">ExecutionResponse</a></li>
+      <li class="toc-h2"><a href="#storage-structure">Storage Structure</a></li>
+      <li class="toc-h3"><a href="#file-system">File System</a></li>
+      <li class="toc-h3"><a href="#graphstorage-api">GraphStorage API</a></li>
+      <li class="toc-h2"><a href="#execution-engine">Execution Engine</a></li>
+      <li class="toc-h3"><a href="#graphexecutionengine">GraphExecutionEngine</a></li>
+      <li class="toc-h2"><a href="#uiux-flow">UI/UX Flow</a></li>
+      <li class="toc-h3"><a href="#graph-list-page">Graph List Page</a></li>
+      <li class="toc-h3"><a href="#graph-edit-page">Graph Edit Page</a></li>
+      <li class="toc-h3"><a href="#graph-execution-page">Graph Execution Page</a></li>
+      <li class="toc-h2"><a href="#security-considerations">Security Considerations</a></li>
+      <li class="toc-h2"><a href="#extensibility">Extensibility</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -281,6 +333,52 @@ components/
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

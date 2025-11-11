@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header expanded">Advanced Topics</div>
+      <ul class="nav-submenu expanded">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" class="active">WebAssembly</a></li>
@@ -68,11 +65,12 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>WebAssembly Opportunities in VZ Programming</h1>
 <p>This document outlines where WebAssembly (WASM) could provide significant performance and security benefits in the VZ Programming project.</p>
-<h2>🎯 High-Impact Areas for WebAssembly</h2>
-<h3>1. <strong>Custom Node Expression Execution</strong> ⭐⭐⭐</h3>
+<h2 id="-high-impact-areas-for-webassembly">🎯 High-Impact Areas for WebAssembly</h2>
+<h3 id="1-custom-node-expression-execution-">1. <strong>Custom Node Expression Execution</strong> ⭐⭐⭐</h3>
 <p><strong>Current Implementation:</strong></p>
 <ul>
 <li>Uses VM2 sandbox for executing user-defined expressions</li>
@@ -100,7 +98,7 @@
 <li>JSONPath queries on large JSON objects</li>
 <li>Array/object manipulations</li>
 </ul>
-<h3>2. <strong>Data Processing Operations</strong> ⭐⭐⭐</h3>
+<h3 id="2-data-processing-operations-">2. <strong>Data Processing Operations</strong> ⭐⭐⭐</h3>
 <p><strong>Current Bottlenecks:</strong></p>
 <ul>
 <li>JSON parsing/stringifying large objects</li>
@@ -131,7 +129,7 @@ private evaluateJsonPath(data: unknown, path: string): unknown {
 // WASM: Compiled JSONPath evaluator
 // 10-50x faster for large JSON objects
 </code></pre>
-<h3>3. <strong>Graph Algorithm Execution</strong> ⭐⭐</h3>
+<h3 id="3-graph-algorithm-execution-">3. <strong>Graph Algorithm Execution</strong> ⭐⭐</h3>
 <p><strong>Current Implementation:</strong></p>
 <ul>
 <li>Dependency resolution in JavaScript</li>
@@ -152,7 +150,7 @@ private evaluateJsonPath(data: unknown, path: string): unknown {
 <li>Graph validation and optimization</li>
 <li>Cycle detection algorithms</li>
 </ul>
-<h3>4. <strong>Mathematical &amp; Computational Nodes</strong> ⭐⭐⭐</h3>
+<h3 id="4-mathematical-amp-computational-nodes-">4. <strong>Mathematical &amp; Computational Nodes</strong> ⭐⭐⭐</h3>
 <p><strong>Current Nodes:</strong></p>
 <ul>
 <li><code>MathNode</code>: Basic arithmetic operations</li>
@@ -179,7 +177,7 @@ result = Math.sqrt(a);
 // WASM: Native math with SIMD support
 // Process arrays of numbers in parallel
 </code></pre>
-<h3>5. <strong>Large File &amp; Data Processing</strong> ⭐⭐</h3>
+<h3 id="5-large-file-amp-data-processing-">5. <strong>Large File &amp; Data Processing</strong> ⭐⭐</h3>
 <p><strong>Current Limitations:</strong></p>
 <ul>
 <li>JavaScript memory limits for large files</li>
@@ -200,7 +198,7 @@ result = Math.sqrt(a);
 <li>Binary file operations</li>
 <li>Image processing (if added)</li>
 </ul>
-<h3>6. <strong>Security-Critical Operations</strong> ⭐⭐⭐</h3>
+<h3 id="6-security-critical-operations-">6. <strong>Security-Critical Operations</strong> ⭐⭐⭐</h3>
 <p><strong>Current Implementation:</strong></p>
 <ul>
 <li>VM2 sandbox for custom expressions</li>
@@ -219,7 +217,7 @@ result = Math.sqrt(a);
 <li>Execute user expressions in WASM sandbox</li>
 <li>Cryptographic operations (hashing, encryption)</li>
 </ul>
-<h3>7. <strong>Image Processing</strong> ⭐⭐</h3>
+<h3 id="7-image-processing-">7. <strong>Image Processing</strong> ⭐⭐</h3>
 <p><strong>Current State:</strong></p>
 <ul>
 <li><code>ImageDisplayNode</code> exists but doesn&#39;t process images</li>
@@ -237,7 +235,7 @@ result = Math.sqrt(a);
 <li><strong>squoosh</strong>: Google&#39;s image optimization in WASM</li>
 <li><strong>Custom WASM</strong>: Lightweight image operations</li>
 </ul>
-<h3>8. <strong>Encryption &amp; Compression</strong> ⭐⭐</h3>
+<h3 id="8-encryption-amp-compression-">8. <strong>Encryption &amp; Compression</strong> ⭐⭐</h3>
 <p><strong>Potential Use Cases:</strong></p>
 <ul>
 <li>Encrypt/decrypt node data</li>
@@ -251,8 +249,8 @@ result = Math.sqrt(a);
 <li><strong>Security</strong>: Isolated cryptographic operations</li>
 <li><strong>Libraries</strong>: Use existing WASM crypto libraries</li>
 </ul>
-<h2>📊 Performance Impact Estimates</h2>
-<h3>Expected Performance Improvements</h3>
+<h2 id="-performance-impact-estimates">📊 Performance Impact Estimates</h2>
+<h3 id="expected-performance-improvements">Expected Performance Improvements</h3>
 <table>
 <thead>
 <tr>
@@ -299,14 +297,14 @@ result = Math.sqrt(a);
 <td><strong>4-10x</strong></td>
 </tr>
 </tbody></table>
-<h3>Memory Benefits</h3>
+<h3 id="memory-benefits">Memory Benefits</h3>
 <ul>
 <li><strong>Reduced Memory</strong>: 30-50% less memory for large data operations</li>
 <li><strong>Better GC</strong>: Less garbage collection pressure</li>
 <li><strong>Streaming</strong>: Process data without loading entirely into memory</li>
 </ul>
-<h2>🛠️ Implementation Strategy</h2>
-<h3>Phase 1: High-Value, Low-Risk (Quick Wins)</h3>
+<h2 id="-implementation-strategy">🛠️ Implementation Strategy</h2>
+<h3 id="phase-1-high-value-low-risk-quick-wins">Phase 1: High-Value, Low-Risk (Quick Wins)</h3>
 <ol>
 <li><p><strong>JSONPath Evaluation</strong> (2-3 days)</p>
 <ul>
@@ -330,7 +328,7 @@ result = Math.sqrt(a);
 </ul>
 </li>
 </ol>
-<h3>Phase 2: Custom Expression Execution (1-2 weeks)</h3>
+<h3 id="phase-2-custom-expression-execution-1-2-weeks">Phase 2: Custom Expression Execution (1-2 weeks)</h3>
 <ol>
 <li><p><strong>Expression Compiler</strong></p>
 <ul>
@@ -348,7 +346,7 @@ result = Math.sqrt(a);
 </ul>
 </li>
 </ol>
-<h3>Phase 3: Advanced Features (2-4 weeks)</h3>
+<h3 id="phase-3-advanced-features-2-4-weeks">Phase 3: Advanced Features (2-4 weeks)</h3>
 <ol>
 <li><p><strong>Large Data Processing</strong></p>
 <ul>
@@ -372,8 +370,8 @@ result = Math.sqrt(a);
 </ul>
 </li>
 </ol>
-<h2>🔧 Technical Considerations</h2>
-<h3>Tools &amp; Libraries</h3>
+<h2 id="-technical-considerations">🔧 Technical Considerations</h2>
+<h3 id="tools-amp-libraries">Tools &amp; Libraries</h3>
 <p><strong>Compilation:</strong></p>
 <ul>
 <li><strong>AssemblyScript</strong>: TypeScript-like syntax, easy to adopt</li>
@@ -393,7 +391,7 @@ result = Math.sqrt(a);
 <li><strong>wasm-crypto</strong>: Cryptographic operations</li>
 <li><strong>wasm-json</strong>: Fast JSON parsing</li>
 </ul>
-<h3>Integration Points</h3>
+<h3 id="integration-points">Integration Points</h3>
 <ol>
 <li><p><strong>Node Execution Layer</strong></p>
 <pre><code class="language-typescript">// In BaseNode or specific nodes
@@ -424,7 +422,7 @@ private async evaluateJsonPathWasm(data: unknown, path: string) {
 </code></pre>
 </li>
 </ol>
-<h3>Browser vs Node.js</h3>
+<h3 id="browser-vs-nodejs">Browser vs Node.js</h3>
 <p><strong>Browser:</strong></p>
 <ul>
 <li>Native WebAssembly support</li>
@@ -437,33 +435,33 @@ private async evaluateJsonPathWasm(data: unknown, path: string) {
 <li>Or use Node.js built-in WASM support</li>
 <li>Consider worker threads for isolation</li>
 </ul>
-<h2>📈 Migration Path</h2>
-<h3>Step 1: Proof of Concept (1 week)</h3>
+<h2 id="-migration-path">📈 Migration Path</h2>
+<h3 id="step-1-proof-of-concept-1-week">Step 1: Proof of Concept (1 week)</h3>
 <ul>
 <li>Implement WASM JSONPath evaluator</li>
 <li>Compare performance with JavaScript version</li>
 <li>Measure memory usage</li>
 </ul>
-<h3>Step 2: Core Operations (2-3 weeks)</h3>
+<h3 id="step-2-core-operations-2-3-weeks">Step 2: Core Operations (2-3 weeks)</h3>
 <ul>
 <li>Math operations in WASM</li>
 <li>Array operations with SIMD</li>
 <li>Expression compiler prototype</li>
 </ul>
-<h3>Step 3: Integration (2-3 weeks)</h3>
+<h3 id="step-3-integration-2-3-weeks">Step 3: Integration (2-3 weeks)</h3>
 <ul>
 <li>Integrate WASM into node execution</li>
 <li>Add fallback mechanisms</li>
 <li>Update node implementations</li>
 </ul>
-<h3>Step 4: Optimization (ongoing)</h3>
+<h3 id="step-4-optimization-ongoing">Step 4: Optimization (ongoing)</h3>
 <ul>
 <li>Profile and optimize hot paths</li>
 <li>Add more WASM modules</li>
 <li>Improve compilation caching</li>
 </ul>
-<h2>⚠️ Challenges &amp; Considerations</h2>
-<h3>Challenges</h3>
+<h2 id="-challenges-amp-considerations">⚠️ Challenges &amp; Considerations</h2>
+<h3 id="challenges">Challenges</h3>
 <ol>
 <li><p><strong>Development Complexity</strong></p>
 <ul>
@@ -494,47 +492,47 @@ private async evaluateJsonPathWasm(data: unknown, path: string) {
 </ul>
 </li>
 </ol>
-<h3>When NOT to Use WASM</h3>
+<h3 id="when-not-to-use-wasm">When NOT to Use WASM</h3>
 <ul>
 <li><strong>Simple Operations</strong>: Overhead not worth it for simple operations</li>
 <li><strong>I/O Operations</strong>: WASM doesn&#39;t help with network/disk I/O</li>
 <li><strong>Small Data</strong>: JavaScript is fine for small datasets</li>
 <li><strong>Rapid Prototyping</strong>: JS is faster to develop</li>
 </ul>
-<h2>🎯 Recommended Starting Points</h2>
-<h3>Priority 1: JSONPath Evaluation</h3>
+<h2 id="-recommended-starting-points">🎯 Recommended Starting Points</h2>
+<h3 id="priority-1-jsonpath-evaluation">Priority 1: JSONPath Evaluation</h3>
 <ul>
 <li><strong>Impact</strong>: High (used frequently, processes large data)</li>
 <li><strong>Effort</strong>: Medium (can use existing library)</li>
 <li><strong>Risk</strong>: Low (easy to fallback to JS)</li>
 </ul>
-<h3>Priority 2: Mathematical Operations</h3>
+<h3 id="priority-2-mathematical-operations">Priority 2: Mathematical Operations</h3>
 <ul>
 <li><strong>Impact</strong>: Medium-High (used in many nodes)</li>
 <li><strong>Effort</strong>: Low (simple operations)</li>
 <li><strong>Risk</strong>: Low (easy fallback)</li>
 </ul>
-<h3>Priority 3: Custom Expression Execution</h3>
+<h3 id="priority-3-custom-expression-execution">Priority 3: Custom Expression Execution</h3>
 <ul>
 <li><strong>Impact</strong>: Very High (core feature)</li>
 <li><strong>Effort</strong>: High (needs compiler)</li>
 <li><strong>Risk</strong>: Medium (complex but high reward)</li>
 </ul>
-<h3>Priority 4: Array Operations</h3>
+<h3 id="priority-4-array-operations">Priority 4: Array Operations</h3>
 <ul>
 <li><strong>Impact</strong>: High (used in data processing)</li>
 <li><strong>Effort</strong>: Medium (SIMD support needed)</li>
 <li><strong>Risk</strong>: Low-Medium</li>
 </ul>
-<h2>📚 Resources</h2>
+<h2 id="-resources">📚 Resources</h2>
 <ul>
 <li><strong>AssemblyScript</strong>: <a href="https://www.assemblyscript.org/">https://www.assemblyscript.org/</a></li>
 <li><strong>WebAssembly Documentation</strong>: <a href="https://webassembly.org/">https://webassembly.org/</a></li>
 <li><strong>wasm-pack</strong>: <a href="https://rustwasm.github.io/wasm-pack/">https://rustwasm.github.io/wasm-pack/</a></li>
 <li><strong>WASM Performance Guide</strong>: <a href="https://web.dev/webassembly/">https://web.dev/webassembly/</a></li>
 </ul>
-<h2>💡 Example Implementation</h2>
-<h3>JSONPath Node with WASM</h3>
+<h2 id="-example-implementation">💡 Example Implementation</h2>
+<h3 id="jsonpath-node-with-wasm">JSONPath Node with WASM</h3>
 <pre><code class="language-typescript">// src/nodes/dataprocessing/JsonPathNode.ts
 export class JsonPathNode extends BaseNode {
   private wasmModule?: WebAssembly.Instance;
@@ -572,19 +570,82 @@ export class JsonPathNode extends BaseNode {
 <hr>
 <p><strong>Conclusion</strong>: WebAssembly can provide significant performance improvements, especially for data processing, mathematical operations, and custom expression execution. Start with high-impact, low-risk areas like JSONPath and math operations, then expand to more complex features.</p>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#-high-impact-areas-for-webassembly">🎯 High-Impact Areas for WebAssembly</a></li>
+      <li class="toc-h3"><a href="#1-custom-node-expression-execution-">1. Custom Node Expression Execution ⭐⭐⭐</a></li>
+      <li class="toc-h3"><a href="#2-data-processing-operations-">2. Data Processing Operations ⭐⭐⭐</a></li>
+      <li class="toc-h3"><a href="#3-graph-algorithm-execution-">3. Graph Algorithm Execution ⭐⭐</a></li>
+      <li class="toc-h3"><a href="#4-mathematical-amp-computational-nodes-">4. Mathematical &amp; Computational Nodes ⭐⭐⭐</a></li>
+      <li class="toc-h3"><a href="#5-large-file-amp-data-processing-">5. Large File &amp; Data Processing ⭐⭐</a></li>
+      <li class="toc-h3"><a href="#6-security-critical-operations-">6. Security-Critical Operations ⭐⭐⭐</a></li>
+      <li class="toc-h3"><a href="#7-image-processing-">7. Image Processing ⭐⭐</a></li>
+      <li class="toc-h3"><a href="#8-encryption-amp-compression-">8. Encryption &amp; Compression ⭐⭐</a></li>
+      <li class="toc-h2"><a href="#-performance-impact-estimates">📊 Performance Impact Estimates</a></li>
+      <li class="toc-h3"><a href="#expected-performance-improvements">Expected Performance Improvements</a></li>
+      <li class="toc-h3"><a href="#memory-benefits">Memory Benefits</a></li>
+      <li class="toc-h2"><a href="#-implementation-strategy">🛠️ Implementation Strategy</a></li>
+      <li class="toc-h3"><a href="#phase-1-high-value-low-risk-quick-wins">Phase 1: High-Value, Low-Risk (Quick Wins)</a></li>
+      <li class="toc-h3"><a href="#phase-2-custom-expression-execution-1-2-weeks">Phase 2: Custom Expression Execution (1-2 weeks)</a></li>
+      <li class="toc-h3"><a href="#phase-3-advanced-features-2-4-weeks">Phase 3: Advanced Features (2-4 weeks)</a></li>
+      <li class="toc-h2"><a href="#-technical-considerations">🔧 Technical Considerations</a></li>
+      <li class="toc-h3"><a href="#tools-amp-libraries">Tools &amp; Libraries</a></li>
+      <li class="toc-h3"><a href="#integration-points">Integration Points</a></li>
+      <li class="toc-h3"><a href="#browser-vs-nodejs">Browser vs Node.js</a></li>
+      <li class="toc-h2"><a href="#-migration-path">📈 Migration Path</a></li>
+      <li class="toc-h3"><a href="#step-1-proof-of-concept-1-week">Step 1: Proof of Concept (1 week)</a></li>
+      <li class="toc-h3"><a href="#step-2-core-operations-2-3-weeks">Step 2: Core Operations (2-3 weeks)</a></li>
+      <li class="toc-h3"><a href="#step-3-integration-2-3-weeks">Step 3: Integration (2-3 weeks)</a></li>
+      <li class="toc-h3"><a href="#step-4-optimization-ongoing">Step 4: Optimization (ongoing)</a></li>
+      <li class="toc-h2"><a href="#-challenges-amp-considerations">⚠️ Challenges &amp; Considerations</a></li>
+      <li class="toc-h3"><a href="#challenges">Challenges</a></li>
+      <li class="toc-h3"><a href="#when-not-to-use-wasm">When NOT to Use WASM</a></li>
+      <li class="toc-h2"><a href="#-recommended-starting-points">🎯 Recommended Starting Points</a></li>
+      <li class="toc-h3"><a href="#priority-1-jsonpath-evaluation">Priority 1: JSONPath Evaluation</a></li>
+      <li class="toc-h3"><a href="#priority-2-mathematical-operations">Priority 2: Mathematical Operations</a></li>
+      <li class="toc-h3"><a href="#priority-3-custom-expression-execution">Priority 3: Custom Expression Execution</a></li>
+      <li class="toc-h3"><a href="#priority-4-array-operations">Priority 4: Array Operations</a></li>
+      <li class="toc-h2"><a href="#-resources">📚 Resources</a></li>
+      <li class="toc-h2"><a href="#-example-implementation">💡 Example Implementation</a></li>
+      <li class="toc-h3"><a href="#jsonpath-node-with-wasm">JSONPath Node with WASM</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -597,6 +658,52 @@ export class JsonPathNode extends BaseNode {
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

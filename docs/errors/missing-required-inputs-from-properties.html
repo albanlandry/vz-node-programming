@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,25 +65,26 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Missing Required Inputs - Properties Not Used as Default Values</h1>
-<h2>Error Summary</h2>
+<h2 id="error-summary">Error Summary</h2>
 <p><strong>Date</strong>: December 2024<br><strong>Severity</strong>: High<br><strong>Status</strong>: Resolved</p>
-<h2>Error Description</h2>
+<h2 id="error-description">Error Description</h2>
 <p>When executing graphs, nodes with properties (like <code>operation</code>, <code>level</code>) were failing with &quot;Required input missing&quot; errors, even though these values were stored in the node&#39;s <code>properties</code>. The properties were being set on the node but not used as default input values when inputs weren&#39;t connected.</p>
-<h3>Error Messages</h3>
+<h3 id="error-messages">Error Messages</h3>
 <pre><code>[ERROR] Node math-add execution error: NodeError: Required input &#39;Operation&#39; (operation) is missing
 [ERROR] Node string-upper execution error: NodeError: Required input &#39;Operation&#39; (operation) is missing
 [ERROR] Node logger-1 execution error: NodeError: Required input &#39;Data&#39; (data) is missing
 </code></pre>
-<h3>Affected Nodes</h3>
+<h3 id="affected-nodes">Affected Nodes</h3>
 <ul>
 <li><code>MathNode</code> - Requires <code>operation</code> property (e.g., &quot;add&quot;, &quot;multiply&quot;)</li>
 <li><code>StringNode</code> - Requires <code>operation</code> property (e.g., &quot;toUpperCase&quot;, &quot;toLowerCase&quot;)</li>
 <li><code>LoggerNode</code> - Requires <code>level</code> property (e.g., &quot;info&quot;, &quot;warn&quot;)</li>
 <li>Any node that uses properties as default input values</li>
 </ul>
-<h3>Example Graph Node</h3>
+<h3 id="example-graph-node">Example Graph Node</h3>
 <pre><code class="language-json">{
   &quot;id&quot;: &quot;math-add&quot;,
   &quot;type&quot;: &quot;utility.math&quot;,
@@ -96,14 +94,14 @@
 }
 </code></pre>
 <p>The <code>operation</code> property should be used as the default value for the <code>operation</code> input port when no connection provides it.</p>
-<h2>Root Cause</h2>
+<h2 id="root-cause">Root Cause</h2>
 <p>The <code>NodeExecutor.gatherNodeInputs()</code> method only gathered inputs from:</p>
 <ol>
 <li>Initial inputs provided in the execution request</li>
 <li>Connected nodes&#39; outputs</li>
 </ol>
 <p>It did not check node properties to use as default values for unconnected required inputs.</p>
-<h3>Code Flow</h3>
+<h3 id="code-flow">Code Flow</h3>
 <ol>
 <li>Node is created with properties: <code>{ operation: &quot;add&quot; }</code></li>
 <li>Properties are stored in <code>node.properties</code> Map</li>
@@ -113,7 +111,7 @@
 <li><code>validateInputs()</code> throws error: &quot;Required input &#39;Operation&#39; is missing&quot;</li>
 <li>Execution fails</li>
 </ol>
-<h3>Problematic Code</h3>
+<h3 id="problematic-code">Problematic Code</h3>
 <pre><code class="language-typescript">// ❌ Before - doesn&#39;t check properties
 private gatherNodeInputs(
   nodeId: NodeId,
@@ -128,15 +126,15 @@ private gatherNodeInputs(
   return inputs;
 }
 </code></pre>
-<h2>Resolution</h2>
-<h3>Solution</h3>
+<h2 id="resolution">Resolution</h2>
+<h3 id="solution">Solution</h3>
 <p>Modified <code>NodeExecutor.gatherNodeInputs()</code> to use node properties as default values for inputs that:</p>
 <ol>
 <li>Are not provided via connections</li>
 <li>Are not provided in initial inputs</li>
 <li>Have a matching property name</li>
 </ol>
-<h3>Code Changes</h3>
+<h3 id="code-changes">Code Changes</h3>
 <p><strong>File</strong>: <code>src/core/NodeExecutor.ts</code></p>
 <p><strong>Before:</strong></p>
 <pre><code class="language-typescript">private gatherNodeInputs(
@@ -229,38 +227,38 @@ private gatherNodeInputs(
   return inputs;
 }
 </code></pre>
-<h2>Implementation Details</h2>
-<h3>Property Priority</h3>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="property-priority">Property Priority</h3>
 <p>Input values are resolved in this order (highest to lowest priority):</p>
 <ol>
 <li><strong>Initial inputs</strong> - Explicitly provided in execution request</li>
 <li><strong>Connected outputs</strong> - Values from connected nodes</li>
 <li><strong>Node properties</strong> - Default values from node properties (new)</li>
 </ol>
-<h3>Property Matching</h3>
+<h3 id="property-matching">Property Matching</h3>
 <p>Properties are matched to input ports by:</p>
 <ul>
 <li>Property key name matching input port ID</li>
 <li>Example: Property <code>operation</code> matches input port <code>operation</code></li>
 </ul>
-<h3>Type Safety</h3>
+<h3 id="type-safety">Type Safety</h3>
 <p>The code checks if the node has a <code>getProperty</code> method before using it, ensuring compatibility with all node types.</p>
-<h2>Verification</h2>
-<h3>Test Steps</h3>
+<h2 id="verification">Verification</h2>
+<h3 id="test-steps">Test Steps</h3>
 <ol>
 <li>Create a graph with nodes that have properties (e.g., Math node with <code>operation: &quot;add&quot;</code>)</li>
 <li>Don&#39;t connect the property-based input ports</li>
 <li>Execute the graph</li>
 <li>Verify nodes execute successfully using property values as defaults</li>
 </ol>
-<h3>Expected Behavior</h3>
+<h3 id="expected-behavior">Expected Behavior</h3>
 <ul>
 <li>Nodes should use properties as default input values</li>
 <li>No &quot;Required input missing&quot; errors for properties</li>
 <li>Graph execution should complete successfully</li>
 <li>Connected inputs should still override property defaults</li>
 </ul>
-<h3>Example</h3>
+<h3 id="example">Example</h3>
 <p><strong>Graph Node:</strong></p>
 <pre><code class="language-json">{
   &quot;id&quot;: &quot;math-add&quot;,
@@ -276,8 +274,8 @@ private gatherNodeInputs(
 <li>Property <code>operation: &quot;add&quot;</code> is used as default</li>
 <li>Node executes successfully with <code>operation = &quot;add&quot;</code></li>
 </ul>
-<h2>Prevention</h2>
-<h3>Best Practices</h3>
+<h2 id="prevention">Prevention</h2>
+<h3 id="best-practices">Best Practices</h3>
 <ol>
 <li><p><strong>Document property usage</strong>: When creating nodes that use properties as defaults, document which properties map to which inputs.</p>
 </li>
@@ -288,24 +286,24 @@ private gatherNodeInputs(
 <li><p><strong>Consider making properties explicit</strong>: For clarity, consider making property-based inputs optional or providing clear documentation.</p>
 </li>
 </ol>
-<h2>Related Issues</h2>
+<h2 id="related-issues">Related Issues</h2>
 <ul>
 <li>Graph execution failing with &quot;Required input missing&quot; errors</li>
 <li>Properties not being used during execution</li>
 <li>Nodes requiring manual input connection even when properties are set</li>
 </ul>
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ul>
 <li><code>src/core/NodeExecutor.ts</code> - Input gathering logic</li>
 <li><code>src/core/BaseNode.ts</code> - Node property management</li>
 <li><code>src/graph-management/GraphExecutionEngine.ts</code> - Graph execution engine</li>
 <li><code>data/graphs/test-live-execution.json</code> - Test graph with property-based nodes</li>
 </ul>
-<h2>Resolution Date</h2>
+<h2 id="resolution-date">Resolution Date</h2>
 <p>December 2024</p>
-<h2>Implementation Status</h2>
+<h2 id="implementation-status">Implementation Status</h2>
 <p>✅ <strong>RESOLVED</strong> - Node properties are now used as default input values when inputs are not connected.</p>
-<h3>Changes Made</h3>
+<h3 id="changes-made">Changes Made</h3>
 <ol>
 <li><p><strong>Updated <code>NodeExecutor.gatherNodeInputs()</code></strong>:</p>
 <ul>
@@ -334,7 +332,7 @@ private gatherNodeInputs(
 <li>Sets properties on node after creation using <code>setProperty()</code> method</li>
 <li>Logs property setting for debugging</li>
 </ul>
-<h3>Testing</h3>
+<h3 id="testing">Testing</h3>
 <p>After the fix, graph execution should:</p>
 <ul>
 <li>Use node properties as default values for unconnected required inputs</li>
@@ -362,19 +360,73 @@ private gatherNodeInputs(
 <li>Node executes successfully with <code>operation = &quot;add&quot;</code></li>
 </ol>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#error-summary">Error Summary</a></li>
+      <li class="toc-h2"><a href="#error-description">Error Description</a></li>
+      <li class="toc-h3"><a href="#error-messages">Error Messages</a></li>
+      <li class="toc-h3"><a href="#affected-nodes">Affected Nodes</a></li>
+      <li class="toc-h3"><a href="#example-graph-node">Example Graph Node</a></li>
+      <li class="toc-h2"><a href="#root-cause">Root Cause</a></li>
+      <li class="toc-h3"><a href="#code-flow">Code Flow</a></li>
+      <li class="toc-h3"><a href="#problematic-code">Problematic Code</a></li>
+      <li class="toc-h2"><a href="#resolution">Resolution</a></li>
+      <li class="toc-h3"><a href="#solution">Solution</a></li>
+      <li class="toc-h3"><a href="#code-changes">Code Changes</a></li>
+      <li class="toc-h2"><a href="#implementation-details">Implementation Details</a></li>
+      <li class="toc-h3"><a href="#property-priority">Property Priority</a></li>
+      <li class="toc-h3"><a href="#property-matching">Property Matching</a></li>
+      <li class="toc-h3"><a href="#type-safety">Type Safety</a></li>
+      <li class="toc-h2"><a href="#verification">Verification</a></li>
+      <li class="toc-h3"><a href="#test-steps">Test Steps</a></li>
+      <li class="toc-h3"><a href="#expected-behavior">Expected Behavior</a></li>
+      <li class="toc-h3"><a href="#example">Example</a></li>
+      <li class="toc-h2"><a href="#prevention">Prevention</a></li>
+      <li class="toc-h3"><a href="#best-practices">Best Practices</a></li>
+      <li class="toc-h2"><a href="#related-issues">Related Issues</a></li>
+      <li class="toc-h2"><a href="#references">References</a></li>
+      <li class="toc-h2"><a href="#resolution-date">Resolution Date</a></li>
+      <li class="toc-h2"><a href="#implementation-status">Implementation Status</a></li>
+      <li class="toc-h3"><a href="#changes-made">Changes Made</a></li>
+      <li class="toc-h3"><a href="#testing">Testing</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -387,6 +439,52 @@ private gatherNodeInputs(
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

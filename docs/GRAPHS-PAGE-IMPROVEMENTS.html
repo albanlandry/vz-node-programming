@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header expanded">Graph Editor</div>
+      <ul class="nav-submenu expanded">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" class="active">Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,14 +65,15 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Graphs Page Improvements</h1>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>This document describes the improvements made to the Graphs Management page (<code>/graphs</code>) to add test graph availability and view mode switching.</p>
-<h2>Implementation Date</h2>
+<h2 id="implementation-date">Implementation Date</h2>
 <p>December 2024</p>
-<h2>Features Implemented</h2>
-<h3>1. Test Graph Auto-Initialization</h3>
+<h2 id="features-implemented">Features Implemented</h2>
+<h3 id="1-test-graph-auto-initialization">1. Test Graph Auto-Initialization</h3>
 <p><strong>Purpose</strong>: Automatically make the test graph available in the graphs list without manual intervention.</p>
 <p><strong>Implementation</strong>:</p>
 <ul>
@@ -91,7 +89,7 @@
 <li>Subsequent requests skip initialization if graph already exists</li>
 <li>Test graph appears in graphs list with ID <code>test-live-execution-001</code></li>
 </ul>
-<h3>2. Grid/List View Mode Toggle</h3>
+<h3 id="2-gridlist-view-mode-toggle">2. Grid/List View Mode Toggle</h3>
 <p><strong>Purpose</strong>: Allow users to switch between grid and list view modes for better graph browsing experience.</p>
 <p><strong>Implementation</strong>:</p>
 <ul>
@@ -111,14 +109,14 @@
 <li>Smooth transitions between view modes</li>
 <li>Both views maintain all functionality (edit, execute, delete)</li>
 </ul>
-<h4>Grid View</h4>
+<h4 id="grid-view">Grid View</h4>
 <ul>
 <li>3-column responsive layout (1 col on mobile, 2 on tablet, 3 on desktop)</li>
 <li>Card-based design with full information display</li>
 <li>Tags displayed prominently</li>
 <li>Vertical action buttons</li>
 </ul>
-<h4>List View</h4>
+<h4 id="list-view">List View</h4>
 <ul>
 <li>Single-column layout optimized for scanning</li>
 <li>Horizontal information layout</li>
@@ -126,8 +124,8 @@
 <li>Horizontal action buttons</li>
 <li>Better for viewing many graphs at once</li>
 </ul>
-<h2>UI Components</h2>
-<h3>View Mode Toggle</h3>
+<h2 id="ui-components">UI Components</h2>
+<h3 id="view-mode-toggle">View Mode Toggle</h3>
 <p><strong>Location</strong>: Page header, next to &quot;Create New Graph&quot; button</p>
 <p><strong>Design</strong>:</p>
 <ul>
@@ -141,8 +139,8 @@
 <li>Grid: <code>Grid3x3</code> from Lucide</li>
 <li>List: <code>List</code> from Lucide</li>
 </ul>
-<h2>State Management</h2>
-<h3>View Mode State</h3>
+<h2 id="state-management">State Management</h2>
+<h3 id="view-mode-state">View Mode State</h3>
 <pre><code class="language-typescript">const [viewMode, setViewMode] = useState&lt;ViewMode&gt;(() =&gt; {
   if (typeof window !== &#39;undefined&#39;) {
     const saved = localStorage.getItem(&#39;graphsViewMode&#39;);
@@ -152,8 +150,8 @@
 });
 </code></pre>
 <p><strong>Persistence</strong>: Saved to <code>localStorage</code> key <code>graphsViewMode</code><br><strong>Default</strong>: Grid view</p>
-<h2>Test Graph Details</h2>
-<h3>Graph Information</h3>
+<h2 id="test-graph-details">Test Graph Details</h2>
+<h3 id="graph-information">Graph Information</h3>
 <ul>
 <li><strong>ID</strong>: <code>test-live-execution-001</code></li>
 <li><strong>Name</strong>: &quot;Live Execution Test Graph&quot;</li>
@@ -162,14 +160,14 @@
 <li><strong>Nodes</strong>: 8 nodes</li>
 <li><strong>Connections</strong>: 7 connections</li>
 </ul>
-<h3>Graph Structure</h3>
+<h3 id="graph-structure">Graph Structure</h3>
 <ul>
 <li>3 Constant nodes (numbers and string)</li>
 <li>2 Math nodes (add and multiply)</li>
 <li>1 String node (uppercase)</li>
 <li>2 Logger nodes (output)</li>
 </ul>
-<h3>Usage</h3>
+<h3 id="usage">Usage</h3>
 <ol>
 <li>Navigate to <code>/graphs</code> page</li>
 <li>Test graph appears in the list automatically</li>
@@ -177,19 +175,19 @@
 <li>Click &quot;Execute&quot; to run the graph</li>
 <li>Use for testing live execution features</li>
 </ol>
-<h2>Files Modified</h2>
-<h3>Modified Files</h3>
+<h2 id="files-modified">Files Modified</h2>
+<h3 id="modified-files">Modified Files</h3>
 <ul>
 <li><code>app/api/graphs/route.ts</code> - Added test graph auto-initialization</li>
 <li><code>app/graphs/page.tsx</code> - Added view mode toggle and list view layout</li>
 </ul>
-<h3>Created Files</h3>
+<h3 id="created-files">Created Files</h3>
 <ul>
 <li><code>scripts/initialize-test-graph.ts</code> - Test graph initialization script (optional, not used in final implementation)</li>
 <li><code>docs/GRAPHS-PAGE-IMPROVEMENTS.md</code> - This documentation</li>
 </ul>
-<h2>User Experience</h2>
-<h3>Grid View (Default)</h3>
+<h2 id="user-experience">User Experience</h2>
+<h3 id="grid-view-default">Grid View (Default)</h3>
 <ul>
 <li>Best for: Visual browsing, seeing graph details at a glance</li>
 <li>Layout: Card-based, 3 columns</li>
@@ -203,8 +201,8 @@
 <li>Information density: Medium</li>
 <li>Scrolling: Vertical (less scrolling needed)</li>
 </ul>
-<h2>Technical Details</h2>
-<h3>Test Graph Initialization Flow</h3>
+<h2 id="technical-details">Technical Details</h2>
+<h3 id="test-graph-initialization-flow">Test Graph Initialization Flow</h3>
 <ol>
 <li>User requests <code>/api/graphs</code></li>
 <li>API checks if test graph exists in index</li>
@@ -217,28 +215,28 @@
 </li>
 <li>Returns all graphs including test graph</li>
 </ol>
-<h3>View Mode Persistence</h3>
+<h3 id="view-mode-persistence">View Mode Persistence</h3>
 <ul>
 <li>View mode stored in <code>localStorage</code></li>
 <li>Persists across page reloads</li>
 <li>Defaults to grid if no preference saved</li>
 <li>Updates immediately on toggle</li>
 </ul>
-<h2>Error Handling</h2>
-<h3>Test Graph Initialization</h3>
+<h2 id="error-handling">Error Handling</h2>
+<h3 id="test-graph-initialization">Test Graph Initialization</h3>
 <ul>
 <li>If test graph file doesn&#39;t exist: Silently skipped (optional feature)</li>
 <li>If file is invalid JSON: Error logged, initialization skipped</li>
 <li>If save fails: Error logged, initialization skipped</li>
 <li>All errors are non-blocking - graphs list still loads</li>
 </ul>
-<h3>View Mode</h3>
+<h3 id="view-mode">View Mode</h3>
 <ul>
 <li>If localStorage unavailable: Defaults to grid view</li>
 <li>If saved value invalid: Defaults to grid view</li>
 <li>No errors thrown - graceful degradation</li>
 </ul>
-<h2>Future Enhancements</h2>
+<h2 id="future-enhancements">Future Enhancements</h2>
 <ol>
 <li><p><strong>View Mode Options</strong>:</p>
 <ul>
@@ -263,8 +261,8 @@
 </ul>
 </li>
 </ol>
-<h2>Testing</h2>
-<h3>Manual Testing Checklist</h3>
+<h2 id="testing">Testing</h2>
+<h3 id="manual-testing-checklist">Manual Testing Checklist</h3>
 <ul>
 <li><input checked="" disabled="" type="checkbox"> Test graph appears in graphs list after first API call</li>
 <li><input checked="" disabled="" type="checkbox"> Test graph can be edited from graphs list</li>
@@ -276,7 +274,7 @@
 <li><input checked="" disabled="" type="checkbox"> List view is more compact and scrollable</li>
 <li><input checked="" disabled="" type="checkbox"> Grid view maintains responsive layout</li>
 </ul>
-<h2>Conclusion</h2>
+<h2 id="conclusion">Conclusion</h2>
 <p>The improvements successfully:</p>
 <ul>
 <li>✅ Make test graph automatically available</li>
@@ -287,19 +285,76 @@
 </ul>
 <p>All features are working and ready for use.</p>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#overview">Overview</a></li>
+      <li class="toc-h2"><a href="#implementation-date">Implementation Date</a></li>
+      <li class="toc-h2"><a href="#features-implemented">Features Implemented</a></li>
+      <li class="toc-h3"><a href="#1-test-graph-auto-initialization">1. Test Graph Auto-Initialization</a></li>
+      <li class="toc-h3"><a href="#2-gridlist-view-mode-toggle">2. Grid/List View Mode Toggle</a></li>
+      <li class="toc-h4"><a href="#grid-view">Grid View</a></li>
+      <li class="toc-h4"><a href="#list-view">List View</a></li>
+      <li class="toc-h2"><a href="#ui-components">UI Components</a></li>
+      <li class="toc-h3"><a href="#view-mode-toggle">View Mode Toggle</a></li>
+      <li class="toc-h2"><a href="#state-management">State Management</a></li>
+      <li class="toc-h3"><a href="#view-mode-state">View Mode State</a></li>
+      <li class="toc-h2"><a href="#test-graph-details">Test Graph Details</a></li>
+      <li class="toc-h3"><a href="#graph-information">Graph Information</a></li>
+      <li class="toc-h3"><a href="#graph-structure">Graph Structure</a></li>
+      <li class="toc-h3"><a href="#usage">Usage</a></li>
+      <li class="toc-h2"><a href="#files-modified">Files Modified</a></li>
+      <li class="toc-h3"><a href="#modified-files">Modified Files</a></li>
+      <li class="toc-h3"><a href="#created-files">Created Files</a></li>
+      <li class="toc-h2"><a href="#user-experience">User Experience</a></li>
+      <li class="toc-h3"><a href="#grid-view-default">Grid View (Default)</a></li>
+      <li class="toc-h2"><a href="#technical-details">Technical Details</a></li>
+      <li class="toc-h3"><a href="#test-graph-initialization-flow">Test Graph Initialization Flow</a></li>
+      <li class="toc-h3"><a href="#view-mode-persistence">View Mode Persistence</a></li>
+      <li class="toc-h2"><a href="#error-handling">Error Handling</a></li>
+      <li class="toc-h3"><a href="#test-graph-initialization">Test Graph Initialization</a></li>
+      <li class="toc-h3"><a href="#view-mode">View Mode</a></li>
+      <li class="toc-h2"><a href="#future-enhancements">Future Enhancements</a></li>
+      <li class="toc-h2"><a href="#testing">Testing</a></li>
+      <li class="toc-h3"><a href="#manual-testing-checklist">Manual Testing Checklist</a></li>
+      <li class="toc-h2"><a href="#conclusion">Conclusion</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -312,6 +367,52 @@
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

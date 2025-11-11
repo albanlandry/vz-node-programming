@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" class="active">Node Registry</a></li>
+      <div class="nav-group-header expanded">Core Systems</div>
+      <ul class="nav-submenu expanded">        <li><a href="NODE-REGISTRY.html" class="active">Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,11 +65,12 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Node Registry &amp; Discovery System</h1>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>The Node Registry is a central system for discovering, organizing, and instantiating nodes in the VZ Programming system. It provides a catalog of all available node types with rich metadata, search capabilities, and type-safe node creation.</p>
-<h2>Features</h2>
+<h2 id="features">Features</h2>
 <ul>
 <li>✅ Central registry for all node types</li>
 <li>✅ Rich metadata (categories, tags, icons, colors)</li>
@@ -82,7 +80,7 @@
 <li>✅ Version management</li>
 <li>✅ Documentation export</li>
 </ul>
-<h2>Quick Start</h2>
+<h2 id="quick-start">Quick Start</h2>
 <pre><code class="language-typescript">import { NodeRegistry, registerBuiltInNodes, createNode } from &#39;./src/index&#39;;
 
 // Register all built-in nodes
@@ -96,8 +94,8 @@ const registry = NodeRegistry.getInstance();
 const metadata = registry.getMetadata(&#39;async.http-request&#39;);
 console.log(metadata);
 </code></pre>
-<h2>Core Concepts</h2>
-<h3>Node Metadata</h3>
+<h2 id="core-concepts">Core Concepts</h2>
+<h3 id="node-metadata">Node Metadata</h3>
 <p>Each registered node has comprehensive metadata:</p>
 <pre><code class="language-typescript">interface NodeMetadata {
   type: string;              // Unique identifier (e.g., &#39;async.http-request&#39;)
@@ -116,7 +114,7 @@ console.log(metadata);
   docsUrl?: string;        // Documentation link
 }
 </code></pre>
-<h3>Categories</h3>
+<h3 id="categories">Categories</h3>
 <p>Built-in categories:</p>
 <ul>
 <li><strong>Functional</strong> - Map, Filter, Reduce, Compose</li>
@@ -124,13 +122,13 @@ console.log(metadata);
 <li><strong>Async</strong> - Delay, HTTP, PromiseAll, PromiseRace, Retry</li>
 <li><strong>Utility</strong> - Conditional, Math, String, Transform, Logger</li>
 </ul>
-<h2>API Reference</h2>
-<h3>NodeRegistry</h3>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="noderegistry">NodeRegistry</h3>
 <p>Singleton class managing all node registrations.</p>
-<h4>Get Instance</h4>
+<h4 id="get-instance">Get Instance</h4>
 <pre><code class="language-typescript">const registry = NodeRegistry.getInstance();
 </code></pre>
-<h4>Register a Node</h4>
+<h4 id="register-a-node">Register a Node</h4>
 <pre><code class="language-typescript">import { registerNode } from &#39;./src/index&#39;;
 import { MyCustomNode } from &#39;./nodes/MyCustomNode&#39;;
 
@@ -147,7 +145,7 @@ registerNode(MyCustomNode, {
   outputs: [...]
 });
 </code></pre>
-<h4>Using the Decorator</h4>
+<h4 id="using-the-decorator">Using the Decorator</h4>
 <pre><code class="language-typescript">import { RegisterNode, BaseNode } from &#39;./src/index&#39;;
 
 @RegisterNode({
@@ -167,7 +165,7 @@ export class DecoratedNode extends BaseNode {
   }
 }
 </code></pre>
-<h4>Create a Node</h4>
+<h4 id="create-a-node">Create a Node</h4>
 <pre><code class="language-typescript">// Create with default config
 const node = createNode(&#39;async.http-request&#39;);
 
@@ -178,7 +176,7 @@ const node = createNode(&#39;utility.math&#39;, {
   description: &#39;Custom instance&#39;
 });
 </code></pre>
-<h4>Discovery &amp; Search</h4>
+<h4 id="discovery-amp-search">Discovery &amp; Search</h4>
 <pre><code class="language-typescript">const registry = NodeRegistry.getInstance();
 
 // Get all node types
@@ -202,7 +200,7 @@ const results = registry.search(&#39;http&#39;);
 const categories = registry.getCategories();
 const tags = registry.getTags();
 </code></pre>
-<h4>Statistics</h4>
+<h4 id="statistics">Statistics</h4>
 <pre><code class="language-typescript">const stats = registry.getStats();
 // {
 //   totalNodes: 17,
@@ -211,19 +209,19 @@ const tags = registry.getTags();
 //   deprecated: 0
 // }
 </code></pre>
-<h4>Export Catalog</h4>
+<h4 id="export-catalog">Export Catalog</h4>
 <pre><code class="language-typescript">// Export all metadata as JSON
 const catalog = registry.exportMetadata();
 // Save to file for documentation or API reference
 </code></pre>
-<h2>Graph Serialization</h2>
+<h2 id="graph-serialization">Graph Serialization</h2>
 <p>Export and import complete node graphs as JSON or YAML.</p>
-<h3>GraphSerializer</h3>
+<h3 id="graphserializer">GraphSerializer</h3>
 <pre><code class="language-typescript">import { GraphSerializer, NodeExecutor } from &#39;./src/index&#39;;
 
 const serializer = new GraphSerializer();
 </code></pre>
-<h3>Export Graph</h3>
+<h3 id="export-graph">Export Graph</h3>
 <pre><code class="language-typescript">// From an executor
 const definition = serializer.serializeExecutor(executor, {
   name: &#39;My Workflow&#39;,
@@ -241,7 +239,7 @@ const yaml = serializer.toYAML(definition);
 import fs from &#39;fs&#39;;
 fs.writeFileSync(&#39;workflow.json&#39;, json);
 </code></pre>
-<h3>Import Graph</h3>
+<h3 id="import-graph">Import Graph</h3>
 <pre><code class="language-typescript">// From JSON string
 const definition = serializer.fromJSON(jsonString);
 
@@ -251,7 +249,7 @@ const executor = serializer.deserializeToExecutor(definition);
 // Now you can execute the imported workflow
 const results = await executor.executeParallel(initialInputs);
 </code></pre>
-<h3>Graph Definition Format</h3>
+<h3 id="graph-definition-format">Graph Definition Format</h3>
 <pre><code class="language-json">{
   &quot;version&quot;: &quot;1.0.0&quot;,
   &quot;name&quot;: &quot;My Workflow&quot;,
@@ -283,8 +281,8 @@ const results = await executor.executeParallel(initialInputs);
   &quot;metadata&quot;: {}
 }
 </code></pre>
-<h2>Examples</h2>
-<h3>Example 1: Browse Available Nodes</h3>
+<h2 id="examples">Examples</h2>
+<h3 id="example-1-browse-available-nodes">Example 1: Browse Available Nodes</h3>
 <pre><code class="language-typescript">registerBuiltInNodes();
 const registry = NodeRegistry.getInstance();
 
@@ -300,7 +298,7 @@ registry.getCategories().forEach(category =&gt; {
   });
 });
 </code></pre>
-<h3>Example 2: Create Workflow Dynamically</h3>
+<h3 id="example-2-create-workflow-dynamically">Example 2: Create Workflow Dynamically</h3>
 <pre><code class="language-typescript">// Discover what nodes are available
 const httpNode = createNode(&#39;async.http-request&#39;);
 const transformNode = createNode(&#39;utility.transform&#39;);
@@ -324,7 +322,7 @@ executor.addConnection({
 // Execute
 const results = await executor.executeParallel(inputs);
 </code></pre>
-<h3>Example 3: Save and Load Workflows</h3>
+<h3 id="example-3-save-and-load-workflows">Example 3: Save and Load Workflows</h3>
 <pre><code class="language-typescript">// Create and save
 const serializer = new GraphSerializer();
 const definition = serializer.serializeExecutor(executor, {
@@ -341,7 +339,7 @@ const loaded = serializer.fromJSON(
 
 const newExecutor = serializer.deserializeToExecutor(loaded);
 </code></pre>
-<h3>Example 4: Custom Node Registration</h3>
+<h3 id="example-4-custom-node-registration">Example 4: Custom Node Registration</h3>
 <pre><code class="language-typescript">import { BaseNode, registerNode } from &#39;./src/index&#39;;
 
 class WeatherNode extends BaseNode {
@@ -396,14 +394,14 @@ registerNode(WeatherNode, {
 // Use it
 const weatherNode = createNode(&#39;custom.weather&#39;);
 </code></pre>
-<h2>Best Practices</h2>
-<h3>1. Consistent Naming</h3>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-consistent-naming">1. Consistent Naming</h3>
 <p>Use dot notation for type names:</p>
 <ul>
 <li><code>category.specific-name</code></li>
 <li>Examples: <code>async.http-request</code>, <code>utility.math</code></li>
 </ul>
-<h3>2. Rich Metadata</h3>
+<h3 id="2-rich-metadata">2. Rich Metadata</h3>
 <p>Provide comprehensive metadata:</p>
 <ul>
 <li>Clear descriptions</li>
@@ -411,29 +409,29 @@ const weatherNode = createNode(&#39;custom.weather&#39;);
 <li>Useful examples</li>
 <li>Visual identifiers (icons, colors)</li>
 </ul>
-<h3>3. Versioning</h3>
+<h3 id="3-versioning">3. Versioning</h3>
 <p>Use semantic versioning:</p>
 <ul>
 <li><code>1.0.0</code> - Initial release</li>
 <li><code>1.1.0</code> - New features</li>
 <li><code>2.0.0</code> - Breaking changes</li>
 </ul>
-<h3>4. Documentation</h3>
+<h3 id="4-documentation">4. Documentation</h3>
 <p>Include:</p>
 <ul>
 <li>Input/output descriptions</li>
 <li>Usage examples</li>
 <li>Links to detailed docs</li>
 </ul>
-<h3>5. Categories</h3>
+<h3 id="5-categories">5. Categories</h3>
 <p>Organize nodes logically:</p>
 <ul>
 <li>Group by functionality</li>
 <li>Keep categories focused</li>
 <li>Use standard names</li>
 </ul>
-<h2>Advanced Topics</h2>
-<h3>Custom Node Discovery</h3>
+<h2 id="advanced-topics">Advanced Topics</h2>
+<h3 id="custom-node-discovery">Custom Node Discovery</h3>
 <p>Implement auto-discovery from file system:</p>
 <pre><code class="language-typescript">import fs from &#39;fs&#39;;
 import path from &#39;path&#39;;
@@ -456,7 +454,7 @@ function discoverNodes(directory: string) {
 
 discoverNodes(&#39;./custom-nodes&#39;);
 </code></pre>
-<h3>Plugin System</h3>
+<h3 id="plugin-system">Plugin System</h3>
 <p>Load nodes from plugins:</p>
 <pre><code class="language-typescript">interface NodePlugin {
   name: string;
@@ -473,7 +471,7 @@ function loadPlugin(plugin: NodePlugin) {
   });
 }
 </code></pre>
-<h3>Marketplace Integration</h3>
+<h3 id="marketplace-integration">Marketplace Integration</h3>
 <p>Export registry for marketplace:</p>
 <pre><code class="language-typescript">const catalog = registry.exportMetadata();
 
@@ -483,8 +481,8 @@ await fetch(&#39;https://marketplace.api/nodes&#39;, {
   body: catalog
 });
 </code></pre>
-<h2>Troubleshooting</h2>
-<h3>Node Already Registered</h3>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="node-already-registered">Node Already Registered</h3>
 <pre><code class="language-typescript">// Check before registering
 if (!registry.isRegistered(&#39;custom.my-node&#39;)) {
   registerNode(MyNode, metadata);
@@ -494,7 +492,7 @@ if (!registry.isRegistered(&#39;custom.my-node&#39;)) {
 registry.unregister(&#39;custom.my-node&#39;);
 registerNode(MyNode, metadata);
 </code></pre>
-<h3>Node Type Not Found</h3>
+<h3 id="node-type-not-found">Node Type Not Found</h3>
 <pre><code class="language-typescript">// Check if type exists
 if (registry.isRegistered(&#39;async.http-request&#39;)) {
   const node = createNode(&#39;async.http-request&#39;);
@@ -503,7 +501,7 @@ if (registry.isRegistered(&#39;async.http-request&#39;)) {
 // Or search for similar
 const similar = registry.search(&#39;http&#39;);
 </code></pre>
-<h3>Serialization Errors</h3>
+<h3 id="serialization-errors">Serialization Errors</h3>
 <pre><code class="language-typescript">// Validate before deserializing
 try {
   const definition = serializer.fromJSON(json);
@@ -512,7 +510,7 @@ try {
   console.error(&#39;Invalid graph definition:&#39;, error);
 }
 </code></pre>
-<h2>See Also</h2>
+<h2 id="see-also">See Also</h2>
 <ul>
 <li><a href="../QUICKSTART.html">Quick Start Guide</a></li>
 <li><a href="../PARALLEL-EXECUTION.html">Parallel Execution</a></li>
@@ -520,19 +518,86 @@ try {
 <li><a href="../examples/registry-example.ts">Examples</a></li>
 </ul>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#overview">Overview</a></li>
+      <li class="toc-h2"><a href="#features">Features</a></li>
+      <li class="toc-h2"><a href="#quick-start">Quick Start</a></li>
+      <li class="toc-h2"><a href="#core-concepts">Core Concepts</a></li>
+      <li class="toc-h3"><a href="#node-metadata">Node Metadata</a></li>
+      <li class="toc-h3"><a href="#categories">Categories</a></li>
+      <li class="toc-h2"><a href="#api-reference">API Reference</a></li>
+      <li class="toc-h3"><a href="#noderegistry">NodeRegistry</a></li>
+      <li class="toc-h4"><a href="#get-instance">Get Instance</a></li>
+      <li class="toc-h4"><a href="#register-a-node">Register a Node</a></li>
+      <li class="toc-h4"><a href="#using-the-decorator">Using the Decorator</a></li>
+      <li class="toc-h4"><a href="#create-a-node">Create a Node</a></li>
+      <li class="toc-h4"><a href="#discovery-amp-search">Discovery &amp; Search</a></li>
+      <li class="toc-h4"><a href="#statistics">Statistics</a></li>
+      <li class="toc-h4"><a href="#export-catalog">Export Catalog</a></li>
+      <li class="toc-h2"><a href="#graph-serialization">Graph Serialization</a></li>
+      <li class="toc-h3"><a href="#graphserializer">GraphSerializer</a></li>
+      <li class="toc-h3"><a href="#export-graph">Export Graph</a></li>
+      <li class="toc-h3"><a href="#import-graph">Import Graph</a></li>
+      <li class="toc-h3"><a href="#graph-definition-format">Graph Definition Format</a></li>
+      <li class="toc-h2"><a href="#examples">Examples</a></li>
+      <li class="toc-h3"><a href="#example-1-browse-available-nodes">Example 1: Browse Available Nodes</a></li>
+      <li class="toc-h3"><a href="#example-2-create-workflow-dynamically">Example 2: Create Workflow Dynamically</a></li>
+      <li class="toc-h3"><a href="#example-3-save-and-load-workflows">Example 3: Save and Load Workflows</a></li>
+      <li class="toc-h3"><a href="#example-4-custom-node-registration">Example 4: Custom Node Registration</a></li>
+      <li class="toc-h2"><a href="#best-practices">Best Practices</a></li>
+      <li class="toc-h3"><a href="#1-consistent-naming">1. Consistent Naming</a></li>
+      <li class="toc-h3"><a href="#2-rich-metadata">2. Rich Metadata</a></li>
+      <li class="toc-h3"><a href="#3-versioning">3. Versioning</a></li>
+      <li class="toc-h3"><a href="#4-documentation">4. Documentation</a></li>
+      <li class="toc-h3"><a href="#5-categories">5. Categories</a></li>
+      <li class="toc-h2"><a href="#advanced-topics">Advanced Topics</a></li>
+      <li class="toc-h3"><a href="#custom-node-discovery">Custom Node Discovery</a></li>
+      <li class="toc-h3"><a href="#plugin-system">Plugin System</a></li>
+      <li class="toc-h3"><a href="#marketplace-integration">Marketplace Integration</a></li>
+      <li class="toc-h2"><a href="#troubleshooting">Troubleshooting</a></li>
+      <li class="toc-h3"><a href="#node-already-registered">Node Already Registered</a></li>
+      <li class="toc-h3"><a href="#node-type-not-found">Node Type Not Found</a></li>
+      <li class="toc-h3"><a href="#serialization-errors">Serialization Errors</a></li>
+      <li class="toc-h2"><a href="#see-also">See Also</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -545,6 +610,52 @@ try {
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

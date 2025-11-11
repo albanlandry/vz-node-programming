@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header expanded">Core Systems</div>
+      <ul class="nav-submenu expanded">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" class="active">Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,14 +65,15 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>VZ Programming - Features Summary</h1>
-<h2>🎉 Newly Implemented Features</h2>
+<h2 id="-newly-implemented-features">🎉 Newly Implemented Features</h2>
 <p>This document summarizes the features that were just added to the VZ Programming system.</p>
 <hr>
-<h2>✨ Node Registry &amp; Discovery System</h2>
+<h2 id="-node-registry-amp-discovery-system">✨ Node Registry &amp; Discovery System</h2>
 <p>A comprehensive system for managing, discovering, and creating nodes.</p>
-<h3>What Was Built</h3>
+<h3 id="what-was-built">What Was Built</h3>
 <ol>
 <li><p><strong>NodeRegistry Class</strong> (<code>src/registry/NodeRegistry.ts</code>)</p>
 <ul>
@@ -114,7 +112,7 @@
 </ul>
 </li>
 </ol>
-<h3>Key APIs</h3>
+<h3 id="key-apis">Key APIs</h3>
 <pre><code class="language-typescript">// Get registry instance
 const registry = NodeRegistry.getInstance();
 
@@ -133,10 +131,10 @@ const httpMetadata = registry.getMetadata(&#39;async.http-request&#39;);
 const stats = registry.getStats();
 // { totalNodes: 17, categories: 4, tags: 31, deprecated: 0 }
 </code></pre>
-<h3>Use Cases</h3>
+<h3 id="use-cases">Use Cases</h3>
 <p>✅ Dynamic node creation without importing classes<br>✅ Browse available nodes by category<br>✅ Search for specific functionality<br>✅ Build node palettes for visual editors<br>✅ Generate documentation automatically<br>✅ Plugin system foundation  </p>
 <hr>
-<h2>📦 Graph Serialization System</h2>
+<h2 id="-graph-serialization-system">📦 Graph Serialization System</h2>
 <p>Export and import complete workflows as JSON or YAML.</p>
 <h3>What Was Built</h3>
 <ol>
@@ -190,7 +188,7 @@ const executor = serializer.deserializeToExecutor(loaded);
 const cloned = serializer.cloneDefinition(definition);
 const merged = serializer.mergeDefinitions(def1, def2);
 </code></pre>
-<h3>Graph Definition Structure</h3>
+<h3 id="graph-definition-structure">Graph Definition Structure</h3>
 <pre><code class="language-json">{
   &quot;version&quot;: &quot;1.0.0&quot;,
   &quot;name&quot;: &quot;Workflow Name&quot;,
@@ -221,9 +219,9 @@ const merged = serializer.mergeDefinitions(def1, def2);
 <h3>Use Cases</h3>
 <p>✅ Save workflows to files<br>✅ Version control for workflows<br>✅ Share workflows between users<br>✅ Template library<br>✅ Visual editor integration<br>✅ Workflow backup and restore<br>✅ Diff and merge workflows  </p>
 <hr>
-<h2>📚 Documentation</h2>
+<h2 id="-documentation">📚 Documentation</h2>
 <p>Comprehensive documentation for all new features.</p>
-<h3>What Was Created</h3>
+<h3 id="what-was-created">What Was Created</h3>
 <ol>
 <li><p><strong>Node Registry Guide</strong> (<code>docs/NODE-REGISTRY.md</code>)</p>
 <ul>
@@ -260,7 +258,7 @@ const merged = serializer.mergeDefinitions(def1, def2);
 </ul>
 </li>
 </ol>
-<h3>Documentation Highlights</h3>
+<h3 id="documentation-highlights">Documentation Highlights</h3>
 <ul>
 <li><strong>Complete API coverage</strong> for NodeRegistry</li>
 <li><strong>Complete API coverage</strong> for GraphSerializer</li>
@@ -270,8 +268,8 @@ const merged = serializer.mergeDefinitions(def1, def2);
 <li><strong>Advanced topics</strong> (plugins, discovery, marketplace)</li>
 </ul>
 <hr>
-<h2>🎯 Statistics</h2>
-<h3>Code Added</h3>
+<h2 id="-statistics">🎯 Statistics</h2>
+<h3 id="code-added">Code Added</h3>
 <ul>
 <li><strong>3 new core files</strong>: NodeRegistry.ts, registerBuiltInNodes.ts, GraphSerializer.ts</li>
 <li><strong>1 example file</strong>: registry-example.ts</li>
@@ -280,7 +278,7 @@ const merged = serializer.mergeDefinitions(def1, def2);
 <li><strong>~500 lines</strong> of example code</li>
 <li><strong>~800 lines</strong> of documentation</li>
 </ul>
-<h3>Nodes Registered</h3>
+<h3 id="nodes-registered">Nodes Registered</h3>
 <table>
 <thead>
 <tr>
@@ -315,7 +313,7 @@ const merged = serializer.mergeDefinitions(def1, def2);
 <td></td>
 </tr>
 </tbody></table>
-<h3>Metadata Coverage</h3>
+<h3 id="metadata-coverage">Metadata Coverage</h3>
 <ul>
 <li>✅ 17/17 nodes with complete metadata</li>
 <li>✅ 4 categories</li>
@@ -327,8 +325,8 @@ const merged = serializer.mergeDefinitions(def1, def2);
 <li>✅ 27 output ports documented</li>
 </ul>
 <hr>
-<h2>🚀 Usage Examples</h2>
-<h3>Example 1: Browse Available Nodes</h3>
+<h2 id="-usage-examples">🚀 Usage Examples</h2>
+<h3 id="example-1-browse-available-nodes">Example 1: Browse Available Nodes</h3>
 <pre><code class="language-bash">$ npm run example:registry
 </code></pre>
 <p>Output:</p>
@@ -350,7 +348,7 @@ const merged = serializer.mergeDefinitions(def1, def2);
       Filters array elements based on a predicate function
    ...
 </code></pre>
-<h3>Example 2: Create Workflow and Export</h3>
+<h3 id="example-2-create-workflow-and-export">Example 2: Create Workflow and Export</h3>
 <pre><code class="language-typescript">import { createNode, NodeExecutor, GraphSerializer } from &#39;./src/index&#39;;
 
 // Create workflow
@@ -376,7 +374,7 @@ const json = serializer.toJSON(
 
 fs.writeFileSync(&#39;workflow.json&#39;, json);
 </code></pre>
-<h3>Example 3: Search and Discover</h3>
+<h3 id="example-3-search-and-discover">Example 3: Search and Discover</h3>
 <pre><code class="language-typescript">const registry = NodeRegistry.getInstance();
 
 // Find all HTTP-related nodes
@@ -392,23 +390,23 @@ asyncNodes.forEach(node =&gt; {
 });
 </code></pre>
 <hr>
-<h2>🔮 Future Enhancements</h2>
+<h2 id="-future-enhancements">🔮 Future Enhancements</h2>
 <p>Based on this foundation, here are potential next steps:</p>
-<h3>Short Term (Next Sprint)</h3>
+<h3 id="short-term-next-sprint">Short Term (Next Sprint)</h3>
 <ul>
 <li><input disabled="" type="checkbox"> Auto-discovery of nodes from file system</li>
 <li><input disabled="" type="checkbox"> Hot-reload for node definitions</li>
 <li><input disabled="" type="checkbox"> Graph validation and linting</li>
 <li><input disabled="" type="checkbox"> Plugin loader system</li>
 </ul>
-<h3>Medium Term</h3>
+<h3 id="medium-term">Medium Term</h3>
 <ul>
 <li><input disabled="" type="checkbox"> Visual graph editor (web-based)</li>
 <li><input disabled="" type="checkbox"> Node marketplace/catalog</li>
 <li><input disabled="" type="checkbox"> Workflow templates library</li>
 <li><input disabled="" type="checkbox"> Graph diffing and version control</li>
 </ul>
-<h3>Long Term</h3>
+<h3 id="long-term">Long Term</h3>
 <ul>
 <li><input disabled="" type="checkbox"> Distributed execution</li>
 <li><input disabled="" type="checkbox"> Real-time collaboration</li>
@@ -416,7 +414,7 @@ asyncNodes.forEach(node =&gt; {
 <li><input disabled="" type="checkbox"> Cloud-hosted registry</li>
 </ul>
 <hr>
-<h2>📊 Performance Impact</h2>
+<h2 id="-performance-impact">📊 Performance Impact</h2>
 <ul>
 <li><strong>Registry lookups</strong>: O(1) for getMetadata</li>
 <li><strong>Search</strong>: O(n) where n = total nodes (currently 17, very fast)</li>
@@ -425,21 +423,21 @@ asyncNodes.forEach(node =&gt; {
 <li><strong>Memory</strong>: Minimal overhead, registry is singleton</li>
 </ul>
 <hr>
-<h2>🎓 Learning Resources</h2>
-<h3>Quick Start</h3>
+<h2 id="-learning-resources">🎓 Learning Resources</h2>
+<h3 id="quick-start">Quick Start</h3>
 <ol>
 <li>Read <a href="../QUICKSTART.html">QUICKSTART.md</a></li>
 <li>Run <code>npm run example:registry</code></li>
 <li>Browse <a href="./NODE-REGISTRY.html">docs/NODE-REGISTRY.md</a></li>
 </ol>
-<h3>Deep Dive</h3>
+<h3 id="deep-dive">Deep Dive</h3>
 <ol>
 <li>Study <code>src/registry/NodeRegistry.ts</code></li>
 <li>Examine <code>src/registry/registerBuiltInNodes.ts</code></li>
 <li>Review <code>src/serialization/GraphSerializer.ts</code></li>
 <li>Experiment with <code>examples/registry-example.ts</code></li>
 </ol>
-<h3>API Reference</h3>
+<h3 id="api-reference">API Reference</h3>
 <ul>
 <li><a href="../README.html">README.md</a> - Main documentation</li>
 <li><a href="./NODE-REGISTRY.html">NODE-REGISTRY.md</a> - Registry API</li>
@@ -447,7 +445,7 @@ asyncNodes.forEach(node =&gt; {
 <li><a href="../ROADMAP.html">ROADMAP.md</a> - Development plan</li>
 </ul>
 <hr>
-<h2>✅ Testing</h2>
+<h2 id="-testing">✅ Testing</h2>
 <p>All features have been tested with working examples:</p>
 <pre><code class="language-bash"># Test registry and serialization
 npm run example:registry
@@ -462,7 +460,7 @@ npm run example:registry
 # ✅ Statistics calculation works
 </code></pre>
 <hr>
-<h2>🎉 Summary</h2>
+<h2 id="-summary">🎉 Summary</h2>
 <p>We successfully implemented:</p>
 <ol>
 <li><p>✅ <strong>Node Registry System</strong></p>
@@ -499,19 +497,75 @@ npm run example:registry
 </ol>
 <p>All features are <strong>production-ready</strong> and <strong>fully documented</strong>! 🚀</p>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#-newly-implemented-features">🎉 Newly Implemented Features</a></li>
+      <li class="toc-h2"><a href="#-node-registry-amp-discovery-system">✨ Node Registry &amp; Discovery System</a></li>
+      <li class="toc-h3"><a href="#what-was-built">What Was Built</a></li>
+      <li class="toc-h3"><a href="#key-apis">Key APIs</a></li>
+      <li class="toc-h3"><a href="#use-cases">Use Cases</a></li>
+      <li class="toc-h2"><a href="#-graph-serialization-system">📦 Graph Serialization System</a></li>
+      <li class="toc-h3"><a href="#graph-definition-structure">Graph Definition Structure</a></li>
+      <li class="toc-h2"><a href="#-documentation">📚 Documentation</a></li>
+      <li class="toc-h3"><a href="#what-was-created">What Was Created</a></li>
+      <li class="toc-h3"><a href="#documentation-highlights">Documentation Highlights</a></li>
+      <li class="toc-h2"><a href="#-statistics">🎯 Statistics</a></li>
+      <li class="toc-h3"><a href="#code-added">Code Added</a></li>
+      <li class="toc-h3"><a href="#nodes-registered">Nodes Registered</a></li>
+      <li class="toc-h3"><a href="#metadata-coverage">Metadata Coverage</a></li>
+      <li class="toc-h2"><a href="#-usage-examples">🚀 Usage Examples</a></li>
+      <li class="toc-h3"><a href="#example-1-browse-available-nodes">Example 1: Browse Available Nodes</a></li>
+      <li class="toc-h3"><a href="#example-2-create-workflow-and-export">Example 2: Create Workflow and Export</a></li>
+      <li class="toc-h3"><a href="#example-3-search-and-discover">Example 3: Search and Discover</a></li>
+      <li class="toc-h2"><a href="#-future-enhancements">🔮 Future Enhancements</a></li>
+      <li class="toc-h3"><a href="#short-term-next-sprint">Short Term (Next Sprint)</a></li>
+      <li class="toc-h3"><a href="#medium-term">Medium Term</a></li>
+      <li class="toc-h3"><a href="#long-term">Long Term</a></li>
+      <li class="toc-h2"><a href="#-performance-impact">📊 Performance Impact</a></li>
+      <li class="toc-h2"><a href="#-learning-resources">🎓 Learning Resources</a></li>
+      <li class="toc-h3"><a href="#quick-start">Quick Start</a></li>
+      <li class="toc-h3"><a href="#deep-dive">Deep Dive</a></li>
+      <li class="toc-h3"><a href="#api-reference">API Reference</a></li>
+      <li class="toc-h2"><a href="#-testing">✅ Testing</a></li>
+      <li class="toc-h2"><a href="#-summary">🎉 Summary</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -524,6 +578,52 @@ npm run example:registry
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

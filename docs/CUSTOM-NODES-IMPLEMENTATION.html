@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header expanded">Custom Nodes</div>
+      <ul class="nav-submenu expanded">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" class="active">Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,14 +65,15 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Custom Node System - Phase 1 Implementation Report</h1>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>This document describes the implementation of Phase 1 of the Custom Node Creation System, which allows users to create custom nodes via a web-based UI without writing TypeScript code.</p>
 <p><strong>Implementation Date</strong>: 2024<br><strong>Status</strong>: ✅ Completed<br><strong>Phase</strong>: Phase 1 - Template-Based System</p>
-<h2>Implementation Summary</h2>
+<h2 id="implementation-summary">Implementation Summary</h2>
 <p>Phase 1 has been successfully implemented with the following components:</p>
-<h3>Backend Components</h3>
+<h3 id="backend-components">Backend Components</h3>
 <ol>
 <li><p><strong>CustomNode Class</strong> (<code>src/custom-nodes/CustomNode.ts</code>)</p>
 <ul>
@@ -123,7 +121,7 @@
 </ul>
 </li>
 </ol>
-<h3>API Endpoints</h3>
+<h3 id="api-endpoints">API Endpoints</h3>
 <ol>
 <li><p><strong>GET /api/custom-nodes</strong></p>
 <ul>
@@ -168,7 +166,7 @@
 </ul>
 </li>
 </ol>
-<h3>Frontend Components</h3>
+<h3 id="frontend-components">Frontend Components</h3>
 <ol>
 <li><p><strong>Custom Nodes List Page</strong> (<code>app/custom-nodes/page.tsx</code>)</p>
 <ul>
@@ -206,8 +204,8 @@
 </ul>
 </li>
 </ol>
-<h2>Technical Details</h2>
-<h3>Expression Security</h3>
+<h2 id="technical-details">Technical Details</h2>
+<h3 id="expression-security">Expression Security</h3>
 <p>The system implements multiple layers of security:</p>
 <ol>
 <li><p><strong>Pattern Blocking</strong>: Dangerous patterns are blocked using regex</p>
@@ -236,7 +234,7 @@
 </ul>
 </li>
 </ol>
-<h3>Storage Format</h3>
+<h3 id="storage-format">Storage Format</h3>
 <p>Custom nodes are stored as JSON files:</p>
 <pre><code class="language-json">{
   &quot;id&quot;: &quot;node-1234567890&quot;,
@@ -261,7 +259,7 @@
   }
 }
 </code></pre>
-<h3>Node Registration Flow</h3>
+<h3 id="node-registration-flow">Node Registration Flow</h3>
 <ol>
 <li>User creates node via web UI</li>
 <li>Frontend sends POST to <code>/api/custom-nodes</code></li>
@@ -271,14 +269,14 @@
 <li>Node is saved to storage</li>
 <li>Node is immediately available for use</li>
 </ol>
-<h3>Loading Custom Nodes on Startup</h3>
+<h3 id="loading-custom-nodes-on-startup">Loading Custom Nodes on Startup</h3>
 <p>To load custom nodes when the application starts:</p>
 <pre><code class="language-typescript">import { CustomNodeManager } from &#39;./src/custom-nodes&#39;;
 
 // Load all custom nodes from storage
 await CustomNodeManager.loadAllFromStorage();
 </code></pre>
-<h2>File Structure</h2>
+<h2 id="file-structure">File Structure</h2>
 <pre><code>src/custom-nodes/
 ├── CustomNode.ts              # Custom node implementation
 ├── CustomNodeManager.ts       # Node lifecycle management
@@ -307,8 +305,8 @@ storage/custom-nodes/
 ├── index.json                # Node index
 └── *.json                   # Individual node files
 </code></pre>
-<h2>Testing</h2>
-<h3>Manual Testing Checklist</h3>
+<h2 id="testing">Testing</h2>
+<h3 id="manual-testing-checklist">Manual Testing Checklist</h3>
 <ul>
 <li><input checked="" disabled="" type="checkbox"> Create custom node with Transform template</li>
 <li><input checked="" disabled="" type="checkbox"> Create custom node with Filter template</li>
@@ -321,7 +319,7 @@ storage/custom-nodes/
 <li><input checked="" disabled="" type="checkbox"> List all custom nodes</li>
 <li><input checked="" disabled="" type="checkbox"> Load custom nodes from storage on startup</li>
 </ul>
-<h3>Known Limitations</h3>
+<h3 id="known-limitations">Known Limitations</h3>
 <ol>
 <li><p><strong>Expression Flexibility</strong>: Limited to safe JavaScript expressions</p>
 <ul>
@@ -345,13 +343,13 @@ storage/custom-nodes/
 </ul>
 </li>
 </ol>
-<h2>Performance Considerations</h2>
+<h2 id="performance-considerations">Performance Considerations</h2>
 <ul>
 <li><strong>Expression Compilation</strong>: Expressions are pre-compiled for better performance</li>
 <li><strong>Template Registry</strong>: Templates are cached after first initialization</li>
 <li><strong>Storage</strong>: Index file allows quick node lookup without reading all files</li>
 </ul>
-<h2>Security Considerations</h2>
+<h2 id="security-considerations">Security Considerations</h2>
 <ol>
 <li><strong>Expression Validation</strong>: All expressions are validated before execution</li>
 <li><strong>Pattern Blocking</strong>: Dangerous patterns are blocked at validation time</li>
@@ -359,7 +357,7 @@ storage/custom-nodes/
 <li><strong>No File System Access</strong>: Expressions cannot access file system</li>
 <li><strong>No Network Access</strong>: Expressions cannot make network requests</li>
 </ol>
-<h2>Future Enhancements (Phase 2)</h2>
+<h2 id="future-enhancements-phase-2">Future Enhancements (Phase 2)</h2>
 <ul>
 <li>VM2-based sandboxing for script execution</li>
 <li>Monaco Editor integration for better code editing</li>
@@ -368,22 +366,67 @@ storage/custom-nodes/
 <li>Performance monitoring</li>
 <li>Database migration for storage</li>
 </ul>
-<h2>Conclusion</h2>
+<h2 id="conclusion">Conclusion</h2>
 <p>Phase 1 implementation is complete and functional. The system provides a secure, user-friendly way to create custom nodes without writing TypeScript code. The template-based approach ensures safety while maintaining flexibility for common use cases.</p>
+
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#overview">Overview</a></li>
+      <li class="toc-h2"><a href="#implementation-summary">Implementation Summary</a></li>
+      <li class="toc-h3"><a href="#backend-components">Backend Components</a></li>
+      <li class="toc-h3"><a href="#api-endpoints">API Endpoints</a></li>
+      <li class="toc-h3"><a href="#frontend-components">Frontend Components</a></li>
+      <li class="toc-h2"><a href="#technical-details">Technical Details</a></li>
+      <li class="toc-h3"><a href="#expression-security">Expression Security</a></li>
+      <li class="toc-h3"><a href="#storage-format">Storage Format</a></li>
+      <li class="toc-h3"><a href="#node-registration-flow">Node Registration Flow</a></li>
+      <li class="toc-h3"><a href="#loading-custom-nodes-on-startup">Loading Custom Nodes on Startup</a></li>
+      <li class="toc-h2"><a href="#file-structure">File Structure</a></li>
+      <li class="toc-h2"><a href="#testing">Testing</a></li>
+      <li class="toc-h3"><a href="#manual-testing-checklist">Manual Testing Checklist</a></li>
+      <li class="toc-h3"><a href="#known-limitations">Known Limitations</a></li>
+      <li class="toc-h2"><a href="#performance-considerations">Performance Considerations</a></li>
+      <li class="toc-h2"><a href="#security-considerations">Security Considerations</a></li>
+      <li class="toc-h2"><a href="#future-enhancements-phase-2">Future Enhancements (Phase 2)</a></li>
+      <li class="toc-h2"><a href="#conclusion">Conclusion</a></li>
+    </ul>
+</div>
 
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -396,6 +439,52 @@ storage/custom-nodes/
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

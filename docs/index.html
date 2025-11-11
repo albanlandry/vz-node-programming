@@ -9,13 +9,10 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
                 <li class="nav-group">
-                    <div class="nav-group-header">Getting Started</div>
+                    <div class="nav-group-header expanded">Getting Started</div>
                     <ul class="nav-submenu expanded">
                         <li><a href="index.html" class="active">Home</a></li>
                         <li><a href="node-library.html">Node Library</a></li>
@@ -81,7 +78,8 @@
                 </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
             <h1>VZ Programming Documentation</h1>
             <p>VZ Programming is a node-based programming system that supports multiple programming paradigms using TypeScript/Node.js.</p>
             
@@ -122,15 +120,36 @@
             
             <h2>Documentation Structure</h2>
             <p>This documentation is HTML-based and you can access all documents from the left sidebar. Documents are organized into related groups and submenus for easy navigation.</p>
+            </div>
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
     </script>

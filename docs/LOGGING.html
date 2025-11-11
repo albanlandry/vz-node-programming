@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header expanded">Error Handling & Logging</div>
+      <ul class="nav-submenu expanded">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" class="active">Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,11 +65,12 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Logging System</h1>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>The VZ Programming system uses a centralized logging abstraction that provides configurable logging with multiple formats and log levels. All production code uses the logger abstraction instead of direct console calls.</p>
-<h2>Features</h2>
+<h2 id="features">Features</h2>
 <ul>
 <li>✅ <strong>Multiple Log Levels</strong> - DEBUG, INFO, WARN, ERROR, NONE</li>
 <li>✅ <strong>Multiple Formats</strong> - Console, JSON, Silent</li>
@@ -81,7 +79,7 @@
 <li>✅ <strong>Type-Safe</strong> - Full TypeScript support</li>
 <li>✅ <strong>Testable</strong> - Easy to mock or replace in tests</li>
 </ul>
-<h2>Quick Start</h2>
+<h2 id="quick-start">Quick Start</h2>
 <pre><code class="language-typescript">import { logger } from &#39;./src/index&#39;;
 
 // Basic logging
@@ -94,7 +92,7 @@ logger.error(&#39;Error message&#39;);
 logger.info(&#39;User logged in&#39;, { userId: &#39;123&#39; });
 logger.error(&#39;Operation failed&#39;, { error: error.message });
 </code></pre>
-<h2>Log Levels</h2>
+<h2 id="log-levels">Log Levels</h2>
 <p>Log levels are ordered from most verbose to least verbose:</p>
 <pre><code class="language-typescript">enum LogLevel {
   DEBUG = 0,  // Most verbose - development debugging
@@ -104,13 +102,13 @@ logger.error(&#39;Operation failed&#39;, { error: error.message });
   NONE = 4    // No logging
 }
 </code></pre>
-<h3>Default Behavior</h3>
+<h3 id="default-behavior">Default Behavior</h3>
 <ul>
 <li><strong>Development</strong> (NODE_ENV !== &#39;production&#39;): DEBUG level</li>
 <li><strong>Production</strong> (NODE_ENV === &#39;production&#39;): INFO level</li>
 </ul>
-<h2>Logger Implementations</h2>
-<h3>ConsoleLogger (Default)</h3>
+<h2 id="logger-implementations">Logger Implementations</h2>
+<h3 id="consolelogger-default">ConsoleLogger (Default)</h3>
 <p>Standard console output with level prefixes:</p>
 <pre><code class="language-typescript">import { ConsoleLogger, LogLevel } from &#39;./src/index&#39;;
 
@@ -120,7 +118,7 @@ logger.info(&#39;Message&#39;);  // [INFO] Message
 logger.warn(&#39;Warning&#39;);  // [WARN] Warning
 logger.error(&#39;Error&#39;);   // [ERROR] Error
 </code></pre>
-<h3>JsonLogger</h3>
+<h3 id="jsonlogger">JsonLogger</h3>
 <p>Structured JSON output for log aggregation systems:</p>
 <pre><code class="language-typescript">import { JsonLogger, LogLevel } from &#39;./src/index&#39;;
 
@@ -132,14 +130,14 @@ logger.info(&#39;User logged in&#39;, { userId: &#39;123&#39; });
 logger.error(&#39;Database error&#39;, { host: &#39;db.example.com&#39; });
 // Output: {&quot;timestamp&quot;:&quot;2025-10-21T10:00:00.000Z&quot;,&quot;level&quot;:&quot;ERROR&quot;,&quot;message&quot;:&quot;Database error&quot;,&quot;host&quot;:&quot;db.example.com&quot;,&quot;stack&quot;:&quot;...&quot;}
 </code></pre>
-<h3>SilentLogger</h3>
+<h3 id="silentlogger">SilentLogger</h3>
 <p>Discards all logs (useful for testing):</p>
 <pre><code class="language-typescript">import { SilentLogger } from &#39;./src/index&#39;;
 
 const logger = new SilentLogger();
 logger.info(&#39;This will not appear&#39;); // No output
 </code></pre>
-<h2>Environment Configuration</h2>
+<h2 id="environment-configuration">Environment Configuration</h2>
 <p>Configure the logger via environment variables:</p>
 <pre><code class="language-bash"># Set log level
 export LOG_LEVEL=DEBUG
@@ -150,7 +148,7 @@ export LOG_FORMAT=json
 # Include stack traces in JSON logs
 export LOG_INCLUDE_STACK=true
 </code></pre>
-<h3>Environment Variables</h3>
+<h3 id="environment-variables">Environment Variables</h3>
 <table>
 <thead>
 <tr>
@@ -179,7 +177,7 @@ export LOG_INCLUDE_STACK=true
 <td>Include stack traces in JSON logs</td>
 </tr>
 </tbody></table>
-<h3>Examples</h3>
+<h3 id="examples">Examples</h3>
 <pre><code class="language-bash"># Development with verbose logging
 LOG_LEVEL=DEBUG npm run dev
 
@@ -189,7 +187,7 @@ LOG_LEVEL=INFO LOG_FORMAT=json npm start
 # Silent mode (no logs)
 LOG_FORMAT=silent npm test
 </code></pre>
-<h2>Child Loggers</h2>
+<h2 id="child-loggers">Child Loggers</h2>
 <p>Create context-specific loggers with prefixes:</p>
 <pre><code class="language-typescript">import { createChildLogger } from &#39;./src/index&#39;;
 
@@ -202,7 +200,7 @@ nodeLogger.info(&#39;Starting execution&#39;);
 registryLogger.info(&#39;Registering nodes&#39;);
 // [INFO] [NodeRegistry] Registering nodes
 </code></pre>
-<h2>Dynamic Configuration</h2>
+<h2 id="dynamic-configuration">Dynamic Configuration</h2>
 <p>Change log level at runtime:</p>
 <pre><code class="language-typescript">import { logger, LogLevel } from &#39;./src/index&#39;;
 
@@ -218,8 +216,8 @@ if (logger.isEnabled(LogLevel.DEBUG)) {
   logger.debug(&#39;This will now appear&#39;);
 }
 </code></pre>
-<h2>API Reference</h2>
-<h3>Logger Interface</h3>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="logger-interface">Logger Interface</h3>
 <pre><code class="language-typescript">interface Logger {
   debug(message: string, ...args: any[]): void;
   info(message: string, ...args: any[]): void;
@@ -230,13 +228,13 @@ if (logger.isEnabled(LogLevel.DEBUG)) {
   isEnabled(level: LogLevel): boolean;
 }
 </code></pre>
-<h3>Default Logger Instance</h3>
+<h3 id="default-logger-instance">Default Logger Instance</h3>
 <pre><code class="language-typescript">import { logger } from &#39;./src/index&#39;;
 
 // Use the default logger (configured via environment)
 logger.info(&#39;Message&#39;);
 </code></pre>
-<h3>Creating Custom Loggers</h3>
+<h3 id="creating-custom-loggers">Creating Custom Loggers</h3>
 <pre><code class="language-typescript">import { ConsoleLogger, JsonLogger, SilentLogger, LogLevel } from &#39;./src/index&#39;;
 
 // Console logger with custom level
@@ -248,7 +246,7 @@ const jsonLogger = new JsonLogger(LogLevel.INFO, true);
 // Silent logger
 const silentLogger = new SilentLogger();
 </code></pre>
-<h2>Usage in Code</h2>
+<h2 id="usage-in-code">Usage in Code</h2>
 <p>All production code uses the logger:</p>
 <pre><code class="language-typescript">import { logger } from &#39;../utils/Logger&#39;;
 
@@ -264,8 +262,8 @@ logger.error(&#39;Operation failed&#39;, error);
 // Instead of console.debug
 logger.debug(&#39;Detailed debug information&#39;);
 </code></pre>
-<h2>Best Practices</h2>
-<h3>1. Use Appropriate Log Levels</h3>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-use-appropriate-log-levels">1. Use Appropriate Log Levels</h3>
 <pre><code class="language-typescript">// DEBUG - Detailed information for debugging
 logger.debug(&#39;Processing item&#39;, { itemId, step: &#39;validation&#39; });
 
@@ -278,7 +276,7 @@ logger.warn(&#39;Rate limit approaching&#39;, { current: 90, limit: 100 });
 // ERROR - Error conditions
 logger.error(&#39;Database connection failed&#39;, { error: error.message });
 </code></pre>
-<h3>2. Include Context</h3>
+<h3 id="2-include-context">2. Include Context</h3>
 <pre><code class="language-typescript">// Good - includes context
 logger.error(&#39;Node execution failed&#39;, {
   nodeId: node.id,
@@ -290,7 +288,7 @@ logger.error(&#39;Node execution failed&#39;, {
 // Bad - no context
 logger.error(&#39;Node execution failed&#39;);
 </code></pre>
-<h3>3. Use Child Loggers for Components</h3>
+<h3 id="3-use-child-loggers-for-components">3. Use Child Loggers for Components</h3>
 <pre><code class="language-typescript">// In NodeExecutor
 import { createChildLogger } from &#39;../utils/Logger&#39;;
 
@@ -299,7 +297,7 @@ const logger = createChildLogger(&#39;NodeExecutor&#39;);
 // All logs from NodeExecutor will have [NodeExecutor] prefix
 logger.info(&#39;Starting execution&#39;); // [INFO] [NodeExecutor] Starting execution
 </code></pre>
-<h3>4. Structured Data in JSON Mode</h3>
+<h3 id="4-structured-data-in-json-mode">4. Structured Data in JSON Mode</h3>
 <pre><code class="language-typescript">// When using JSON logger, pass objects as second argument
 logger.info(&#39;Operation completed&#39;, {
   operation: &#39;data-processing&#39;,
@@ -308,8 +306,8 @@ logger.info(&#39;Operation completed&#39;, {
   success: true
 });
 </code></pre>
-<h2>Testing</h2>
-<h3>Mock Logger for Tests</h3>
+<h2 id="testing">Testing</h2>
+<h3 id="mock-logger-for-tests">Mock Logger for Tests</h3>
 <pre><code class="language-typescript">import { Logger } from &#39;./src/utils/Logger&#39;;
 
 const mockLogger: Logger = {
@@ -324,13 +322,13 @@ const mockLogger: Logger = {
 
 // Use in tests
 </code></pre>
-<h3>Silent Logger for Tests</h3>
+<h3 id="silent-logger-for-tests">Silent Logger for Tests</h3>
 <pre><code class="language-typescript">import { SilentLogger } from &#39;./src/utils/Logger&#39;;
 
 const logger = new SilentLogger();
 // No logs will appear during tests
 </code></pre>
-<h2>Migration from Console</h2>
+<h2 id="migration-from-console">Migration from Console</h2>
 <p>All console calls have been replaced:</p>
 <pre><code class="language-typescript">// Before
 console.log(&#39;Message&#39;);
@@ -348,26 +346,82 @@ logger.error(&#39;Error&#39;);
 <p>See <code>examples/logger-example.ts</code> for comprehensive examples:</p>
 <pre><code class="language-bash">npm run example:logger
 </code></pre>
-<h2>See Also</h2>
+<h2 id="see-also">See Also</h2>
 <ul>
 <li><a href="../README.html">README</a> - Main documentation</li>
 <li><a href="./ERROR-HANDLING.html">Error Handling</a> - Error handling guide</li>
 <li><a href="../IMPROVEMENTS.html">Improvements</a> - Improvement suggestions</li>
 </ul>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#overview">Overview</a></li>
+      <li class="toc-h2"><a href="#features">Features</a></li>
+      <li class="toc-h2"><a href="#quick-start">Quick Start</a></li>
+      <li class="toc-h2"><a href="#log-levels">Log Levels</a></li>
+      <li class="toc-h3"><a href="#default-behavior">Default Behavior</a></li>
+      <li class="toc-h2"><a href="#logger-implementations">Logger Implementations</a></li>
+      <li class="toc-h3"><a href="#consolelogger-default">ConsoleLogger (Default)</a></li>
+      <li class="toc-h3"><a href="#jsonlogger">JsonLogger</a></li>
+      <li class="toc-h3"><a href="#silentlogger">SilentLogger</a></li>
+      <li class="toc-h2"><a href="#environment-configuration">Environment Configuration</a></li>
+      <li class="toc-h3"><a href="#environment-variables">Environment Variables</a></li>
+      <li class="toc-h3"><a href="#examples">Examples</a></li>
+      <li class="toc-h2"><a href="#child-loggers">Child Loggers</a></li>
+      <li class="toc-h2"><a href="#dynamic-configuration">Dynamic Configuration</a></li>
+      <li class="toc-h2"><a href="#api-reference">API Reference</a></li>
+      <li class="toc-h3"><a href="#logger-interface">Logger Interface</a></li>
+      <li class="toc-h3"><a href="#default-logger-instance">Default Logger Instance</a></li>
+      <li class="toc-h3"><a href="#creating-custom-loggers">Creating Custom Loggers</a></li>
+      <li class="toc-h2"><a href="#usage-in-code">Usage in Code</a></li>
+      <li class="toc-h2"><a href="#best-practices">Best Practices</a></li>
+      <li class="toc-h3"><a href="#1-use-appropriate-log-levels">1. Use Appropriate Log Levels</a></li>
+      <li class="toc-h3"><a href="#2-include-context">2. Include Context</a></li>
+      <li class="toc-h3"><a href="#3-use-child-loggers-for-components">3. Use Child Loggers for Components</a></li>
+      <li class="toc-h3"><a href="#4-structured-data-in-json-mode">4. Structured Data in JSON Mode</a></li>
+      <li class="toc-h2"><a href="#testing">Testing</a></li>
+      <li class="toc-h3"><a href="#mock-logger-for-tests">Mock Logger for Tests</a></li>
+      <li class="toc-h3"><a href="#silent-logger-for-tests">Silent Logger for Tests</a></li>
+      <li class="toc-h2"><a href="#migration-from-console">Migration from Console</a></li>
+      <li class="toc-h2"><a href="#see-also">See Also</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -380,6 +434,52 @@ logger.error(&#39;Error&#39;);
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

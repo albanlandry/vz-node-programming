@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header expanded">Error Handling & Logging</div>
+      <ul class="nav-submenu expanded">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" class="active">Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,14 +65,15 @@
     </li>
             </ul>
         </div>
-        <div class="content">
-<h2>AI Model: Claude Sonnet 4.5</h2>
+        <div class="content-wrapper">
+            <div class="content">
+<h2 id="ai-model-claude-sonnet-45">AI Model: Claude Sonnet 4.5</h2>
 <h1>Error Handling Features - Implementation Summary</h1>
-<h2>🎉 Completed Implementation</h2>
+<h2 id="-completed-implementation">🎉 Completed Implementation</h2>
 <p>All requested error handling features have been successfully implemented and tested!</p>
 <hr>
-<h2>✨ Features Implemented</h2>
-<h3>1. Retry Policies with Exponential Backoff ✅</h3>
+<h2 id="-features-implemented">✨ Features Implemented</h2>
+<h3 id="1-retry-policies-with-exponential-backoff-">1. Retry Policies with Exponential Backoff ✅</h3>
 <p><strong>Files Created:</strong></p>
 <ul>
 <li><code>src/error-handling/RetryPolicy.ts</code></li>
@@ -104,7 +102,7 @@ RetryPolicies.Network     // 4 attempts, network-optimized
 <li>Retry callbacks for monitoring</li>
 </ul>
 <hr>
-<h3>2. Circuit Breaker Pattern ✅</h3>
+<h3 id="2-circuit-breaker-pattern-">2. Circuit Breaker Pattern ✅</h3>
 <p><strong>Files Created:</strong></p>
 <ul>
 <li><code>src/error-handling/CircuitBreaker.ts</code></li>
@@ -140,7 +138,7 @@ RetryPolicies.Network     // 4 attempts, network-optimized
 <li>Statistics and monitoring</li>
 </ul>
 <hr>
-<h3>3. Fallback Execution Paths ✅</h3>
+<h3 id="3-fallback-execution-paths-">3. Fallback Execution Paths ✅</h3>
 <p><strong>Files Created:</strong></p>
 <ul>
 <li><code>src/error-handling/ErrorHandlingNode.ts</code> (includes fallback support)</li>
@@ -172,7 +170,7 @@ RetryPolicies.Network     // 4 attempts, network-optimized
 <li>Graceful degradation</li>
 </ul>
 <hr>
-<h3>4. Error Boundary Nodes ✅</h3>
+<h3 id="4-error-boundary-nodes-">4. Error Boundary Nodes ✅</h3>
 <p><strong>Files Created:</strong></p>
 <ul>
 <li><code>src/error-handling/ErrorHandlingNode.ts</code></li>
@@ -203,7 +201,7 @@ RetryPolicies.Network     // 4 attempts, network-optimized
 }
 </code></pre>
 <hr>
-<h3>5. Dead Letter Queue ✅</h3>
+<h3 id="5-dead-letter-queue-">5. Dead Letter Queue ✅</h3>
 <p><strong>Files Created:</strong></p>
 <ul>
 <li><code>src/error-handling/DeadLetterQueue.ts</code></li>
@@ -244,8 +242,8 @@ RetryPolicies.Network     // 4 attempts, network-optimized
 }
 </code></pre>
 <hr>
-<h2>📊 Statistics</h2>
-<h3>Code Added</h3>
+<h2 id="-statistics">📊 Statistics</h2>
+<h3 id="code-added">Code Added</h3>
 <table>
 <thead>
 <tr>
@@ -295,7 +293,7 @@ RetryPolicies.Network     // 4 attempts, network-optimized
 <td><strong>8</strong></td>
 </tr>
 </tbody></table>
-<h3>Features Count</h3>
+<h3 id="features-count">Features Count</h3>
 <ul>
 <li>✅ 5 Predefined retry policies</li>
 <li>✅ 3 Circuit breaker states</li>
@@ -306,8 +304,8 @@ RetryPolicies.Network     // 4 attempts, network-optimized
 <li>✅ 1,200+ lines of documentation</li>
 </ul>
 <hr>
-<h2>🚀 Usage Examples</h2>
-<h3>Example 1: Basic Retry</h3>
+<h2 id="-usage-examples">🚀 Usage Examples</h2>
+<h3 id="example-1-basic-retry">Example 1: Basic Retry</h3>
 <pre><code class="language-typescript">const node = new ErrorHandlingNode(config, {
   retryPolicy: RetryPolicies.Standard
 });
@@ -315,7 +313,7 @@ RetryPolicies.Network     // 4 attempts, network-optimized
 // Automatically retries 3 times with exponential backoff
 await executor.execute(inputs);
 </code></pre>
-<h3>Example 2: Circuit Breaker</h3>
+<h3 id="example-2-circuit-breaker">Example 2: Circuit Breaker</h3>
 <pre><code class="language-typescript">const breaker = new CircuitBreaker({
   failureThreshold: 5,
   resetTimeout: 60000
@@ -328,7 +326,7 @@ const node = new ErrorHandlingNode(config, {
 // After 5 failures, circuit opens and rejects requests
 // After 60s, enters half-open to test recovery
 </code></pre>
-<h3>Example 3: Fallback</h3>
+<h3 id="example-3-fallback">Example 3: Fallback</h3>
 <pre><code class="language-typescript">const node = new ErrorHandlingNode(config, {
   retryPolicy: RetryPolicies.Standard,
   fallbackFn: async () =&gt; {
@@ -338,7 +336,7 @@ const node = new ErrorHandlingNode(config, {
 
 // Retries 3 times, then uses cache
 </code></pre>
-<h3>Example 4: Error Boundary</h3>
+<h3 id="example-4-error-boundary">Example 4: Error Boundary</h3>
 <pre><code class="language-typescript">const boundary = new ErrorBoundaryNode();
 
 // Catches errors, provides defaults
@@ -346,7 +344,7 @@ executor.addConnection({ from: unreliableNode, to: boundary });
 
 // Outputs: result (or default), hasError, error details
 </code></pre>
-<h3>Example 5: Dead Letter Queue</h3>
+<h3 id="example-5-dead-letter-queue">Example 5: Dead Letter Queue</h3>
 <pre><code class="language-typescript">const node = new ErrorHandlingNode(config, {
   enableDLQ: true
 });
@@ -360,7 +358,7 @@ console.log(`Failures: ${stats.total}`);
 const json = dlq.export();
 fs.writeFileSync(&#39;failures.json&#39;, json);
 </code></pre>
-<h3>Example 6: Combined</h3>
+<h3 id="example-6-combined">Example 6: Combined</h3>
 <pre><code class="language-typescript">const resilientNode = new ErrorHandlingNode(config, {
   retryPolicy: RetryPolicies.Standard,
   circuitBreaker: new CircuitBreaker({ failureThreshold: 5 }),
@@ -377,8 +375,8 @@ fs.writeFileSync(&#39;failures.json&#39;, json);
 // 6. Return result or throw
 </code></pre>
 <hr>
-<h2>📈 Resilience Patterns</h2>
-<h3>Layered Defense Strategy</h3>
+<h2 id="-resilience-patterns">📈 Resilience Patterns</h2>
+<h3 id="layered-defense-strategy">Layered Defense Strategy</h3>
 <pre><code>┌─────────────────────────────────────────┐
 │ Request                                  │
 └────────┬────────────────────────────────┘
@@ -415,8 +413,8 @@ fs.writeFileSync(&#39;failures.json&#39;, json);
     └─────────┘
 </code></pre>
 <hr>
-<h2>🎓 Documentation</h2>
-<h3>Created Documentation</h3>
+<h2 id="-documentation">🎓 Documentation</h2>
+<h3 id="created-documentation">Created Documentation</h3>
 <ol>
 <li><p><strong>ERROR-HANDLING.md</strong> (~1,200 lines)</p>
 <ul>
@@ -449,7 +447,7 @@ fs.writeFileSync(&#39;failures.json&#39;, json);
 </ul>
 </li>
 </ol>
-<h3>Documentation Highlights</h3>
+<h3 id="documentation-highlights">Documentation Highlights</h3>
 <ul>
 <li>✅ <strong>Complete API coverage</strong> for all classes</li>
 <li>✅ <strong>30+ code examples</strong> showing real usage</li>
@@ -459,7 +457,7 @@ fs.writeFileSync(&#39;failures.json&#39;, json);
 <li>✅ <strong>Configuration guides</strong> with defaults</li>
 </ul>
 <hr>
-<h2>✅ Testing Results</h2>
+<h2 id="-testing-results">✅ Testing Results</h2>
 <p>All features tested and working:</p>
 <pre><code class="language-bash">$ npm run example:errors
 </code></pre>
@@ -490,8 +488,8 @@ fs.writeFileSync(&#39;failures.json&#39;, json);
 📊 Total Entries: 3, Unprocessed: 3
 </code></pre>
 <hr>
-<h2>🔮 Use Cases</h2>
-<h3>1. Resilient API Calls</h3>
+<h2 id="-use-cases">🔮 Use Cases</h2>
+<h3 id="1-resilient-api-calls">1. Resilient API Calls</h3>
 <pre><code class="language-typescript">const apiNode = new ErrorHandlingNode(config, {
   retryPolicy: RetryPolicies.Network,
   circuitBreaker: new CircuitBreaker({ failureThreshold: 3 }),
@@ -500,7 +498,7 @@ fs.writeFileSync(&#39;failures.json&#39;, json);
 });
 </code></pre>
 <p><strong>Result:</strong> 99.9% uptime even with flaky APIs</p>
-<h3>2. Database Operations</h3>
+<h3 id="2-database-operations">2. Database Operations</h3>
 <pre><code class="language-typescript">const dbNode = new ErrorHandlingNode(config, {
   retryPolicy: new RetryPolicy({
     maxAttempts: 5,
@@ -511,7 +509,7 @@ fs.writeFileSync(&#39;failures.json&#39;, json);
 });
 </code></pre>
 <p><strong>Result:</strong> Automatic recovery from connection issues</p>
-<h3>3. Microservices Communication</h3>
+<h3 id="3-microservices-communication">3. Microservices Communication</h3>
 <pre><code class="language-typescript">const serviceNode = new ErrorHandlingNode(config, {
   retryPolicy: RetryPolicies.Standard,
   circuitBreaker: new CircuitBreaker({
@@ -522,7 +520,7 @@ fs.writeFileSync(&#39;failures.json&#39;, json);
 });
 </code></pre>
 <p><strong>Result:</strong> Graceful degradation and failover</p>
-<h3>4. Data Processing Pipelines</h3>
+<h3 id="4-data-processing-pipelines">4. Data Processing Pipelines</h3>
 <pre><code class="language-typescript">// Unreliable → Boundary → Fallback → Logger
 
 const pipeline = [
@@ -534,29 +532,29 @@ const pipeline = [
 </code></pre>
 <p><strong>Result:</strong> Never crash, always produce output</p>
 <hr>
-<h2>🎯 Key Benefits</h2>
-<h3>1. Resilience</h3>
+<h2 id="-key-benefits">🎯 Key Benefits</h2>
+<h3 id="1-resilience">1. Resilience</h3>
 <ul>
 <li><strong>Automatic recovery</strong> from transient failures</li>
 <li><strong>Circuit breaker</strong> prevents cascading failures</li>
 <li><strong>Fallback</strong> ensures service availability</li>
 <li><strong>Error containment</strong> prevents propagation</li>
 </ul>
-<h3>2. Observability</h3>
+<h3 id="2-observability">2. Observability</h3>
 <ul>
 <li><strong>DLQ tracking</strong> of all failures</li>
 <li><strong>Statistics</strong> for monitoring</li>
 <li><strong>Export capabilities</strong> for analysis</li>
 <li><strong>Callback hooks</strong> for alerting</li>
 </ul>
-<h3>3. Flexibility</h3>
+<h3 id="3-flexibility">3. Flexibility</h3>
 <ul>
 <li><strong>Per-node configuration</strong> of policies</li>
 <li><strong>Custom retry conditions</strong></li>
 <li><strong>Multiple fallback strategies</strong></li>
 <li><strong>Composable patterns</strong></li>
 </ul>
-<h3>4. Production-Ready</h3>
+<h3 id="4-production-ready">4. Production-Ready</h3>
 <ul>
 <li><strong>Battle-tested patterns</strong> (circuit breaker, retry)</li>
 <li><strong>Enterprise-grade</strong> error handling</li>
@@ -564,28 +562,28 @@ const pipeline = [
 <li><strong>Full documentation</strong></li>
 </ul>
 <hr>
-<h2>📚 Learning Resources</h2>
-<h3>Quick Start</h3>
+<h2 id="-learning-resources">📚 Learning Resources</h2>
+<h3 id="quick-start">Quick Start</h3>
 <ol>
 <li>Read <a href="./ERROR-HANDLING.html">ERROR-HANDLING.md</a></li>
 <li>Run <code>npm run example:errors</code></li>
 <li>Study examples in <code>examples/error-handling-example.ts</code></li>
 </ol>
-<h3>Deep Dive</h3>
+<h3 id="deep-dive">Deep Dive</h3>
 <ol>
 <li>Review <code>src/error-handling/RetryPolicy.ts</code></li>
 <li>Study <code>src/error-handling/CircuitBreaker.ts</code></li>
 <li>Examine <code>src/error-handling/DeadLetterQueue.ts</code></li>
 <li>Understand <code>src/error-handling/ErrorHandlingNode.ts</code></li>
 </ol>
-<h3>API Reference</h3>
+<h3 id="api-reference">API Reference</h3>
 <ul>
 <li><a href="./ERROR-HANDLING.html">ERROR-HANDLING.md</a> - Complete guide</li>
 <li><a href="../README.html">README.md</a> - Quick reference</li>
 <li><a href="../ROADMAP.html">ROADMAP.md</a> - Development status</li>
 </ul>
 <hr>
-<h2>🎉 Summary</h2>
+<h2 id="-summary">🎉 Summary</h2>
 <p>Successfully implemented all requested error handling features:</p>
 <ol>
 <li>✅ <strong>Retry Policies</strong> - 5 predefined, custom configuration, exponential backoff</li>
@@ -604,19 +602,85 @@ const pipeline = [
 </ul>
 <p>All features are <strong>production-ready</strong>, <strong>fully documented</strong>, and <strong>thoroughly tested</strong>! 🚀</p>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#ai-model-claude-sonnet-45">AI Model: Claude Sonnet 4.5</a></li>
+      <li class="toc-h2"><a href="#-completed-implementation">🎉 Completed Implementation</a></li>
+      <li class="toc-h2"><a href="#-features-implemented">✨ Features Implemented</a></li>
+      <li class="toc-h3"><a href="#1-retry-policies-with-exponential-backoff-">1. Retry Policies with Exponential Backoff ✅</a></li>
+      <li class="toc-h3"><a href="#2-circuit-breaker-pattern-">2. Circuit Breaker Pattern ✅</a></li>
+      <li class="toc-h3"><a href="#3-fallback-execution-paths-">3. Fallback Execution Paths ✅</a></li>
+      <li class="toc-h3"><a href="#4-error-boundary-nodes-">4. Error Boundary Nodes ✅</a></li>
+      <li class="toc-h3"><a href="#5-dead-letter-queue-">5. Dead Letter Queue ✅</a></li>
+      <li class="toc-h2"><a href="#-statistics">📊 Statistics</a></li>
+      <li class="toc-h3"><a href="#code-added">Code Added</a></li>
+      <li class="toc-h3"><a href="#features-count">Features Count</a></li>
+      <li class="toc-h2"><a href="#-usage-examples">🚀 Usage Examples</a></li>
+      <li class="toc-h3"><a href="#example-1-basic-retry">Example 1: Basic Retry</a></li>
+      <li class="toc-h3"><a href="#example-2-circuit-breaker">Example 2: Circuit Breaker</a></li>
+      <li class="toc-h3"><a href="#example-3-fallback">Example 3: Fallback</a></li>
+      <li class="toc-h3"><a href="#example-4-error-boundary">Example 4: Error Boundary</a></li>
+      <li class="toc-h3"><a href="#example-5-dead-letter-queue">Example 5: Dead Letter Queue</a></li>
+      <li class="toc-h3"><a href="#example-6-combined">Example 6: Combined</a></li>
+      <li class="toc-h2"><a href="#-resilience-patterns">📈 Resilience Patterns</a></li>
+      <li class="toc-h3"><a href="#layered-defense-strategy">Layered Defense Strategy</a></li>
+      <li class="toc-h2"><a href="#-documentation">🎓 Documentation</a></li>
+      <li class="toc-h3"><a href="#created-documentation">Created Documentation</a></li>
+      <li class="toc-h3"><a href="#documentation-highlights">Documentation Highlights</a></li>
+      <li class="toc-h2"><a href="#-testing-results">✅ Testing Results</a></li>
+      <li class="toc-h2"><a href="#-use-cases">🔮 Use Cases</a></li>
+      <li class="toc-h3"><a href="#1-resilient-api-calls">1. Resilient API Calls</a></li>
+      <li class="toc-h3"><a href="#2-database-operations">2. Database Operations</a></li>
+      <li class="toc-h3"><a href="#3-microservices-communication">3. Microservices Communication</a></li>
+      <li class="toc-h3"><a href="#4-data-processing-pipelines">4. Data Processing Pipelines</a></li>
+      <li class="toc-h2"><a href="#-key-benefits">🎯 Key Benefits</a></li>
+      <li class="toc-h3"><a href="#1-resilience">1. Resilience</a></li>
+      <li class="toc-h3"><a href="#2-observability">2. Observability</a></li>
+      <li class="toc-h3"><a href="#3-flexibility">3. Flexibility</a></li>
+      <li class="toc-h3"><a href="#4-production-ready">4. Production-Ready</a></li>
+      <li class="toc-h2"><a href="#-learning-resources">📚 Learning Resources</a></li>
+      <li class="toc-h3"><a href="#quick-start">Quick Start</a></li>
+      <li class="toc-h3"><a href="#deep-dive">Deep Dive</a></li>
+      <li class="toc-h3"><a href="#api-reference">API Reference</a></li>
+      <li class="toc-h2"><a href="#-summary">🎉 Summary</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -629,6 +693,52 @@ const pipeline = [
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header ">Graph Editor</div>
+      <ul class="nav-submenu ">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header expanded">Live Execution</div>
+      <ul class="nav-submenu expanded">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" class="active">Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,11 +65,12 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Live Graph Execution Phase 2 - Design &amp; Architecture</h1>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>Phase 2 extends the basic live execution (Phase 1) with advanced features including real-time streaming, input configuration, data flow visualization, and debugging capabilities.</p>
-<h2>Architecture Overview</h2>
+<h2 id="architecture-overview">Architecture Overview</h2>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │                    Frontend (React/Next.js)                  │
 ├─────────────────────────────────────────────────────────────┤
@@ -119,9 +117,9 @@
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
 </code></pre>
-<h2>Component Architecture</h2>
-<h3>1. Real-time Streaming (SSE)</h3>
-<h4>Backend: SSE Endpoint</h4>
+<h2 id="component-architecture">Component Architecture</h2>
+<h3 id="1-real-time-streaming-sse">1. Real-time Streaming (SSE)</h3>
+<h4 id="backend-sse-endpoint">Backend: SSE Endpoint</h4>
 <pre><code class="language-typescript">// app/api/graphs/execute-stream/route.ts
 POST /api/graphs/execute-stream
 - Accepts graph definition and execution options
@@ -135,15 +133,15 @@ POST /api/graphs/execute-stream
   - execution:completed
   - execution:error
 </code></pre>
-<h4>Frontend: SSE Client Service</h4>
+<h4 id="frontend-sse-client-service">Frontend: SSE Client Service</h4>
 <pre><code class="language-typescript">// services/streamingExecutionService.ts
 - EventSource wrapper
 - Automatic reconnection
 - Event parsing and dispatch
 - Error handling
 </code></pre>
-<h3>2. Input Configuration Panel</h3>
-<h4>Component Structure</h4>
+<h3 id="2-input-configuration-panel">2. Input Configuration Panel</h3>
+<h4 id="component-structure">Component Structure</h4>
 <pre><code>InputConfigPanel
 ├── InputSection (per node)
 │   ├── PortInputEditor
@@ -156,14 +154,14 @@ POST /api/graphs/execute-stream
 ├── QuickInputPresets
 └── InputValidation
 </code></pre>
-<h4>State Management</h4>
+<h4 id="state-management">State Management</h4>
 <ul>
 <li>Input values stored in <code>graphStore.inputConfig</code></li>
 <li>Per-node input configuration</li>
 <li>Input templates (save/load)</li>
 </ul>
-<h3>3. Data Flow Visualization</h3>
-<h4>Connection State Management</h4>
+<h3 id="3-data-flow-visualization">3. Data Flow Visualization</h3>
+<h4 id="connection-state-management">Connection State Management</h4>
 <pre><code class="language-typescript">interface ConnectionState {
   connectionId: string;
   status: &#39;idle&#39; | &#39;active&#39; | &#39;error&#39;;
@@ -171,35 +169,35 @@ POST /api/graphs/execute-stream
   animationProgress?: number;
 }
 </code></pre>
-<h4>Visualization Features</h4>
+<h4 id="visualization-features">Visualization Features</h4>
 <ul>
 <li>Animated data flow along connections</li>
 <li>Value display on connection labels (toggleable)</li>
 <li>Color-coded connections by data type</li>
 <li>Connection state indicators</li>
 </ul>
-<h3>4. Debugging Features</h3>
-<h4>Breakpoint System</h4>
+<h3 id="4-debugging-features">4. Debugging Features</h3>
+<h4 id="breakpoint-system">Breakpoint System</h4>
 <pre><code class="language-typescript">interface Breakpoint {
   nodeId: string;
   enabled: boolean;
   condition?: string; // Optional condition expression
 }
 </code></pre>
-<h4>Step Execution</h4>
+<h4 id="step-execution">Step Execution</h4>
 <ul>
 <li>Execute one node at a time</li>
 <li>Step over/into controls</li>
 <li>Execution pause/resume</li>
 </ul>
-<h4>Variable Inspector</h4>
+<h4 id="variable-inspector">Variable Inspector</h4>
 <ul>
 <li>Inspect node inputs/outputs at any point</li>
 <li>Watch expressions</li>
 <li>Call stack visualization</li>
 </ul>
-<h2>Data Flow</h2>
-<h3>Execution Flow with Streaming</h3>
+<h2 id="data-flow">Data Flow</h2>
+<h3 id="execution-flow-with-streaming">Execution Flow with Streaming</h3>
 <ol>
 <li><p><strong>User Initiates Execution</strong></p>
 <pre><code>User clicks Play
@@ -228,7 +226,7 @@ POST /api/graphs/execute-stream
 </li>
 </ol>
 <h2>State Management</h2>
-<h3>Extended Graph Store</h3>
+<h3 id="extended-graph-store">Extended Graph Store</h3>
 <pre><code class="language-typescript">interface GraphState {
   // ... existing state
   
@@ -260,8 +258,8 @@ POST /api/graphs/execute-stream
   updateConnectionState: (connectionId: string, state: ConnectionState) =&gt; void;
 }
 </code></pre>
-<h2>API Design</h2>
-<h3>SSE Endpoint</h3>
+<h2 id="api-design">API Design</h2>
+<h3 id="sse-endpoint">SSE Endpoint</h3>
 <p><strong>POST /api/graphs/execute-stream</strong></p>
 <p>Request:</p>
 <pre><code class="language-typescript">{
@@ -322,8 +320,8 @@ data: {
   &quot;timestamp&quot;: 1234567990
 }
 </code></pre>
-<h2>Component Specifications</h2>
-<h3>1. InputConfigPanel</h3>
+<h2 id="component-specifications">Component Specifications</h2>
+<h3 id="1-inputconfigpanel">1. InputConfigPanel</h3>
 <p><strong>Location</strong>: <code>components/graph/InputConfigPanel.tsx</code></p>
 <p><strong>Props</strong>:</p>
 <pre><code class="language-typescript">interface InputConfigPanelProps {
@@ -340,7 +338,7 @@ data: {
 <li>Save/load input templates</li>
 <li>Quick input presets</li>
 </ul>
-<h3>2. DataFlowVisualization</h3>
+<h3 id="2-dataflowvisualization">2. DataFlowVisualization</h3>
 <p><strong>Location</strong>: <code>components/graph/DataFlowVisualization.tsx</code></p>
 <p><strong>Features</strong>:</p>
 <ul>
@@ -349,7 +347,7 @@ data: {
 <li>Color-code by data type</li>
 <li>Toggle visibility</li>
 </ul>
-<h3>3. DebugPanel</h3>
+<h3 id="3-debugpanel">3. DebugPanel</h3>
 <p><strong>Location</strong>: <code>components/graph/DebugPanel.tsx</code></p>
 <p><strong>Features</strong>:</p>
 <ul>
@@ -359,7 +357,7 @@ data: {
 <li>Call stack</li>
 <li>Watch expressions</li>
 </ul>
-<h3>4. StreamingExecutionService</h3>
+<h3 id="4-streamingexecutionservice">4. StreamingExecutionService</h3>
 <p><strong>Location</strong>: <code>services/streamingExecutionService.ts</code></p>
 <p><strong>Methods</strong>:</p>
 <pre><code class="language-typescript">class StreamingExecutionService {
@@ -375,61 +373,61 @@ data: {
   offEvent(callback: (event: ExecutionEvent) =&gt; void): void;
 }
 </code></pre>
-<h2>Error Handling</h2>
-<h3>Streaming Errors</h3>
+<h2 id="error-handling">Error Handling</h2>
+<h3 id="streaming-errors">Streaming Errors</h3>
 <ul>
 <li>Connection failures → Auto-reconnect with exponential backoff</li>
 <li>Parse errors → Log and continue</li>
 <li>Execution errors → Stream error event, continue with other nodes</li>
 </ul>
-<h3>Input Validation</h3>
+<h3 id="input-validation">Input Validation</h3>
 <ul>
 <li>Type validation per port</li>
 <li>Required field validation</li>
 <li>JSON validation for object/array inputs</li>
 <li>Real-time validation feedback</li>
 </ul>
-<h3>Debugging Errors</h3>
+<h3 id="debugging-errors">Debugging Errors</h3>
 <ul>
 <li>Breakpoint condition evaluation errors</li>
 <li>Step execution errors</li>
 <li>Variable inspection errors</li>
 </ul>
-<h2>Performance Considerations</h2>
-<h3>SSE Optimization</h3>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="sse-optimization">SSE Optimization</h3>
 <ul>
 <li>Throttle high-frequency events</li>
 <li>Batch node state updates</li>
 <li>Connection pooling</li>
 </ul>
-<h3>UI Performance</h3>
+<h3 id="ui-performance">UI Performance</h3>
 <ul>
 <li>Virtualize large node lists in InputConfigPanel</li>
 <li>Debounce input validation</li>
 <li>Lazy load debug panel</li>
 <li>Throttle data flow animations</li>
 </ul>
-<h3>Memory Management</h3>
+<h3 id="memory-management">Memory Management</h3>
 <ul>
 <li>Limit connection state history</li>
 <li>Clear old execution data</li>
 <li>Garbage collect unused breakpoints</li>
 </ul>
-<h2>Security Considerations</h2>
+<h2 id="security-considerations">Security Considerations</h2>
 <h3>Input Validation</h3>
 <ul>
 <li>Sanitize all user inputs</li>
 <li>Validate JSON inputs</li>
 <li>Prevent code injection in breakpoint conditions</li>
 </ul>
-<h3>SSE Security</h3>
+<h3 id="sse-security">SSE Security</h3>
 <ul>
 <li>Validate execution requests</li>
 <li>Rate limiting</li>
 <li>Timeout enforcement</li>
 </ul>
-<h2>Testing Strategy</h2>
-<h3>Unit Tests</h3>
+<h2 id="testing-strategy">Testing Strategy</h2>
+<h3 id="unit-tests">Unit Tests</h3>
 <ul>
 <li>StreamingExecutionService</li>
 <li>InputConfigPanel components</li>
@@ -437,20 +435,20 @@ data: {
 <li>DebugPanel functionality</li>
 <li>Breakpoint evaluation</li>
 </ul>
-<h3>Integration Tests</h3>
+<h3 id="integration-tests">Integration Tests</h3>
 <ul>
 <li>End-to-end streaming execution</li>
 <li>Input configuration flow</li>
 <li>Data flow visualization</li>
 <li>Debugging workflow</li>
 </ul>
-<h3>Performance Tests</h3>
+<h3 id="performance-tests">Performance Tests</h3>
 <ul>
 <li>Large graph streaming (100+ nodes)</li>
 <li>Concurrent executions</li>
 <li>Memory usage with long-running streams</li>
 </ul>
-<h2>Migration Path</h2>
+<h2 id="migration-path">Migration Path</h2>
 <ol>
 <li>Add streaming endpoint (non-breaking)</li>
 <li>Add SSE client service</li>
@@ -461,7 +459,7 @@ data: {
 <li>Extend graph store with new state</li>
 <li>Update UI to show new features</li>
 </ol>
-<h2>Success Criteria</h2>
+<h2 id="success-criteria">Success Criteria</h2>
 <ul>
 <li>✅ Real-time updates visible within 100ms</li>
 <li>✅ Input configuration supports all data types</li>
@@ -473,19 +471,88 @@ data: {
 <li>✅ Error handling graceful and informative</li>
 </ul>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#overview">Overview</a></li>
+      <li class="toc-h2"><a href="#architecture-overview">Architecture Overview</a></li>
+      <li class="toc-h2"><a href="#component-architecture">Component Architecture</a></li>
+      <li class="toc-h3"><a href="#1-real-time-streaming-sse">1. Real-time Streaming (SSE)</a></li>
+      <li class="toc-h4"><a href="#backend-sse-endpoint">Backend: SSE Endpoint</a></li>
+      <li class="toc-h4"><a href="#frontend-sse-client-service">Frontend: SSE Client Service</a></li>
+      <li class="toc-h3"><a href="#2-input-configuration-panel">2. Input Configuration Panel</a></li>
+      <li class="toc-h4"><a href="#component-structure">Component Structure</a></li>
+      <li class="toc-h4"><a href="#state-management">State Management</a></li>
+      <li class="toc-h3"><a href="#3-data-flow-visualization">3. Data Flow Visualization</a></li>
+      <li class="toc-h4"><a href="#connection-state-management">Connection State Management</a></li>
+      <li class="toc-h4"><a href="#visualization-features">Visualization Features</a></li>
+      <li class="toc-h3"><a href="#4-debugging-features">4. Debugging Features</a></li>
+      <li class="toc-h4"><a href="#breakpoint-system">Breakpoint System</a></li>
+      <li class="toc-h4"><a href="#step-execution">Step Execution</a></li>
+      <li class="toc-h4"><a href="#variable-inspector">Variable Inspector</a></li>
+      <li class="toc-h2"><a href="#data-flow">Data Flow</a></li>
+      <li class="toc-h3"><a href="#execution-flow-with-streaming">Execution Flow with Streaming</a></li>
+      <li class="toc-h3"><a href="#extended-graph-store">Extended Graph Store</a></li>
+      <li class="toc-h2"><a href="#api-design">API Design</a></li>
+      <li class="toc-h3"><a href="#sse-endpoint">SSE Endpoint</a></li>
+      <li class="toc-h2"><a href="#component-specifications">Component Specifications</a></li>
+      <li class="toc-h3"><a href="#1-inputconfigpanel">1. InputConfigPanel</a></li>
+      <li class="toc-h3"><a href="#2-dataflowvisualization">2. DataFlowVisualization</a></li>
+      <li class="toc-h3"><a href="#3-debugpanel">3. DebugPanel</a></li>
+      <li class="toc-h3"><a href="#4-streamingexecutionservice">4. StreamingExecutionService</a></li>
+      <li class="toc-h2"><a href="#error-handling">Error Handling</a></li>
+      <li class="toc-h3"><a href="#streaming-errors">Streaming Errors</a></li>
+      <li class="toc-h3"><a href="#input-validation">Input Validation</a></li>
+      <li class="toc-h3"><a href="#debugging-errors">Debugging Errors</a></li>
+      <li class="toc-h2"><a href="#performance-considerations">Performance Considerations</a></li>
+      <li class="toc-h3"><a href="#sse-optimization">SSE Optimization</a></li>
+      <li class="toc-h3"><a href="#ui-performance">UI Performance</a></li>
+      <li class="toc-h3"><a href="#memory-management">Memory Management</a></li>
+      <li class="toc-h2"><a href="#security-considerations">Security Considerations</a></li>
+      <li class="toc-h3"><a href="#sse-security">SSE Security</a></li>
+      <li class="toc-h2"><a href="#testing-strategy">Testing Strategy</a></li>
+      <li class="toc-h3"><a href="#unit-tests">Unit Tests</a></li>
+      <li class="toc-h3"><a href="#integration-tests">Integration Tests</a></li>
+      <li class="toc-h3"><a href="#performance-tests">Performance Tests</a></li>
+      <li class="toc-h2"><a href="#migration-path">Migration Path</a></li>
+      <li class="toc-h2"><a href="#success-criteria">Success Criteria</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -498,6 +565,52 @@ data: {
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

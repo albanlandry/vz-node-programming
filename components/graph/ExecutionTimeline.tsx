@@ -9,6 +9,7 @@
 import { useMemo } from 'react';
 import { X } from 'lucide-react';
 import { useGraphStore, type TimelineEvent } from '../../store/graphStore';
+import DraggableResizablePanel from './DraggableResizablePanel';
 
 interface ExecutionTimelineProps {
   isOpen: boolean;
@@ -49,24 +50,21 @@ export default function ExecutionTimeline({ isOpen, onClose, position }: Executi
 
   if (timelineEvents.length === 0) {
     return (
-      <div
-        className="fixed bg-white shadow-2xl border-2 border-gray-300 z-50 w-96 max-h-[500px] flex flex-col"
-        style={{
-          left: position?.x ?? '50%',
-          top: position?.y ?? '50%',
-          transform: position ? 'none' : 'translate(-50%, -50%)',
-        }}
+      <DraggableResizablePanel
+        panelId="execution-timeline"
+        defaultPosition={position}
+        defaultSize={{ width: 384, height: 500 }}
+        minWidth={300}
+        minHeight={200}
+        maxHeight={800}
+        headerClassName="bg-gradient-to-r from-indigo-500 to-indigo-600"
+        headerContent={<h3 className="font-semibold text-sm">Execution Timeline</h3>}
+        onClose={onClose}
       >
-        <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-4 py-3 flex items-center justify-between">
-          <h3 className="font-semibold text-sm">Execution Timeline</h3>
-          <button onClick={onClose} className="p-1 hover:bg-indigo-700 transition-colors">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
         <div className="p-4 text-sm text-gray-500">
           No execution timeline available. Execute a graph to see the timeline.
         </div>
-      </div>
+      </DraggableResizablePanel>
     );
   }
 
@@ -75,21 +73,17 @@ export default function ExecutionTimeline({ isOpen, onClose, position }: Executi
   const totalDuration = maxTime - minTime;
 
   return (
-    <div
-      className="fixed bg-white shadow-2xl border-2 border-gray-300 z-50 w-[600px] max-h-[600px] flex flex-col"
-      style={{
-        left: position?.x ?? '50%',
-        top: position?.y ?? '50%',
-        transform: position ? 'none' : 'translate(-50%, -50%)',
-      }}
+    <DraggableResizablePanel
+      panelId="execution-timeline"
+      defaultPosition={position}
+      defaultSize={{ width: 600, height: 600 }}
+      minWidth={400}
+      minHeight={300}
+      maxHeight={800}
+      headerClassName="bg-gradient-to-r from-indigo-500 to-indigo-600"
+      headerContent={<h3 className="font-semibold text-sm">Execution Timeline</h3>}
+      onClose={onClose}
     >
-      {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-4 py-3 flex items-center justify-between">
-        <h3 className="font-semibold text-sm">Execution Timeline</h3>
-        <button onClick={onClose} className="p-1 hover:bg-indigo-700 transition-colors">
-          <X className="w-4 h-4" />
-        </button>
-      </div>
 
       {/* Timeline */}
       <div className="flex-1 overflow-y-auto p-4">
@@ -138,7 +132,7 @@ export default function ExecutionTimeline({ isOpen, onClose, position }: Executi
           </div>
         </div>
       </div>
-    </div>
+    </DraggableResizablePanel>
   );
 }
 

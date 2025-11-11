@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header expanded">Graph Editor</div>
+      <ul class="nav-submenu expanded">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" class="active">React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,19 +65,20 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Graph Editor - React Flow Migration</h1>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>The Graph Editor has been successfully migrated to use the React Flow library.</p>
-<h2>Changes</h2>
-<h3>Previous (Custom Implementation)</h3>
+<h2 id="changes">Changes</h2>
+<h3 id="previous-custom-implementation">Previous (Custom Implementation)</h3>
 <ul>
 <li>Custom Canvas component</li>
 <li>Node dragging using react-draggable</li>
 <li>Direct connection rendering with SVG</li>
 <li>Manual Pan/Zoom implementation</li>
 </ul>
-<h3>Current (React Flow)</h3>
+<h3 id="current-react-flow">Current (React Flow)</h3>
 <ul>
 <li>React Flow library usage</li>
 <li>Built-in drag and drop</li>
@@ -89,8 +87,8 @@
 <li>MiniMap support</li>
 <li>Background grid</li>
 </ul>
-<h2>Key Features</h2>
-<h3>✅ Maintained Features</h3>
+<h2 id="key-features">Key Features</h2>
+<h3 id="-maintained-features">✅ Maintained Features</h3>
 <ol>
 <li><p><strong>Type-Validated Connections</strong></p>
 <ul>
@@ -118,7 +116,7 @@
 </ul>
 </li>
 </ol>
-<h3>🆕 Added Features</h3>
+<h3 id="-added-features">🆕 Added Features</h3>
 <ol>
 <li><p><strong>MiniMap</strong></p>
 <ul>
@@ -146,22 +144,22 @@
 </ul>
 </li>
 </ol>
-<h2>Technology Stack</h2>
+<h2 id="technology-stack">Technology Stack</h2>
 <ul>
 <li><strong>React Flow</strong>: Graph editor library</li>
 <li><strong>Zustand</strong>: State management</li>
 <li><strong>TypeScript</strong>: Type safety</li>
 <li><strong>Tailwind CSS</strong>: Styling</li>
 </ul>
-<h2>File Structure</h2>
+<h2 id="file-structure">File Structure</h2>
 <pre><code>components/graph/
 ├── ReactFlowCanvas.tsx    # React Flow main canvas
 ├── ReactFlowNode.tsx      # Custom node component
 ├── GraphToolbar.tsx       # Toolbar (maintained from previous version)
 └── (Previous custom components are maintained but not used)
 </code></pre>
-<h2>Usage</h2>
-<h3>Basic Usage</h3>
+<h2 id="usage">Usage</h2>
+<h3 id="basic-usage">Basic Usage</h3>
 <ol>
 <li><p><strong>Add Node</strong></p>
 <ul>
@@ -195,7 +193,7 @@
 </ul>
 </li>
 </ol>
-<h2>React Flow Advantages</h2>
+<h2 id="react-flow-advantages">React Flow Advantages</h2>
 <ol>
 <li><p><strong>Performance</strong></p>
 <ul>
@@ -222,15 +220,15 @@
 </ul>
 </li>
 </ol>
-<h2>Customization</h2>
-<h3>Node Styles</h3>
+<h2 id="customization">Customization</h2>
+<h3 id="node-styles">Node Styles</h3>
 <p>Modify custom node styles in <code>ReactFlowNode.tsx</code>:</p>
 <pre><code class="language-typescript">// Change port colors
 const getTypeColor = (typeName: string): string =&gt; {
   // Custom color logic
 };
 </code></pre>
-<h3>Connection Styles</h3>
+<h3 id="connection-styles">Connection Styles</h3>
 <p>Modify edge styles in <code>ReactFlowCanvas.tsx</code>:</p>
 <pre><code class="language-typescript">const reactFlowEdges = useMemo&lt;Edge[]&gt;(() =&gt; {
   return storeConnections.map((conn) =&gt; ({
@@ -240,69 +238,121 @@ const getTypeColor = (typeName: string): string =&gt; {
   }));
 }, [storeConnections]);
 </code></pre>
-<h2>Migration Notes</h2>
-<h3>Existing Code Compatibility</h3>
+<h2 id="migration-notes">Migration Notes</h2>
+<h3 id="existing-code-compatibility">Existing Code Compatibility</h3>
 <ul>
 <li>Maintained existing Zustand store structure</li>
 <li>Compatible with existing saved graph files</li>
 <li>No API changes</li>
 </ul>
-<h3>Removed Features</h3>
+<h3 id="removed-features">Removed Features</h3>
 <ul>
 <li>Custom Canvas implementation (replaced with React Flow)</li>
 <li>Manual port position calculation (handled automatically by React Flow)</li>
 <li>Custom connection rendering (using React Flow edges)</li>
 </ul>
-<h3>Enhanced Features</h3>
+<h3 id="enhanced-features">Enhanced Features</h3>
 <ul>
 <li>Smoother animations</li>
 <li>Better performance</li>
 <li>More built-in features</li>
 </ul>
-<h2>Troubleshooting</h2>
-<h3>Connections Not Created</h3>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="connections-not-created">Connections Not Created</h3>
 <ul>
 <li>Check if ports are properly rendered as Handles</li>
 <li>Check type compatibility</li>
 <li>Check browser console</li>
 </ul>
-<h3>Nodes Not Visible</h3>
+<h3 id="nodes-not-visible">Nodes Not Visible</h3>
 <ul>
 <li>Check if &#39;custom&#39; type is registered in <code>nodeTypes</code></li>
 <li>Check if wrapped with ReactFlowProvider</li>
 </ul>
-<h3>Viewport Not Saved</h3>
+<h3 id="viewport-not-saved">Viewport Not Saved</h3>
 <ul>
 <li>Check if <code>handleMove</code> callback is working properly</li>
 <li>Check Zustand store updates</li>
 </ul>
-<h2>Next Steps</h2>
+<h2 id="next-steps">Next Steps</h2>
 <ol>
 <li><strong>Node Templates</strong>: Load nodes from registry</li>
 <li><strong>Execution Visualization</strong>: Animation during graph execution</li>
 <li><strong>Grouping</strong>: Node grouping functionality</li>
 <li><strong>Real-time Collaboration</strong>: WebSocket integration</li>
 </ol>
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ul>
 <li><a href="https://reactflow.dev/">React Flow Official Documentation</a></li>
 <li><a href="https://reactflow.dev/examples/">React Flow Examples</a></li>
 <li><a href="https://reactflow.dev/api-reference/">React Flow API Reference</a></li>
 </ul>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#overview">Overview</a></li>
+      <li class="toc-h2"><a href="#changes">Changes</a></li>
+      <li class="toc-h3"><a href="#previous-custom-implementation">Previous (Custom Implementation)</a></li>
+      <li class="toc-h3"><a href="#current-react-flow">Current (React Flow)</a></li>
+      <li class="toc-h2"><a href="#key-features">Key Features</a></li>
+      <li class="toc-h3"><a href="#-maintained-features">✅ Maintained Features</a></li>
+      <li class="toc-h3"><a href="#-added-features">🆕 Added Features</a></li>
+      <li class="toc-h2"><a href="#technology-stack">Technology Stack</a></li>
+      <li class="toc-h2"><a href="#file-structure">File Structure</a></li>
+      <li class="toc-h2"><a href="#usage">Usage</a></li>
+      <li class="toc-h3"><a href="#basic-usage">Basic Usage</a></li>
+      <li class="toc-h2"><a href="#react-flow-advantages">React Flow Advantages</a></li>
+      <li class="toc-h2"><a href="#customization">Customization</a></li>
+      <li class="toc-h3"><a href="#node-styles">Node Styles</a></li>
+      <li class="toc-h3"><a href="#connection-styles">Connection Styles</a></li>
+      <li class="toc-h2"><a href="#migration-notes">Migration Notes</a></li>
+      <li class="toc-h3"><a href="#existing-code-compatibility">Existing Code Compatibility</a></li>
+      <li class="toc-h3"><a href="#removed-features">Removed Features</a></li>
+      <li class="toc-h3"><a href="#enhanced-features">Enhanced Features</a></li>
+      <li class="toc-h2"><a href="#troubleshooting">Troubleshooting</a></li>
+      <li class="toc-h3"><a href="#connections-not-created">Connections Not Created</a></li>
+      <li class="toc-h3"><a href="#nodes-not-visible">Nodes Not Visible</a></li>
+      <li class="toc-h3"><a href="#viewport-not-saved">Viewport Not Saved</a></li>
+      <li class="toc-h2"><a href="#next-steps">Next Steps</a></li>
+      <li class="toc-h2"><a href="#references">References</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -315,6 +365,52 @@ const getTypeColor = (typeName: string): string =&gt; {
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

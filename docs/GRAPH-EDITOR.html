@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" class="active">Overview</a></li>
+      <div class="nav-group-header expanded">Graph Editor</div>
+      <ul class="nav-submenu expanded">        <li><a href="GRAPH-EDITOR.html" class="active">Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,12 +65,13 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Graph Editor - Web-Based Graph UI System</h1>
-<h2>Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>A complete web-based graph editor system for creating and managing node graphs with visual drag-and-drop, type-safe connections, and persistent state management.</p>
-<h2>Features</h2>
-<h3>✅ Core Functionality</h3>
+<h2 id="features">Features</h2>
+<h3 id="-core-functionality">✅ Core Functionality</h3>
 <ol>
 <li><p><strong>Nodes</strong></p>
 <ul>
@@ -123,8 +121,8 @@
 </ul>
 </li>
 </ol>
-<h2>Architecture</h2>
-<h3>Store Structure (<code>store/graphStore.ts</code>)</h3>
+<h2 id="architecture">Architecture</h2>
+<h3 id="store-structure-storegraphstorets">Store Structure (<code>store/graphStore.ts</code>)</h3>
 <pre><code class="language-typescript">interface GraphState {
   nodes: GraphNode[];
   connections: GraphConnection[];
@@ -136,7 +134,7 @@
   // Actions for nodes, ports, connections, viewport, etc.
 }
 </code></pre>
-<h3>Component Structure</h3>
+<h3 id="component-structure">Component Structure</h3>
 <pre><code>components/graph/
 ├── GraphCanvas.tsx      # Main canvas with pan/zoom
 ├── GraphNode.tsx         # Draggable node component
@@ -144,44 +142,44 @@
 ├── GraphConnection.tsx   # Connection line rendering
 └── GraphToolbar.tsx     # Toolbar with controls
 </code></pre>
-<h2>Usage</h2>
-<h3>Accessing the Graph Editor</h3>
+<h2 id="usage">Usage</h2>
+<h3 id="accessing-the-graph-editor">Accessing the Graph Editor</h3>
 <p>Navigate to <code>/graph-editor</code> in the application.</p>
-<h3>Creating Nodes</h3>
+<h3 id="creating-nodes">Creating Nodes</h3>
 <ol>
 <li>Click &quot;Add Node&quot; button in the toolbar</li>
 <li>Enter node name and type</li>
 <li>Node appears on canvas with default input/output ports</li>
 </ol>
-<h3>Moving Nodes</h3>
+<h3 id="moving-nodes">Moving Nodes</h3>
 <ul>
 <li>Click and drag the node header to move it</li>
 <li>Node position is automatically saved</li>
 </ul>
-<h3>Creating Connections</h3>
+<h3 id="creating-connections">Creating Connections</h3>
 <ol>
 <li>Click and hold on an output port (right side)</li>
 <li>Drag to an input port (left side) of another node</li>
 <li>Release to create connection</li>
 <li>Connection is validated for type compatibility</li>
 </ol>
-<h3>Deleting Nodes/Connections</h3>
+<h3 id="deleting-nodesconnections">Deleting Nodes/Connections</h3>
 <ul>
 <li><strong>Nodes</strong>: Select node and press Delete/Backspace, or click the ✕ button</li>
 <li><strong>Connections</strong>: Double-click a connection to delete it</li>
 </ul>
-<h3>Pan and Zoom</h3>
+<h3 id="pan-and-zoom">Pan and Zoom</h3>
 <ul>
 <li><strong>Zoom</strong>: Scroll mouse wheel</li>
 <li><strong>Pan</strong>: Middle mouse button or Ctrl+Left click and drag</li>
 <li><strong>Reset View</strong>: Click &quot;Reset View&quot; button</li>
 </ul>
-<h3>Saving and Loading</h3>
+<h3 id="saving-and-loading">Saving and Loading</h3>
 <ul>
 <li><strong>Save</strong>: Click &quot;Save&quot; button to download graph as JSON</li>
 <li><strong>Load</strong>: Click &quot;Load&quot; button to import a saved graph</li>
 </ul>
-<h2>Type Checking</h2>
+<h2 id="type-checking">Type Checking</h2>
 <p>Connections are validated based on port types:</p>
 <ul>
 <li><strong>Same types</strong>: Can always connect</li>
@@ -189,7 +187,7 @@
 <li><strong>Compatible types</strong>: Number types can connect to each other</li>
 <li><strong>Invalid types</strong>: Connection is rejected</li>
 </ul>
-<h3>Type Colors</h3>
+<h3 id="type-colors">Type Colors</h3>
 <ul>
 <li>🟢 <strong>Green</strong>: String</li>
 <li>🔵 <strong>Blue</strong>: Number</li>
@@ -198,7 +196,7 @@
 <li>🟣 <strong>Pink</strong>: Array</li>
 <li>⚫ <strong>Gray</strong>: Other/Any</li>
 </ul>
-<h2>Graph Data Format</h2>
+<h2 id="graph-data-format">Graph Data Format</h2>
 <p>Saved graphs use the following JSON format:</p>
 <pre><code class="language-json">{
   &quot;nodes&quot;: [
@@ -228,44 +226,44 @@
   }
 }
 </code></pre>
-<h2>Keyboard Shortcuts</h2>
+<h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
 <ul>
 <li><strong>Delete/Backspace</strong>: Delete selected node</li>
 <li><strong>Escape</strong>: Cancel connection creation</li>
 <li><strong>Ctrl+Click</strong>: Pan mode</li>
 </ul>
-<h2>Technical Details</h2>
-<h3>Port Position Calculation</h3>
+<h2 id="technical-details">Technical Details</h2>
+<h3 id="port-position-calculation">Port Position Calculation</h3>
 <p>Ports are positioned using DOM queries to find their actual rendered positions. This ensures connections are drawn accurately even when nodes are moved.</p>
-<h3>Connection Rendering</h3>
+<h3 id="connection-rendering">Connection Rendering</h3>
 <p>Connections use SVG Bezier curves for smooth rendering:</p>
 <ul>
 <li>Control points are calculated based on distance between ports</li>
 <li>Arrow markers indicate direction (output → input)</li>
 <li>Selected connections are highlighted in red</li>
 </ul>
-<h3>Viewport Transform</h3>
+<h3 id="viewport-transform">Viewport Transform</h3>
 <p>The viewport uses CSS transforms for performance:</p>
 <ul>
 <li>Nodes: <code>transform: translate(x, y) scale(zoom)</code></li>
 <li>Connections: SVG <code>transform</code> attribute</li>
 <li>Both layers stay synchronized</li>
 </ul>
-<h3>State Updates</h3>
+<h3 id="state-updates">State Updates</h3>
 <p>Zustand store provides reactive updates:</p>
 <ul>
 <li>All components automatically re-render on state changes</li>
 <li>No prop drilling needed</li>
 <li>Efficient updates with minimal re-renders</li>
 </ul>
-<h2>Performance Considerations</h2>
+<h2 id="performance-considerations">Performance Considerations</h2>
 <ul>
 <li><strong>Large Graphs</strong>: Canvas uses efficient rendering with absolute positioning</li>
 <li><strong>Zoom</strong>: Transform-based zooming for smooth performance</li>
 <li><strong>Connections</strong>: SVG rendering for scalable vector graphics</li>
 <li><strong>Updates</strong>: Zustand minimizes unnecessary re-renders</li>
 </ul>
-<h2>Future Enhancements</h2>
+<h2 id="future-enhancements">Future Enhancements</h2>
 <ul>
 <li><input disabled="" type="checkbox"> Node templates from registry</li>
 <li><input disabled="" type="checkbox"> Port editing UI</li>
@@ -278,7 +276,7 @@
 <li><input disabled="" type="checkbox"> Copy/paste nodes</li>
 <li><input disabled="" type="checkbox"> Graph validation and error highlighting</li>
 </ul>
-<h2>Integration with Node System</h2>
+<h2 id="integration-with-node-system">Integration with Node System</h2>
 <p>The graph editor can be integrated with the node execution system:</p>
 <ol>
 <li>Load nodes from registry into editor</li>
@@ -288,19 +286,72 @@
 </ol>
 <p>This creates a complete visual programming interface!</p>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#overview">Overview</a></li>
+      <li class="toc-h2"><a href="#features">Features</a></li>
+      <li class="toc-h3"><a href="#-core-functionality">✅ Core Functionality</a></li>
+      <li class="toc-h2"><a href="#architecture">Architecture</a></li>
+      <li class="toc-h3"><a href="#store-structure-storegraphstorets">Store Structure (store/graphStore.ts)</a></li>
+      <li class="toc-h3"><a href="#component-structure">Component Structure</a></li>
+      <li class="toc-h2"><a href="#usage">Usage</a></li>
+      <li class="toc-h3"><a href="#accessing-the-graph-editor">Accessing the Graph Editor</a></li>
+      <li class="toc-h3"><a href="#creating-nodes">Creating Nodes</a></li>
+      <li class="toc-h3"><a href="#moving-nodes">Moving Nodes</a></li>
+      <li class="toc-h3"><a href="#creating-connections">Creating Connections</a></li>
+      <li class="toc-h3"><a href="#deleting-nodesconnections">Deleting Nodes/Connections</a></li>
+      <li class="toc-h3"><a href="#pan-and-zoom">Pan and Zoom</a></li>
+      <li class="toc-h3"><a href="#saving-and-loading">Saving and Loading</a></li>
+      <li class="toc-h2"><a href="#type-checking">Type Checking</a></li>
+      <li class="toc-h3"><a href="#type-colors">Type Colors</a></li>
+      <li class="toc-h2"><a href="#graph-data-format">Graph Data Format</a></li>
+      <li class="toc-h2"><a href="#keyboard-shortcuts">Keyboard Shortcuts</a></li>
+      <li class="toc-h2"><a href="#technical-details">Technical Details</a></li>
+      <li class="toc-h3"><a href="#port-position-calculation">Port Position Calculation</a></li>
+      <li class="toc-h3"><a href="#connection-rendering">Connection Rendering</a></li>
+      <li class="toc-h3"><a href="#viewport-transform">Viewport Transform</a></li>
+      <li class="toc-h3"><a href="#state-updates">State Updates</a></li>
+      <li class="toc-h2"><a href="#performance-considerations">Performance Considerations</a></li>
+      <li class="toc-h2"><a href="#future-enhancements">Future Enhancements</a></li>
+      <li class="toc-h2"><a href="#integration-with-node-system">Integration with Node System</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -313,6 +364,52 @@
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>

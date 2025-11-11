@@ -9,31 +9,28 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h1><a href="index.html">VZ Programming</a></h1>
-                <p class="subtitle">Documentation</p>
-            </div>
+            <h2>Documentation</h2>
             <ul class="nav-menu">
 <li class="nav-group">
-      <div class="nav-group-header">Getting Started</div>
-      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+      <div class="nav-group-header ">Getting Started</div>
+      <ul class="nav-submenu ">        <li><a href="index.html" >Home</a></li>
         <li><a href="node-library.html" >Node Library</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Core Systems</div>
-      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+      <div class="nav-group-header ">Core Systems</div>
+      <ul class="nav-submenu ">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
         <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Custom Nodes</div>
-      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+      <div class="nav-group-header ">Custom Nodes</div>
+      <ul class="nav-submenu ">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
         <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
         <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Graph Editor</div>
-      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+      <div class="nav-group-header expanded">Graph Editor</div>
+      <ul class="nav-submenu expanded">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
         <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
         <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
         <li><a href="GRAPH-EDITOR-SUMMARY.html" class="active">Quick Start</a></li>
@@ -42,8 +39,8 @@
         <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Live Execution</div>
-      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+      <div class="nav-group-header ">Live Execution</div>
+      <ul class="nav-submenu ">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
@@ -53,14 +50,14 @@
         <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Error Handling & Logging</div>
-      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+      <div class="nav-group-header ">Error Handling & Logging</div>
+      <ul class="nav-submenu ">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
         <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
         <li><a href="LOGGING.html" >Logging</a></li>
       </ul>
     </li><li class="nav-group">
-      <div class="nav-group-header">Advanced Topics</div>
-      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+      <div class="nav-group-header ">Advanced Topics</div>
+      <ul class="nav-submenu ">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
         <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
         <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
         <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
@@ -68,14 +65,15 @@
     </li>
             </ul>
         </div>
-        <div class="content">
+        <div class="content-wrapper">
+            <div class="content">
 <h1>Graph Editor - Quick Start Guide</h1>
-<h2>✅ Implementation Complete</h2>
+<h2 id="-implementation-complete">✅ Implementation Complete</h2>
 <p>A complete web-based graph UI system has been successfully implemented with all requested features.</p>
-<h2>Quick Access</h2>
+<h2 id="quick-access">Quick Access</h2>
 <p>Navigate to <code>/graph-editor</code> in your application to access the graph editor.</p>
-<h2>Features Overview</h2>
-<h3>✅ Core Features</h3>
+<h2 id="features-overview">Features Overview</h2>
+<h3 id="-core-features">✅ Core Features</h3>
 <ol>
 <li><p><strong>Interactive Drag-and-Drop Nodes</strong></p>
 <ul>
@@ -144,51 +142,51 @@
 </ul>
 </li>
 </ol>
-<h2>Usage Guide</h2>
-<h3>Creating a Node</h3>
+<h2 id="usage-guide">Usage Guide</h2>
+<h3 id="creating-a-node">Creating a Node</h3>
 <ol>
 <li>Click &quot;Add Node&quot; in the toolbar</li>
 <li>Enter node name and type</li>
 <li>Click &quot;Add&quot;</li>
 <li>Node appears on canvas with default ports</li>
 </ol>
-<h3>Moving Nodes</h3>
+<h3 id="moving-nodes">Moving Nodes</h3>
 <ul>
 <li>Click and drag the blue header bar</li>
 <li>Node position is automatically saved</li>
 </ul>
-<h3>Creating Connections</h3>
+<h3 id="creating-connections">Creating Connections</h3>
 <ol>
 <li>Click and hold on an <strong>output port</strong> (right side, colored dot)</li>
 <li>Drag to an <strong>input port</strong> (left side, colored dot)</li>
 <li>Release to create connection</li>
 <li>Invalid connections are rejected</li>
 </ol>
-<h3>Deleting</h3>
+<h3 id="deleting">Deleting</h3>
 <ul>
 <li><strong>Nodes</strong>: Select node, press Delete key, or click ✕ button</li>
 <li><strong>Connections</strong>: Double-click the connection line</li>
 </ul>
-<h3>Pan and Zoom</h3>
+<h3 id="pan-and-zoom">Pan and Zoom</h3>
 <ul>
 <li><strong>Zoom In</strong>: Scroll mouse wheel up</li>
 <li><strong>Zoom Out</strong>: Scroll mouse wheel down</li>
 <li><strong>Pan</strong>: Hold middle mouse button or Ctrl+Left click and drag</li>
 <li><strong>Reset View</strong>: Click &quot;Reset View&quot; button</li>
 </ul>
-<h3>Saving and Loading</h3>
+<h3 id="saving-and-loading">Saving and Loading</h3>
 <ul>
 <li><strong>Save</strong>: Click &quot;Save&quot; → Downloads <code>graph.json</code></li>
 <li><strong>Load</strong>: Click &quot;Load&quot; → Select JSON file → Graph is restored</li>
 </ul>
-<h2>Keyboard Shortcuts</h2>
+<h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
 <ul>
 <li><strong>Delete / Backspace</strong>: Delete selected node</li>
 <li><strong>Escape</strong>: Cancel connection creation</li>
 <li><strong>Ctrl + Left Click</strong>: Pan mode</li>
 </ul>
-<h2>Visual Guide</h2>
-<h3>Port Colors</h3>
+<h2 id="visual-guide">Visual Guide</h2>
+<h3 id="port-colors">Port Colors</h3>
 <ul>
 <li>🟢 <strong>Green</strong>: String type</li>
 <li>🔵 <strong>Blue</strong>: Number type</li>
@@ -197,13 +195,13 @@
 <li>🟣 <strong>Pink</strong>: Array type</li>
 <li>⚫ <strong>Gray</strong>: Other/Any type</li>
 </ul>
-<h3>Connection States</h3>
+<h3 id="connection-states">Connection States</h3>
 <ul>
 <li><strong>Blue line</strong>: Normal connection</li>
 <li><strong>Red line</strong>: Selected connection</li>
 <li><strong>Preview line</strong>: Connection being created (follows mouse)</li>
 </ul>
-<h2>Technical Stack</h2>
+<h2 id="technical-stack">Technical Stack</h2>
 <ul>
 <li><strong>State Management</strong>: Zustand</li>
 <li><strong>Drag and Drop</strong>: react-draggable</li>
@@ -211,7 +209,7 @@
 <li><strong>Styling</strong>: Tailwind CSS</li>
 <li><strong>Type Safety</strong>: TypeScript</li>
 </ul>
-<h2>File Structure</h2>
+<h2 id="file-structure">File Structure</h2>
 <pre><code>store/
 └── graphStore.ts              # Zustand store
 
@@ -225,14 +223,14 @@ components/graph/
 app/graph-editor/
 └── page.tsx                   # Editor page
 </code></pre>
-<h2>Integration</h2>
+<h2 id="integration">Integration</h2>
 <p>The graph editor is fully integrated with:</p>
 <ul>
 <li>Navigation menu (Graph Editor link)</li>
 <li>Breadcrumbs (shows current page)</li>
 <li>Consistent styling with the rest of the app</li>
 </ul>
-<h2>Next Steps</h2>
+<h2 id="next-steps">Next Steps</h2>
 <p>The graph editor is ready to use! Future enhancements could include:</p>
 <ul>
 <li>Loading nodes from the registry</li>
@@ -242,19 +240,65 @@ app/graph-editor/
 <li>Minimap for large graphs</li>
 </ul>
 
+            </div>
+<div class="toc-sidebar">
+    <h3>On This Page</h3>
+    <ul class="toc-menu">
+      <li class="toc-h2"><a href="#-implementation-complete">✅ Implementation Complete</a></li>
+      <li class="toc-h2"><a href="#quick-access">Quick Access</a></li>
+      <li class="toc-h2"><a href="#features-overview">Features Overview</a></li>
+      <li class="toc-h3"><a href="#-core-features">✅ Core Features</a></li>
+      <li class="toc-h2"><a href="#usage-guide">Usage Guide</a></li>
+      <li class="toc-h3"><a href="#creating-a-node">Creating a Node</a></li>
+      <li class="toc-h3"><a href="#moving-nodes">Moving Nodes</a></li>
+      <li class="toc-h3"><a href="#creating-connections">Creating Connections</a></li>
+      <li class="toc-h3"><a href="#deleting">Deleting</a></li>
+      <li class="toc-h3"><a href="#pan-and-zoom">Pan and Zoom</a></li>
+      <li class="toc-h3"><a href="#saving-and-loading">Saving and Loading</a></li>
+      <li class="toc-h2"><a href="#keyboard-shortcuts">Keyboard Shortcuts</a></li>
+      <li class="toc-h2"><a href="#visual-guide">Visual Guide</a></li>
+      <li class="toc-h3"><a href="#port-colors">Port Colors</a></li>
+      <li class="toc-h3"><a href="#connection-states">Connection States</a></li>
+      <li class="toc-h2"><a href="#technical-stack">Technical Stack</a></li>
+      <li class="toc-h2"><a href="#file-structure">File Structure</a></li>
+      <li class="toc-h2"><a href="#integration">Integration</a></li>
+      <li class="toc-h2"><a href="#next-steps">Next Steps</a></li>
+    </ul>
+</div>
+
         </div>
     </div>
     <script>
-        // Toggle submenu visibility
+        // Accordion menu behavior - only one group open at a time
         document.querySelectorAll('.nav-group-header').forEach(header => {
             header.addEventListener('click', function() {
                 const submenu = this.nextElementSibling;
-                submenu.classList.toggle('expanded');
-                this.classList.toggle('expanded');
+                const isExpanded = submenu.classList.contains('expanded');
+                
+                // Close all other groups
+                document.querySelectorAll('.nav-submenu').forEach(menu => {
+                    if (menu !== submenu) {
+                        menu.classList.remove('expanded');
+                    }
+                });
+                document.querySelectorAll('.nav-group-header').forEach(h => {
+                    if (h !== this) {
+                        h.classList.remove('expanded');
+                    }
+                });
+                
+                // Toggle current group
+                if (!isExpanded) {
+                    submenu.classList.add('expanded');
+                    this.classList.add('expanded');
+                } else {
+                    submenu.classList.remove('expanded');
+                    this.classList.remove('expanded');
+                }
             });
         });
         
-        // Expand active menu group
+        // Expand active menu group on page load
         const activeLink = document.querySelector('.nav-menu .active');
         if (activeLink) {
             const navGroup = activeLink.closest('.nav-group');
@@ -267,6 +311,52 @@ app/graph-editor/
                 }
             }
         }
+        
+        // Scroll spy for table of contents
+        
+        const tocLinks = document.querySelectorAll('.toc-menu a');
+        const headers = document.querySelectorAll('.content h2[id], .content h3[id], .content h4[id]');
+        
+        function updateActiveTOCLink() {
+            let current = '';
+            headers.forEach(header => {
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= 100) {
+                    current = header.id;
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateActiveTOCLink);
+        updateActiveTOCLink();
+        
+        // Smooth scroll for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
     </script>
 </body>
 </html>
