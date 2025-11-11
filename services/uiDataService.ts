@@ -2,61 +2,135 @@
  * UI Data Service
  * 
  * Handles data flow from UI forms to node outputs
- * Phase 3: Basic data mapping and transformation
+ * Phase 6: Advanced data mapping and transformation
  */
 
 import type { FormData } from '../src/types/uiDefinition';
-import type { OutputMapping } from '../src/types/uiNodeConfig';
+import type { OutputMapping, TransformationConfig, ConditionalMappingRule } from '../src/types/uiNodeConfig';
+import { applyTransformationById, applyTransformations, type TransformationOptions } from './transformationService';
 
 /**
- * Apply transformation to a value
+ * Evaluate a simple condition (Phase 6)
+ * WARNING: This is a simplified evaluator. For production, consider using a safer expression parser.
  */
-function applyTransformation(value: unknown, transformation: string): unknown {
-  if (typeof value === 'undefined' || value === null) {
-    return value;
-  }
-
-  switch (transformation) {
-    case 'lowercase':
-      return typeof value === 'string' ? value.toLowerCase() : value;
-    case 'uppercase':
-      return typeof value === 'string' ? value.toUpperCase() : value;
-    case 'trim':
-      return typeof value === 'string' ? value.trim() : value;
-    case 'parseInt':
-      return typeof value === 'string' ? parseInt(value, 10) : Number(value);
-    case 'parseFloat':
-      return typeof value === 'string' ? parseFloat(value) : Number(value);
-    case 'toString':
-      return String(value);
-    default:
-      return value;
+function evaluateCondition(condition: string, value: unknown, formData: FormData): boolean {
+  try {
+    // Replace 'value' with actual value and allow access to other form fields
+    let safeCondition = condition.replace(/value/g, JSON.stringify(value));
+    
+    // Allow access to other form fields (e.g., formData.fieldName)
+    Object.entries(formData).forEach(([key, val]) => {
+      safeCondition = safeCondition.replace(new RegExp(`formData\\.${key}`, 'g'), JSON.stringify(val));
+    });
+    
+    return new Function(`return ${safeCondition}`)();
+  } catch (e) {
+    console.warn('Condition evaluation error:', e);
+    return false;
   }
 }
 
 /**
- * Map form data to node outputs based on output mapping configuration
+ * Map form data to node outputs based on output mapping configuration (Phase 6: Enhanced)
  */
 export function mapFormDataToOutputs(
   formData: FormData,
   outputMapping: OutputMapping
 ): Record<string, unknown> {
-  const outputs: Record<string, unknown> = {};
+  let outputs: Record<string, unknown> = {};
 
-  // Map each field to its corresponding output port
+  // Apply filters first (Phase 6)
+  let filteredData = { ...formData };
+  if (outputMapping.filters?.includeFields && outputMapping.filters.includeFields.length > 0) {
+    // Include only specified fields
+    filteredData = Object.fromEntries(
+      Object.entries(formData).filter(([key]) => outputMapping.filters!.includeFields!.includes(key))
+    );
+  } else if (outputMapping.filters?.excludeFields && outputMapping.filters.excludeFields.length > 0) {
+    // Exclude specified fields
+    filteredData = Object.fromEntries(
+      Object.entries(formData).filter(([key]) => !outputMapping.filters!.excludeFields!.includes(key))
+    );
+  }
+
+  // Map each field to its corresponding output port (Phase 6: Enhanced transformations)
   Object.entries(outputMapping.fieldToPort).forEach(([fieldName, portId]) => {
     if (!portId) return; // Skip unmapped fields
+    if (!(fieldName in filteredData)) return; // Skip filtered fields
 
-    const fieldValue = formData[fieldName];
+    const fieldValue = filteredData[fieldName];
 
-    // Apply transformation if specified
-    const transformation = outputMapping.transformations?.[fieldName];
-    const transformedValue = transformation
-      ? applyTransformation(fieldValue, transformation)
-      : fieldValue;
+    // Apply transformation if specified (Phase 6: Support TransformationConfig)
+    const transformConfig = outputMapping.transformations?.[fieldName];
+    let transformedValue = fieldValue;
+
+    if (transformConfig) {
+      try {
+        // Apply main transformation
+        transformedValue = applyTransformationById(
+          transformConfig.id,
+          fieldValue,
+          transformConfig.options as TransformationOptions
+        );
+
+        // Apply chain transformations if any
+        if (transformConfig.chain) {
+          const chainIds = transformConfig.chain.map((t) => t.id);
+          const chainOptions = Object.fromEntries(
+            transformConfig.chain.map((t, i) => [chainIds[i], t.options as TransformationOptions])
+          );
+          transformedValue = applyTransformations(transformedValue, chainIds, chainOptions);
+        }
+      } catch (e) {
+        console.error(`Transformation error for field ${fieldName}:`, e);
+        transformedValue = fieldValue; // Fallback to original value
+      }
+    }
 
     outputs[portId] = transformedValue;
   });
+
+  // Apply conditional mapping rules (Phase 6)
+  if (outputMapping.conditionalRules && outputMapping.conditionalRules.length > 0) {
+    const conditionalOutputs: Record<string, unknown> = {};
+
+    outputMapping.conditionalRules.forEach((rule: ConditionalMappingRule) => {
+      try {
+        // Evaluate condition (using first mapped field value as default, or can be field-specific)
+        // For simplicity, we'll evaluate against all form data
+        const conditionResult = evaluateCondition(rule.condition, filteredData, filteredData);
+
+        if (conditionResult && rule.truePort) {
+          // Apply true transformation if specified
+          let trueValue: unknown = filteredData;
+          if (rule.trueTransform) {
+            trueValue = applyTransformationById(
+              rule.trueTransform.id,
+              trueValue,
+              rule.trueTransform.options as TransformationOptions
+            );
+          }
+          conditionalOutputs[rule.truePort] = trueValue;
+        } else if (!conditionResult && rule.falsePort) {
+          // Apply false transformation if specified
+          let falseValue: unknown = filteredData;
+          if (rule.falseTransform) {
+            falseValue = applyTransformationById(
+              rule.falseTransform.id,
+              falseValue,
+              rule.falseTransform.options as TransformationOptions
+            );
+          }
+          conditionalOutputs[rule.falsePort] = falseValue;
+        }
+      } catch (e) {
+        console.error('Conditional rule evaluation error:', e);
+      }
+    });
+
+    // Merge conditional outputs (conditional outputs take precedence)
+    outputs = { ...outputs, ...conditionalOutputs };
+  }
 
   return outputs;
 }

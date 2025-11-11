@@ -8,7 +8,57 @@
 import type { UIDefinition, FormData } from './uiDefinition';
 
 /**
- * Output mapping configuration
+ * Transformation configuration (Phase 6)
+ */
+export interface TransformationConfig {
+  /**
+   * Transformation ID
+   */
+  id: string;
+  
+  /**
+   * Transformation options/parameters
+   */
+  options?: Record<string, unknown>;
+  
+  /**
+   * Chain multiple transformations (applied in order)
+   */
+  chain?: TransformationConfig[];
+}
+
+/**
+ * Conditional mapping rule (Phase 6)
+ */
+export interface ConditionalMappingRule {
+  /**
+   * Condition to evaluate
+   */
+  condition: string;
+  
+  /**
+   * Output port ID if condition is true
+   */
+  truePort?: string;
+  
+  /**
+   * Output port ID if condition is false
+   */
+  falsePort?: string;
+  
+  /**
+   * Transformation to apply if condition is true
+   */
+  trueTransform?: TransformationConfig;
+  
+  /**
+   * Transformation to apply if condition is false
+   */
+  falseTransform?: TransformationConfig;
+}
+
+/**
+ * Output mapping configuration (Phase 6: Enhanced)
  * Maps UI form fields to node output ports
  */
 export interface OutputMapping {
@@ -18,10 +68,24 @@ export interface OutputMapping {
   fieldToPort: Record<string, string>;
   
   /**
-   * Optional transformation function name
-   * e.g., 'lowercase', 'uppercase', 'parseInt', etc.
+   * Transformation configuration for each field (Phase 6)
    */
-  transformations?: Record<string, string>;
+  transformations?: Record<string, TransformationConfig>;
+  
+  /**
+   * Conditional mapping rules (Phase 6)
+   * Applied after field mapping
+   */
+  conditionalRules?: ConditionalMappingRule[];
+  
+  /**
+   * Filter configuration (Phase 6)
+   * Fields to exclude from output
+   */
+  filters?: {
+    excludeFields?: string[];
+    includeFields?: string[];
+  };
 }
 
 /**
