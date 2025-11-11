@@ -8,7 +8,7 @@
  */
 
 import React, { useState } from 'react';
-import { Palette, Type, Spacing, Layers, Eye, EyeOff } from 'lucide-react';
+import { Palette, Type, Move, Layers, Eye, EyeOff } from 'lucide-react';
 import type { UIComponent } from '../../src/types/uiDefinition';
 import type { ComponentStyle } from '../../src/types/uiDefinition';
 import { getPredefinedThemes, type Theme } from '../../services/themeService';
@@ -246,7 +246,7 @@ export default function StylePanel({
 
             <div>
               <h4 className="text-xs font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <Spacing className="w-4 h-4" />
+                <Move className="w-4 h-4" />
                 Spacing
               </h4>
               <div className="space-y-3">
@@ -410,7 +410,7 @@ export default function StylePanel({
 
             <div>
               <h4 className="text-xs font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <Spacing className="w-4 h-4" />
+                <Move className="w-4 h-4" />
                 Global Spacing
               </h4>
               <div className="space-y-3">

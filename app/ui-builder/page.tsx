@@ -9,10 +9,11 @@
 
 import { useState, useRef } from 'react';
 import { useUIBuilderStore } from '../../store/uiBuilderStore';
-import { Plus, Trash2, Copy, Eye, FileText, Edit2, ArrowLeft, History, Download, Upload, Layers } from 'lucide-react';
+import { Plus, Trash2, Copy, Eye, FileText, Edit2, ArrowLeft, History, Download, Upload, Layers, X, Tag } from 'lucide-react';
 import UIRenderer from '../../components/ui-runtime/UIRenderer';
 import UIBuilder from '../../components/ui-builder/UIBuilder';
 import VersionHistoryPanel from '../../components/ui-builder/VersionHistoryPanel';
+import CreateUIDefinitionModal from '../../components/ui-builder/CreateUIDefinitionModal';
 import { getAllTemplates, createFromTemplate } from '../../services/templateService';
 import { exportUIDefinition, downloadUIDefinition, readUIDefinitionFromFile } from '../../services/exportImportService';
 import type { UIDefinition, FormData } from '../../src/types/uiDefinition';
@@ -26,15 +27,16 @@ export default function UIBuilderPage() {
   const [previewData, setPreviewData] = useState<FormData>({});
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCreateNew = () => {
-    const name = prompt('Enter UI name:');
-    if (name) {
-      const description = prompt('Enter description (optional):') || undefined;
-      const newDef = createDefinition(name, description);
-      setSelectedDefinition(newDef);
-    }
+    setShowCreateModal(true);
+  };
+
+  const handleCreateSubmit = (name: string, description: string) => {
+    const newDef = createDefinition(name, description);
+    setSelectedDefinition(newDef);
   };
 
   const handleDelete = (id: string) => {
@@ -519,6 +521,13 @@ export default function UIBuilderPage() {
           }}
         />
       )}
+
+      {/* Create UI Definition Modal */}
+      <CreateUIDefinitionModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSubmit={handleCreateSubmit}
+      />
 
       {/* Templates Modal (Phase 8) */}
       {showTemplates && (
