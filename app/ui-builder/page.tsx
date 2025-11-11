@@ -7,13 +7,14 @@
  * Phase 2: List, manage, and edit UI definitions with visual builder
  */
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useUIBuilderStore } from '../../store/uiBuilderStore';
-import { Plus, Trash2, Copy, Eye, FileText, Edit2, ArrowLeft, History, Download, Upload, Layers, X, Tag } from 'lucide-react';
+import { Plus, Trash2, Copy, Eye, FileText, Edit2, ArrowLeft, History, Download, Layers, X, Tag } from 'lucide-react';
 import UIRenderer from '../../components/ui-runtime/UIRenderer';
 import UIBuilder from '../../components/ui-builder/UIBuilder';
 import VersionHistoryPanel from '../../components/ui-builder/VersionHistoryPanel';
 import CreateUIDefinitionModal from '../../components/ui-builder/CreateUIDefinitionModal';
+import FileUpload from '../../components/ui-builder/FileUpload';
 import { getAllTemplates, createFromTemplate } from '../../services/templateService';
 import { exportUIDefinition, downloadUIDefinition, readUIDefinitionFromFile } from '../../services/exportImportService';
 import type { UIDefinition, FormData } from '../../src/types/uiDefinition';
@@ -28,7 +29,6 @@ export default function UIBuilderPage() {
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCreateNew = () => {
     setShowCreateModal(true);
@@ -78,33 +78,27 @@ export default function UIBuilderPage() {
   };
 
   /**
-   * Handle import (Phase 8)
-   */
-  const handleImport = async () => {
-    fileInputRef.current?.click();
-  };
-
-  /**
    * Handle file selection (Phase 8)
    */
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileSelect = async (file: File) => {
+    try {
+      const definition = await readUIDefinitionFromFile(file);
+      if (definition) {
+        // Import using store method
+        const importedDef = importDefinition(definition);
+        setSelectedDefinition(importedDef);
+        // Show success message (you could replace this with a toast notification)
+        alert('UI imported successfully!');
+      } else {
+        throw new Error('Failed to parse UI definition file');
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
 
-    const definition = await readUIDefinitionFromFile(file);
-    if (definition) {
-      // Import using store method
-      const importedDef = importDefinition(definition);
-      setSelectedDefinition(importedDef);
-      alert('UI imported successfully!');
-    } else {
-      alert('Failed to import UI definition. Please check the file format.');
-    }
-    
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+  const handleFileError = (error: string) => {
+    alert(error);
   };
 
   /**
@@ -206,13 +200,6 @@ export default function UIBuilderPage() {
                   <Layers className="w-3 h-3" />
                 </button>
                 <button
-                  onClick={handleImport}
-                  className="flex items-center gap-1 px-2 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-xs"
-                  title="Import"
-                >
-                  <Upload className="w-3 h-3" />
-                </button>
-                <button
                   onClick={handleCreateNew}
                   className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
                 >
@@ -221,13 +208,16 @@ export default function UIBuilderPage() {
                 </button>
               </div>
             </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
+            
+            {/* File Upload Component */}
+            <div className="mb-4">
+              <FileUpload
+                accept=".json"
+                onFileSelect={handleFileSelect}
+                onError={handleFileError}
+                maxSize={10 * 1024 * 1024} // 10MB
+              />
+            </div>
 
             {definitions.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
@@ -490,7 +480,7 @@ export default function UIBuilderPage() {
               )}
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center flex flex-col items-center justify-center">
               <FileText className="w-16 h-16 mx-auto mb-4 text-gray-400" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No UI Selected</h3>
               <p className="text-sm text-gray-600 mb-4">
@@ -498,7 +488,7 @@ export default function UIBuilderPage() {
               </p>
               <button
                 onClick={handleCreateNew}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="flex flex-row items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Create New UI
