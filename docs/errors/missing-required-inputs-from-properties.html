@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missing Required Inputs - Properties Not Used as Default Values - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>Missing Required Inputs - Properties Not Used as Default Values</h1>
+<h2>Error Summary</h2>
+<p><strong>Date</strong>: December 2024<br><strong>Severity</strong>: High<br><strong>Status</strong>: Resolved</p>
+<h2>Error Description</h2>
+<p>When executing graphs, nodes with properties (like <code>operation</code>, <code>level</code>) were failing with &quot;Required input missing&quot; errors, even though these values were stored in the node&#39;s <code>properties</code>. The properties were being set on the node but not used as default input values when inputs weren&#39;t connected.</p>
+<h3>Error Messages</h3>
+<pre><code>[ERROR] Node math-add execution error: NodeError: Required input &#39;Operation&#39; (operation) is missing
+[ERROR] Node string-upper execution error: NodeError: Required input &#39;Operation&#39; (operation) is missing
+[ERROR] Node logger-1 execution error: NodeError: Required input &#39;Data&#39; (data) is missing
+</code></pre>
+<h3>Affected Nodes</h3>
+<ul>
+<li><code>MathNode</code> - Requires <code>operation</code> property (e.g., &quot;add&quot;, &quot;multiply&quot;)</li>
+<li><code>StringNode</code> - Requires <code>operation</code> property (e.g., &quot;toUpperCase&quot;, &quot;toLowerCase&quot;)</li>
+<li><code>LoggerNode</code> - Requires <code>level</code> property (e.g., &quot;info&quot;, &quot;warn&quot;)</li>
+<li>Any node that uses properties as default input values</li>
+</ul>
+<h3>Example Graph Node</h3>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;math-add&quot;,
+  &quot;type&quot;: &quot;utility.math&quot;,
+  &quot;properties&quot;: {
+    &quot;operation&quot;: &quot;add&quot;
+  }
+}
+</code></pre>
+<p>The <code>operation</code> property should be used as the default value for the <code>operation</code> input port when no connection provides it.</p>
+<h2>Root Cause</h2>
+<p>The <code>NodeExecutor.gatherNodeInputs()</code> method only gathered inputs from:</p>
+<ol>
+<li>Initial inputs provided in the execution request</li>
+<li>Connected nodes&#39; outputs</li>
+</ol>
+<p>It did not check node properties to use as default values for unconnected required inputs.</p>
+<h3>Code Flow</h3>
+<ol>
+<li>Node is created with properties: <code>{ operation: &quot;add&quot; }</code></li>
+<li>Properties are stored in <code>node.properties</code> Map</li>
+<li><code>NodeExecutor.executeNode()</code> calls <code>gatherNodeInputs()</code></li>
+<li><code>gatherNodeInputs()</code> only checks connections and initial inputs</li>
+<li>If <code>operation</code> input has no connection, it&#39;s missing</li>
+<li><code>validateInputs()</code> throws error: &quot;Required input &#39;Operation&#39; is missing&quot;</li>
+<li>Execution fails</li>
+</ol>
+<h3>Problematic Code</h3>
+<pre><code class="language-typescript">// ❌ Before - doesn&#39;t check properties
+private gatherNodeInputs(
+  nodeId: NodeId,
+  initialInputs: Map&lt;NodeId, Map&lt;PortId, unknown&gt;&gt;,
+): Map&lt;PortId, unknown&gt; {
+  const inputs = new Map&lt;PortId, unknown&gt;();
+  
+  // Add initial inputs
+  // Gather from connections
+  // ❌ Missing: Check node properties for defaults
+  
+  return inputs;
+}
+</code></pre>
+<h2>Resolution</h2>
+<h3>Solution</h3>
+<p>Modified <code>NodeExecutor.gatherNodeInputs()</code> to use node properties as default values for inputs that:</p>
+<ol>
+<li>Are not provided via connections</li>
+<li>Are not provided in initial inputs</li>
+<li>Have a matching property name</li>
+</ol>
+<h3>Code Changes</h3>
+<p><strong>File</strong>: <code>src/core/NodeExecutor.ts</code></p>
+<p><strong>Before:</strong></p>
+<pre><code class="language-typescript">private gatherNodeInputs(
+  nodeId: NodeId,
+  initialInputs: Map&lt;NodeId, Map&lt;PortId, unknown&gt;&gt;,
+): Map&lt;PortId, unknown&gt; {
+  const inputs = new Map&lt;PortId, unknown&gt;();
+  const node = this.nodes.get(nodeId);
+
+  if (!node) {
+    return inputs;
+  }
+
+  // Add initial inputs if provided
+  const nodeInitialInputs = initialInputs.get(nodeId);
+  if (nodeInitialInputs) {
+    nodeInitialInputs.forEach((value, portId) =&gt; {
+      inputs.set(portId, value);
+    });
+  }
+
+  // Gather inputs from connected nodes
+  const incomingConnections = Array.from(this.connections.values())
+    .filter(conn =&gt; conn.toNode === nodeId);
+
+  for (const connection of incomingConnections) {
+    const sourceResult = this.executionResults.get(connection.fromNode);
+    if (sourceResult &amp;&amp; sourceResult.success &amp;&amp; sourceResult.outputs) {
+      const value = sourceResult.outputs.get(connection.fromPort);
+      if (value !== undefined) {
+        inputs.set(connection.toPort, value);
+      }
+    }
+  }
+
+  return inputs;
+}
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-typescript">private gatherNodeInputs(
+  nodeId: NodeId,
+  initialInputs: Map&lt;NodeId, Map&lt;PortId, unknown&gt;&gt;,
+): Map&lt;PortId, unknown&gt; {
+  const inputs = new Map&lt;PortId, unknown&gt;();
+  const node = this.nodes.get(nodeId);
+
+  if (!node) {
+    return inputs;
+  }
+
+  // Add initial inputs if provided
+  const nodeInitialInputs = initialInputs.get(nodeId);
+  if (nodeInitialInputs) {
+    nodeInitialInputs.forEach((value, portId) =&gt; {
+      inputs.set(portId, value);
+    });
+  }
+
+  // Gather inputs from connected nodes
+  const incomingConnections = Array.from(this.connections.values())
+    .filter(conn =&gt; conn.toNode === nodeId);
+
+  for (const connection of incomingConnections) {
+    const sourceResult = this.executionResults.get(connection.fromNode);
+    if (sourceResult &amp;&amp; sourceResult.success &amp;&amp; sourceResult.outputs) {
+      const value = sourceResult.outputs.get(connection.fromPort);
+      if (value !== undefined) {
+        inputs.set(connection.toPort, value);
+      }
+    }
+  }
+
+  // Use node properties as default values for unconnected inputs
+  // Only use properties if the input is not already set (from connection or initial input)
+  if (&#39;getProperty&#39; in node &amp;&amp; typeof node.getProperty === &#39;function&#39;) {
+    for (const inputPort of node.inputs) {
+      // Skip if input already has a value
+      if (inputs.has(inputPort.id)) {
+        continue;
+      }
+
+      // Check if there&#39;s a property with the same name as the input port
+      const propertyValue = node.getProperty(inputPort.id);
+      if (propertyValue !== undefined) {
+        inputs.set(inputPort.id, propertyValue);
+      }
+    }
+  }
+
+  return inputs;
+}
+</code></pre>
+<h2>Implementation Details</h2>
+<h3>Property Priority</h3>
+<p>Input values are resolved in this order (highest to lowest priority):</p>
+<ol>
+<li><strong>Initial inputs</strong> - Explicitly provided in execution request</li>
+<li><strong>Connected outputs</strong> - Values from connected nodes</li>
+<li><strong>Node properties</strong> - Default values from node properties (new)</li>
+</ol>
+<h3>Property Matching</h3>
+<p>Properties are matched to input ports by:</p>
+<ul>
+<li>Property key name matching input port ID</li>
+<li>Example: Property <code>operation</code> matches input port <code>operation</code></li>
+</ul>
+<h3>Type Safety</h3>
+<p>The code checks if the node has a <code>getProperty</code> method before using it, ensuring compatibility with all node types.</p>
+<h2>Verification</h2>
+<h3>Test Steps</h3>
+<ol>
+<li>Create a graph with nodes that have properties (e.g., Math node with <code>operation: &quot;add&quot;</code>)</li>
+<li>Don&#39;t connect the property-based input ports</li>
+<li>Execute the graph</li>
+<li>Verify nodes execute successfully using property values as defaults</li>
+</ol>
+<h3>Expected Behavior</h3>
+<ul>
+<li>Nodes should use properties as default input values</li>
+<li>No &quot;Required input missing&quot; errors for properties</li>
+<li>Graph execution should complete successfully</li>
+<li>Connected inputs should still override property defaults</li>
+</ul>
+<h3>Example</h3>
+<p><strong>Graph Node:</strong></p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;math-add&quot;,
+  &quot;type&quot;: &quot;utility.math&quot;,
+  &quot;properties&quot;: {
+    &quot;operation&quot;: &quot;add&quot;
+  }
+}
+</code></pre>
+<p><strong>Execution:</strong></p>
+<ul>
+<li><code>operation</code> input is not connected</li>
+<li>Property <code>operation: &quot;add&quot;</code> is used as default</li>
+<li>Node executes successfully with <code>operation = &quot;add&quot;</code></li>
+</ul>
+<h2>Prevention</h2>
+<h3>Best Practices</h3>
+<ol>
+<li><p><strong>Document property usage</strong>: When creating nodes that use properties as defaults, document which properties map to which inputs.</p>
+</li>
+<li><p><strong>Property naming</strong>: Use the same names for properties and input port IDs to enable automatic matching.</p>
+</li>
+<li><p><strong>Test property defaults</strong>: When testing nodes, verify that properties work as default values when inputs aren&#39;t connected.</p>
+</li>
+<li><p><strong>Consider making properties explicit</strong>: For clarity, consider making property-based inputs optional or providing clear documentation.</p>
+</li>
+</ol>
+<h2>Related Issues</h2>
+<ul>
+<li>Graph execution failing with &quot;Required input missing&quot; errors</li>
+<li>Properties not being used during execution</li>
+<li>Nodes requiring manual input connection even when properties are set</li>
+</ul>
+<h2>References</h2>
+<ul>
+<li><code>src/core/NodeExecutor.ts</code> - Input gathering logic</li>
+<li><code>src/core/BaseNode.ts</code> - Node property management</li>
+<li><code>src/graph-management/GraphExecutionEngine.ts</code> - Graph execution engine</li>
+<li><code>data/graphs/test-live-execution.json</code> - Test graph with property-based nodes</li>
+</ul>
+<h2>Resolution Date</h2>
+<p>December 2024</p>
+<h2>Implementation Status</h2>
+<p>✅ <strong>RESOLVED</strong> - Node properties are now used as default input values when inputs are not connected.</p>
+<h3>Changes Made</h3>
+<ol>
+<li><p><strong>Updated <code>NodeExecutor.gatherNodeInputs()</code></strong>:</p>
+<ul>
+<li>Added logic to check node properties for default input values</li>
+<li>Properties are used only if input is not already set (from connection or initial input)</li>
+<li>Properties are matched to input ports by name (property key = input port ID)</li>
+</ul>
+</li>
+<li><p><strong>Updated <code>GraphExecutionEngine.buildExecutor()</code></strong>:</p>
+<ul>
+<li>Explicitly extracts <code>properties</code> from graph node definition</li>
+<li>Sets properties on node instance using <code>setProperty()</code> method</li>
+<li>Ensures properties are available for use as default inputs</li>
+</ul>
+</li>
+</ol>
+<h3>Implementation Details</h3>
+<p><strong>File</strong>: <code>src/core/NodeExecutor.ts</code></p>
+<ul>
+<li>Modified <code>gatherNodeInputs()</code> to check node properties after gathering from connections</li>
+<li>Uses type-safe property access with runtime checks</li>
+</ul>
+<p><strong>File</strong>: <code>src/graph-management/GraphExecutionEngine.ts</code></p>
+<ul>
+<li>Extracts <code>properties</code> separately from graph node</li>
+<li>Sets properties on node after creation using <code>setProperty()</code> method</li>
+<li>Logs property setting for debugging</li>
+</ul>
+<h3>Testing</h3>
+<p>After the fix, graph execution should:</p>
+<ul>
+<li>Use node properties as default values for unconnected required inputs</li>
+<li>Allow nodes like Math, String, Logger to work with property-based configuration</li>
+<li>Still allow connections to override property defaults</li>
+<li>Complete execution successfully for graphs with property-based nodes</li>
+</ul>
+<h3>Example</h3>
+<p><strong>Graph Node:</strong></p>
+<pre><code class="language-json">{
+  &quot;id&quot;: &quot;math-add&quot;,
+  &quot;type&quot;: &quot;utility.math&quot;,
+  &quot;properties&quot;: {
+    &quot;operation&quot;: &quot;add&quot;
+  }
+}
+</code></pre>
+<p><strong>Execution Flow:</strong></p>
+<ol>
+<li>Node created with <code>operation: &quot;add&quot;</code> property</li>
+<li>Property set on node via <code>setProperty(&quot;operation&quot;, &quot;add&quot;)</code></li>
+<li><code>gatherNodeInputs()</code> checks for <code>operation</code> input</li>
+<li>No connection provides <code>operation</code> input</li>
+<li>Property <code>operation: &quot;add&quot;</code> is used as default</li>
+<li>Node executes successfully with <code>operation = &quot;add&quot;</code></li>
+</ol>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

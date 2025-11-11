@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Editor - React Flow Migration - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" class="active">React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>Graph Editor - React Flow Migration</h1>
+<h2>Overview</h2>
+<p>The Graph Editor has been successfully migrated to use the React Flow library.</p>
+<h2>Changes</h2>
+<h3>Previous (Custom Implementation)</h3>
+<ul>
+<li>Custom Canvas component</li>
+<li>Node dragging using react-draggable</li>
+<li>Direct connection rendering with SVG</li>
+<li>Manual Pan/Zoom implementation</li>
+</ul>
+<h3>Current (React Flow)</h3>
+<ul>
+<li>React Flow library usage</li>
+<li>Built-in drag and drop</li>
+<li>Automatic connection rendering</li>
+<li>Built-in Pan/Zoom/Controls</li>
+<li>MiniMap support</li>
+<li>Background grid</li>
+</ul>
+<h2>Key Features</h2>
+<h3>✅ Maintained Features</h3>
+<ol>
+<li><p><strong>Type-Validated Connections</strong></p>
+<ul>
+<li>Connection validation based on port types</li>
+<li>Block incompatible connections</li>
+<li>Color coding by type</li>
+</ul>
+</li>
+<li><p><strong>Zustand State Management</strong></p>
+<ul>
+<li>Maintained existing store structure</li>
+<li>Fully synchronized with React Flow</li>
+</ul>
+</li>
+<li><p><strong>Save/Load</strong></p>
+<ul>
+<li>Save/load as JSON files</li>
+<li>Preserves graph state</li>
+</ul>
+</li>
+<li><p><strong>Node Creation/Deletion</strong></p>
+<ul>
+<li>Add nodes from toolbar</li>
+<li>Delete nodes with Delete key</li>
+</ul>
+</li>
+</ol>
+<h3>🆕 Added Features</h3>
+<ol>
+<li><p><strong>MiniMap</strong></p>
+<ul>
+<li>Full graph preview</li>
+<li>Navigation support</li>
+</ul>
+</li>
+<li><p><strong>Controls</strong></p>
+<ul>
+<li>Zoom in/out buttons</li>
+<li>Fit View button</li>
+<li>Fullscreen toggle</li>
+</ul>
+</li>
+<li><p><strong>Background</strong></p>
+<ul>
+<li>Grid background</li>
+<li>Visual guides</li>
+</ul>
+</li>
+<li><p><strong>Snap to Grid</strong></p>
+<ul>
+<li>Node alignment</li>
+<li>Clean layout</li>
+</ul>
+</li>
+</ol>
+<h2>Technology Stack</h2>
+<ul>
+<li><strong>React Flow</strong>: Graph editor library</li>
+<li><strong>Zustand</strong>: State management</li>
+<li><strong>TypeScript</strong>: Type safety</li>
+<li><strong>Tailwind CSS</strong>: Styling</li>
+</ul>
+<h2>File Structure</h2>
+<pre><code>components/graph/
+├── ReactFlowCanvas.tsx    # React Flow main canvas
+├── ReactFlowNode.tsx      # Custom node component
+├── GraphToolbar.tsx       # Toolbar (maintained from previous version)
+└── (Previous custom components are maintained but not used)
+</code></pre>
+<h2>Usage</h2>
+<h3>Basic Usage</h3>
+<ol>
+<li><p><strong>Add Node</strong></p>
+<ul>
+<li>Click &quot;Add Node&quot; in toolbar</li>
+<li>Enter node name and type</li>
+</ul>
+</li>
+<li><p><strong>Move Node</strong></p>
+<ul>
+<li>Drag node to move</li>
+<li>Automatically snaps to grid</li>
+</ul>
+</li>
+<li><p><strong>Create Connection</strong></p>
+<ul>
+<li>Drag from output port to input port</li>
+<li>Type validation automatically performed</li>
+</ul>
+</li>
+<li><p><strong>Pan &amp; Zoom</strong></p>
+<ul>
+<li>Zoom with mouse wheel</li>
+<li>Pan by dragging</li>
+<li>Use Controls panel</li>
+</ul>
+</li>
+<li><p><strong>MiniMap</strong></p>
+<ul>
+<li>MiniMap in bottom left</li>
+<li>Click for quick navigation</li>
+</ul>
+</li>
+</ol>
+<h2>React Flow Advantages</h2>
+<ol>
+<li><p><strong>Performance</strong></p>
+<ul>
+<li>Optimized rendering</li>
+<li>Support for large-scale graphs</li>
+</ul>
+</li>
+<li><p><strong>Features</strong></p>
+<ul>
+<li>Rich built-in features</li>
+<li>Extensible plugins</li>
+</ul>
+</li>
+<li><p><strong>Maintenance</strong></p>
+<ul>
+<li>Proven library</li>
+<li>Active community</li>
+</ul>
+</li>
+<li><p><strong>Accessibility</strong></p>
+<ul>
+<li>Keyboard navigation</li>
+<li>Screen reader support</li>
+</ul>
+</li>
+</ol>
+<h2>Customization</h2>
+<h3>Node Styles</h3>
+<p>Modify custom node styles in <code>ReactFlowNode.tsx</code>:</p>
+<pre><code class="language-typescript">// Change port colors
+const getTypeColor = (typeName: string): string =&gt; {
+  // Custom color logic
+};
+</code></pre>
+<h3>Connection Styles</h3>
+<p>Modify edge styles in <code>ReactFlowCanvas.tsx</code>:</p>
+<pre><code class="language-typescript">const reactFlowEdges = useMemo&lt;Edge[]&gt;(() =&gt; {
+  return storeConnections.map((conn) =&gt; ({
+    // ...
+    style: { stroke: &#39;#3B82F6&#39;, strokeWidth: 2 },
+    type: &#39;smoothstep&#39;, // or &#39;default&#39;, &#39;straight&#39;
+  }));
+}, [storeConnections]);
+</code></pre>
+<h2>Migration Notes</h2>
+<h3>Existing Code Compatibility</h3>
+<ul>
+<li>Maintained existing Zustand store structure</li>
+<li>Compatible with existing saved graph files</li>
+<li>No API changes</li>
+</ul>
+<h3>Removed Features</h3>
+<ul>
+<li>Custom Canvas implementation (replaced with React Flow)</li>
+<li>Manual port position calculation (handled automatically by React Flow)</li>
+<li>Custom connection rendering (using React Flow edges)</li>
+</ul>
+<h3>Enhanced Features</h3>
+<ul>
+<li>Smoother animations</li>
+<li>Better performance</li>
+<li>More built-in features</li>
+</ul>
+<h2>Troubleshooting</h2>
+<h3>Connections Not Created</h3>
+<ul>
+<li>Check if ports are properly rendered as Handles</li>
+<li>Check type compatibility</li>
+<li>Check browser console</li>
+</ul>
+<h3>Nodes Not Visible</h3>
+<ul>
+<li>Check if &#39;custom&#39; type is registered in <code>nodeTypes</code></li>
+<li>Check if wrapped with ReactFlowProvider</li>
+</ul>
+<h3>Viewport Not Saved</h3>
+<ul>
+<li>Check if <code>handleMove</code> callback is working properly</li>
+<li>Check Zustand store updates</li>
+</ul>
+<h2>Next Steps</h2>
+<ol>
+<li><strong>Node Templates</strong>: Load nodes from registry</li>
+<li><strong>Execution Visualization</strong>: Animation during graph execution</li>
+<li><strong>Grouping</strong>: Node grouping functionality</li>
+<li><strong>Real-time Collaboration</strong>: WebSocket integration</li>
+</ol>
+<h2>References</h2>
+<ul>
+<li><a href="https://reactflow.dev/">React Flow Official Documentation</a></li>
+<li><a href="https://reactflow.dev/examples/">React Flow Examples</a></li>
+<li><a href="https://reactflow.dev/api-reference/">React Flow API Reference</a></li>
+</ul>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Graph Execution Phase 3 - Implementation Guide - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" class="active">Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>Live Graph Execution Phase 3 - Implementation Guide</h1>
+<h2>Implementation Overview</h2>
+<p>This document provides detailed implementation steps for Phase 3 features: Incremental Execution and Advanced Visualization.</p>
+<h2>1. Incremental Execution</h2>
+<h3>1.1 Change Detection Service</h3>
+<p><strong>File</strong>: <code>services/changeDetectionService.ts</code></p>
+<pre><code class="language-typescript">import type { GraphDefinition, GraphNode, GraphConnection } from &#39;../src/graph-management/types&#39;;
+
+export interface NodeChange {
+  nodeId: string;
+  type: &#39;added&#39; | &#39;removed&#39; | &#39;modified&#39; | &#39;connection-changed&#39;;
+  affectedNodes: string[];
+  details?: {
+    propertyChanges?: Record&lt;string, { old: unknown; new: unknown }&gt;;
+    connectionChanges?: {
+      added: GraphConnection[];
+      removed: GraphConnection[];
+    };
+  };
+}
+
+export class ChangeDetectionService {
+  /**
+   * Generate hash for a node (node + its dependencies)
+   */
+  private hashNode(node: GraphNode, connections: GraphConnection[]): string {
+    const dependencies = connections
+      .filter(conn =&gt; conn.toNode === node.id)
+      .map(conn =&gt; conn.fromNode)
+      .sort();
+    
+    const nodeData = {
+      id: node.id,
+      type: node.type,
+      properties: node.properties,
+      inputs: node.inputs,
+      outputs: node.outputs,
+      dependencies,
+    };
+    
+    return this.hashString(JSON.stringify(nodeData));
+  }
+
+  /**
+   * Simple hash function
+   */
+  private hashString(str: string): string {
+    let hash = 0;
+    for (let i = 0; i &lt; str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash &lt;&lt; 5) - hash) + char;
+      hash = hash &amp; hash; // Convert to 32bit integer
+    }
+    return hash.toString(36);
+  }
+
+  /**
+   * Detect changes between two graphs
+   */
+  detectChanges(
+    previousGraph: GraphDefinition,
+    currentGraph: GraphDefinition
+  ): NodeChange[] {
+    const changes: NodeChange[] = [];
+    const previousNodes = new Map(previousGraph.data.nodes.map(n =&gt; [n.id, n]));
+    const currentNodes = new Map(currentGraph.data.nodes.map(n =&gt; [n.id, n]));
+    const previousConnections = previousGraph.data.connections;
+    const currentConnections = currentGraph.data.connections;
+
+    // Detect added nodes
+    for (const [nodeId, node] of currentNodes) {
+      if (!previousNodes.has(nodeId)) {
+        changes.push({
+          nodeId,
+          type: &#39;added&#39;,
+          affectedNodes: this.getAffectedNodes(nodeId, currentGraph),
+        });
+      }
+    }
+
+    // Detect removed nodes
+    for (const [nodeId] of previousNodes) {
+      if (!currentNodes.has(nodeId)) {
+        changes.push({
+          nodeId,
+          type: &#39;removed&#39;,
+          affectedNodes: this.getAffectedNodes(nodeId, previousGraph),
+        });
+      }
+    }
+
+    // Detect modified nodes
+    for (const [nodeId, currentNode] of currentNodes) {
+      const previousNode = previousNodes.get(nodeId);
+      if (previousNode) {
+        const nodeChanges = this.detectNodeChanges(previousNode, currentNode);
+        if (nodeChanges.length &gt; 0) {
+          changes.push({
+            nodeId,
+            type: &#39;modified&#39;,
+            affectedNodes: this.getAffectedNodes(nodeId, currentGraph),
+            details: {
+              propertyChanges: nodeChanges.reduce((acc, change) =&gt; {
+                acc[change.property] = { old: change.old, new: change.new };
+                return acc;
+              }, {} as Record&lt;string, { old: unknown; new: unknown }&gt;),
+            },
+          });
+        }
+      }
+    }
+
+    // Detect connection changes
+    const connectionChanges = this.detectConnectionChanges(
+      previousConnections,
+      currentConnections
+    );
+    if (connectionChanges.added.length &gt; 0 || connectionChanges.removed.length &gt; 0) {
+      const affectedNodes = new Set&lt;string&gt;();
+      connectionChanges.added.forEach(conn =&gt; {
+        affectedNodes.add(conn.toNode);
+        affectedNodes.add(conn.fromNode);
+      });
+      connectionChanges.removed.forEach(conn =&gt; {
+        affectedNodes.add(conn.toNode);
+        affectedNodes.add(conn.fromNode);
+      });
+
+      changes.push({
+        nodeId: &#39;connections&#39;,
+        type: &#39;connection-changed&#39;,
+        affectedNodes: Array.from(affectedNodes),
+        details: { connectionChanges },
+      });
+    }
+
+    return changes;
+  }
+
+  /**
+   * Detect changes in a single node
+   */
+  private detectNodeChanges(
+    previous: GraphNode,
+    current: GraphNode
+  ): Array&lt;{ property: string; old: unknown; new: unknown }&gt; {
+    const changes: Array&lt;{ property: string; old: unknown; new: unknown }&gt; = [];
+
+    // Check type
+    if (previous.type !== current.type) {
+      changes.push({ property: &#39;type&#39;, old: previous.type, new: current.type });
+    }
+
+    // Check properties
+    const prevProps = JSON.stringify(previous.properties || {});
+    const currProps = JSON.stringify(current.properties || {});
+    if (prevProps !== currProps) {
+      changes.push({ property: &#39;properties&#39;, old: previous.properties, new: current.properties });
+    }
+
+    // Check inputs/outputs (simplified - could be more detailed)
+    if (JSON.stringify(previous.inputs) !== JSON.stringify(current.inputs)) {
+      changes.push({ property: &#39;inputs&#39;, old: previous.inputs, new: current.inputs });
+    }
+    if (JSON.stringify(previous.outputs) !== JSON.stringify(current.outputs)) {
+      changes.push({ property: &#39;outputs&#39;, old: previous.outputs, new: current.outputs });
+    }
+
+    return changes;
+  }
+
+  /**
+   * Detect connection changes
+   */
+  private detectConnectionChanges(
+    previous: GraphConnection[],
+    current: GraphConnection[]
+  ): { added: GraphConnection[]; removed: GraphConnection[] } {
+    const prevSet = new Set(previous.map(c =&gt; `${c.fromNode}:${c.fromPort}:${c.toNode}:${c.toPort}`));
+    const currSet = new Set(current.map(c =&gt; `${c.fromNode}:${c.fromPort}:${c.toNode}:${c.toPort}`));
+
+    const added = current.filter(c =&gt; {
+      const key = `${c.fromNode}:${c.fromPort}:${c.toNode}:${c.toPort}`;
+      return !prevSet.has(key);
+    });
+
+    const removed = previous.filter(c =&gt; {
+      const key = `${c.fromNode}:${c.fromPort}:${c.toNode}:${c.toPort}`;
+      return !currSet.has(key);
+    });
+
+    return { added, removed };
+  }
+
+  /**
+   * Get nodes affected by a change (downstream nodes)
+   */
+  private getAffectedNodes(nodeId: string, graph: GraphDefinition): string[] {
+    const affected = new Set&lt;string&gt;();
+    const visited = new Set&lt;string&gt;();
+
+    const traverse = (id: string) =&gt; {
+      if (visited.has(id)) return;
+      visited.add(id);
+      affected.add(id);
+
+      // Find all nodes that depend on this node
+      graph.data.connections
+        .filter(conn =&gt; conn.fromNode === id)
+        .forEach(conn =&gt; {
+          traverse(conn.toNode);
+        });
+    };
+
+    traverse(nodeId);
+    affected.delete(nodeId); // Don&#39;t include the changed node itself
+    return Array.from(affected);
+  }
+
+  /**
+   * Get subgraph that needs to be executed
+   */
+  getAffectedSubgraph(
+    changes: NodeChange[],
+    graph: GraphDefinition
+  ): GraphDefinition {
+    const affectedNodeIds = new Set&lt;string&gt;();
+
+    // Add all changed nodes
+    changes.forEach(change =&gt; {
+      if (change.type !== &#39;removed&#39;) {
+        affectedNodeIds.add(change.nodeId);
+      }
+      change.affectedNodes.forEach(id =&gt; affectedNodeIds.add(id));
+    });
+
+    // Get all affected nodes
+    const affectedNodes = graph.data.nodes.filter(n =&gt; affectedNodeIds.has(n.id));
+
+    // Get all connections between affected nodes
+    const affectedConnections = graph.data.connections.filter(
+      conn =&gt; affectedNodeIds.has(conn.fromNode) &amp;&amp; affectedNodeIds.has(conn.toNode)
+    );
+
+    return {
+      ...graph,
+      data: {
+        ...graph.data,
+        nodes: affectedNodes,
+        connections: affectedConnections,
+      },
+    };
+  }
+}
+
+export const changeDetectionService = new ChangeDetectionService();
+</code></pre>
+<h3>1.2 Result Cache Service</h3>
+<p><strong>File</strong>: <code>services/resultCacheService.ts</code></p>
+<pre><code class="language-typescript">import type { ExecutionResult } from &#39;../src/types&#39;;
+
+export interface CachedResult {
+  nodeId: string;
+  result: ExecutionResult;
+  graphHash: string;
+  timestamp: number;
+  ttl?: number;
+}
+
+export class ResultCacheService {
+  private cache: Map&lt;string, CachedResult&gt; = new Map();
+  private defaultTTL = 5 * 60 * 1000; // 5 minutes
+
+  /**
+   * Generate cache key
+   */
+  private getCacheKey(nodeId: string, graphHash: string): string {
+    return `${nodeId}:${graphHash}`;
+  }
+
+  /**
+   * Get cached result
+   */
+  get(nodeId: string, graphHash: string): CachedResult | null {
+    const key = this.getCacheKey(nodeId, graphHash);
+    const cached = this.cache.get(key);
+
+    if (!cached) {
+      return null;
+    }
+
+    // Check TTL
+    const ttl = cached.ttl || this.defaultTTL;
+    if (Date.now() - cached.timestamp &gt; ttl) {
+      this.cache.delete(key);
+      return null;
+    }
+
+    return cached;
+  }
+
+  /**
+   * Set cached result
+   */
+  set(nodeId: string, result: ExecutionResult, graphHash: string, ttl?: number): void {
+    const key = this.getCacheKey(nodeId, graphHash);
+    this.cache.set(key, {
+      nodeId,
+      result,
+      graphHash,
+      timestamp: Date.now(),
+      ttl,
+    });
+  }
+
+  /**
+   * Invalidate cache for a node
+   */
+  invalidate(nodeId: string): void {
+    const keysToDelete: string[] = [];
+    this.cache.forEach((cached, key) =&gt; {
+      if (cached.nodeId === nodeId) {
+        keysToDelete.push(key);
+      }
+    });
+    keysToDelete.forEach(key =&gt; this.cache.delete(key));
+  }
+
+  /**
+   * Clear all cache
+   */
+  clear(): void {
+    this.cache.clear();
+  }
+
+  /**
+   * Get cache statistics
+   */
+  getStats(): { size: number; hitRate: number } {
+    return {
+      size: this.cache.size,
+      hitRate: 0, // Would need to track hits/misses
+    };
+  }
+}
+
+export const resultCacheService = new ResultCacheService();
+</code></pre>
+<h3>1.3 Incremental Execution Service</h3>
+<p><strong>File</strong>: <code>services/incrementalExecutionService.ts</code></p>
+<pre><code class="language-typescript">import { graphExecutionService } from &#39;./graphExecutionService&#39;;
+import { changeDetectionService } from &#39;./changeDetectionService&#39;;
+import { resultCacheService } from &#39;./resultCacheService&#39;;
+import type { GraphDefinition, ExecutionResponse } from &#39;../src/graph-management/types&#39;;
+
+export interface IncrementalExecutionOptions {
+  useCache?: boolean;
+  cacheTTL?: number;
+  parallel?: boolean;
+}
+
+export class IncrementalExecutionService {
+  /**
+   * Execute graph incrementally
+   */
+  async executeIncremental(
+    graph: GraphDefinition,
+    previousGraph?: GraphDefinition,
+    previousResults?: Record&lt;string, ExecutionResult&gt;,
+    inputs?: Record&lt;string, Record&lt;string, unknown&gt;&gt;,
+    options: IncrementalExecutionOptions = {}
+  ): Promise&lt;ExecutionResponse &amp; { cachedNodes: string[]; executedNodes: string[]; cacheHitRate: number }&gt; {
+    const {
+      useCache = true,
+      cacheTTL,
+      parallel = false,
+    } = options;
+
+    const cachedNodes: string[] = [];
+    const executedNodes: string[] = [];
+    let cacheHits = 0;
+    let cacheMisses = 0;
+
+    // Detect changes if previous graph provided
+    let changes: NodeChange[] = [];
+    let affectedSubgraph: GraphDefinition | null = null;
+
+    if (previousGraph) {
+      changes = changeDetectionService.detectChanges(previousGraph, graph);
+      affectedSubgraph = changeDetectionService.getAffectedSubgraph(changes, graph);
+    }
+
+    // If no changes or no previous graph, execute full graph
+    if (!previousGraph || changes.length === 0) {
+      const result = await graphExecutionService.executeGraph(graph, inputs, { parallel });
+      return {
+        ...result,
+        cachedNodes: [],
+        executedNodes: graph.data.nodes.map(n =&gt; n.id),
+        cacheHitRate: 0,
+      };
+    }
+
+    // Generate hash for each node
+    const nodeHashes = new Map&lt;string, string&gt;();
+    graph.data.nodes.forEach(node =&gt; {
+      const hash = this.hashNode(node, graph.data.connections);
+      nodeHashes.set(node.id, hash);
+    });
+
+    // Check cache for unchanged nodes
+    const nodesToExecute: string[] = [];
+    const cachedResults: Record&lt;string, ExecutionResult&gt; = {};
+
+    affectedSubgraph!.data.nodes.forEach(node =&gt; {
+      const hash = nodeHashes.get(node.id)!;
+      const cached = useCache ? resultCacheService.get(node.id, hash) : null;
+
+      if (cached) {
+        cachedNodes.push(node.id);
+        cachedResults[node.id] = cached.result;
+        cacheHits++;
+      } else {
+        nodesToExecute.push(node.id);
+        cacheMisses++;
+      }
+    });
+
+    // Execute only changed/affected nodes
+    if (nodesToExecute.length &gt; 0) {
+      const nodesToExecuteSet = new Set(nodesToExecute);
+      const subgraph: GraphDefinition = {
+        ...graph,
+        data: {
+          ...graph.data,
+          nodes: graph.data.nodes.filter(n =&gt; nodesToExecuteSet.has(n.id)),
+          connections: graph.data.connections.filter(
+            c =&gt; nodesToExecuteSet.has(c.fromNode) &amp;&amp; nodesToExecuteSet.has(c.toNode)
+          ),
+        },
+      };
+
+      const executionResult = await graphExecutionService.executeGraph(subgraph, inputs, { parallel });
+      executedNodes.push(...nodesToExecute);
+
+      // Cache results
+      if (useCache) {
+        nodesToExecute.forEach(nodeId =&gt; {
+          const hash = nodeHashes.get(nodeId)!;
+          const result = executionResult.results?.[nodeId];
+          if (result) {
+            resultCacheService.set(nodeId, result, hash, cacheTTL);
+            cachedResults[nodeId] = result;
+          }
+        });
+      }
+    }
+
+    const cacheHitRate = cacheHits + cacheMisses &gt; 0
+      ? cacheHits / (cacheHits + cacheMisses)
+      : 0;
+
+    return {
+      success: true,
+      results: cachedResults,
+      executionTime: 0, // Would need to calculate
+      logs: [`Executed ${executedNodes.length} nodes, used cache for ${cachedNodes.length} nodes`],
+      cachedNodes,
+      executedNodes,
+      cacheHitRate,
+    };
+  }
+
+  /**
+   * Hash a node (simplified version)
+   */
+  private hashNode(node: GraphNode, connections: GraphConnection[]): string {
+    const dependencies = connections
+      .filter(conn =&gt; conn.toNode === node.id)
+      .map(conn =&gt; `${conn.fromNode}:${conn.fromPort}`)
+      .sort()
+      .join(&#39;,&#39;);
+
+    const nodeData = {
+      id: node.id,
+      type: node.type,
+      properties: JSON.stringify(node.properties || {}),
+      inputs: JSON.stringify(node.inputs),
+      outputs: JSON.stringify(node.outputs),
+      dependencies,
+    };
+
+    return this.hashString(JSON.stringify(nodeData));
+  }
+
+  /**
+   * Simple hash function
+   */
+  private hashString(str: string): string {
+    let hash = 0;
+    for (let i = 0; i &lt; str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash &lt;&lt; 5) - hash) + char;
+      hash = hash &amp; hash;
+    }
+    return hash.toString(36);
+  }
+}
+
+export const incrementalExecutionService = new IncrementalExecutionService();
+</code></pre>
+<h2>2. Advanced Visualization</h2>
+<h3>2.1 Execution Timeline Component</h3>
+<p><strong>File</strong>: <code>components/graph/ExecutionTimeline.tsx</code></p>
+<pre><code class="language-typescript">&#39;use client&#39;;
+
+import { useMemo } from &#39;react&#39;;
+import { useGraphStore } from &#39;../../store/graphStore&#39;;
+
+interface TimelineEvent {
+  nodeId: string;
+  nodeName: string;
+  startTime: number;
+  endTime: number;
+  duration: number;
+  status: &#39;completed&#39; | &#39;failed&#39;;
+  dependencies: string[];
+}
+
+export default function ExecutionTimeline() {
+  const { execution, nodes } = useGraphStore();
+
+  const timelineEvents = useMemo&lt;TimelineEvent[]&gt;(() =&gt; {
+    const events: TimelineEvent[] = [];
+
+    nodes.forEach(node =&gt; {
+      const nodeState = execution.nodeStates[node.id];
+      if (nodeState &amp;&amp; nodeState.startTime &amp;&amp; nodeState.endTime) {
+        events.push({
+          nodeId: node.id,
+          nodeName: node.name,
+          startTime: nodeState.startTime,
+          endTime: nodeState.endTime,
+          duration: (nodeState.endTime - nodeState.startTime),
+          status: nodeState.status === &#39;completed&#39; ? &#39;completed&#39; : &#39;failed&#39;,
+          dependencies: [], // Would need to calculate from connections
+        });
+      }
+    });
+
+    return events.sort((a, b) =&gt; a.startTime - b.startTime);
+  }, [execution.nodeStates, nodes]);
+
+  if (timelineEvents.length === 0) {
+    return (
+      &lt;div className=&quot;p-4 text-sm text-gray-500&quot;&gt;
+        No execution timeline available
+      &lt;/div&gt;
+    );
+  }
+
+  const minTime = Math.min(...timelineEvents.map(e =&gt; e.startTime));
+  const maxTime = Math.max(...timelineEvents.map(e =&gt; e.endTime));
+  const totalDuration = maxTime - minTime;
+
+  return (
+    &lt;div className=&quot;p-4&quot;&gt;
+      &lt;h3 className=&quot;text-sm font-semibold mb-4&quot;&gt;Execution Timeline&lt;/h3&gt;
+      &lt;div className=&quot;space-y-2&quot;&gt;
+        {timelineEvents.map(event =&gt; {
+          const left = ((event.startTime - minTime) / totalDuration) * 100;
+          const width = (event.duration / totalDuration) * 100;
+
+          return (
+            &lt;div key={event.nodeId} className=&quot;relative h-8&quot;&gt;
+              &lt;div
+                className={`absolute h-full ${
+                  event.status === &#39;completed&#39; ? &#39;bg-green-500&#39; : &#39;bg-red-500&#39;
+                } text-white text-xs flex items-center px-2`}
+                style={{
+                  left: `${left}%`,
+                  width: `${width}%`,
+                  minWidth: &#39;50px&#39;,
+                }}
+                title={`${event.nodeName}: ${event.duration}ms`}
+              &gt;
+                {event.nodeName}
+              &lt;/div&gt;
+            &lt;/div&gt;
+          );
+        })}
+      &lt;/div&gt;
+      &lt;div className=&quot;mt-4 text-xs text-gray-500&quot;&gt;
+        Total Duration: {totalDuration}ms
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h3>2.2 Performance Metrics Component</h3>
+<p><strong>File</strong>: <code>components/graph/PerformanceMetrics.tsx</code></p>
+<pre><code class="language-typescript">&#39;use client&#39;;
+
+import { useGraphStore } from &#39;../../store/graphStore&#39;;
+
+export default function PerformanceMetrics() {
+  const { performanceMetrics } = useGraphStore();
+
+  if (!performanceMetrics || Object.keys(performanceMetrics.nodes).length === 0) {
+    return (
+      &lt;div className=&quot;p-4 text-sm text-gray-500&quot;&gt;
+        No performance metrics available
+      &lt;/div&gt;
+    );
+  }
+
+  return (
+    &lt;div className=&quot;p-4&quot;&gt;
+      &lt;h3 className=&quot;text-sm font-semibold mb-4&quot;&gt;Performance Metrics&lt;/h3&gt;
+      &lt;div className=&quot;overflow-x-auto&quot;&gt;
+        &lt;table className=&quot;w-full text-xs&quot;&gt;
+          &lt;thead&gt;
+            &lt;tr className=&quot;border-b border-gray-200&quot;&gt;
+              &lt;th className=&quot;text-left p-2&quot;&gt;Node&lt;/th&gt;
+              &lt;th className=&quot;text-right p-2&quot;&gt;Executions&lt;/th&gt;
+              &lt;th className=&quot;text-right p-2&quot;&gt;Avg Time&lt;/th&gt;
+              &lt;th className=&quot;text-right p-2&quot;&gt;Min Time&lt;/th&gt;
+              &lt;th className=&quot;text-right p-2&quot;&gt;Max Time&lt;/th&gt;
+              &lt;th className=&quot;text-right p-2&quot;&gt;Success Rate&lt;/th&gt;
+            &lt;/tr&gt;
+          &lt;/thead&gt;
+          &lt;tbody&gt;
+            {Object.entries(performanceMetrics.nodes).map(([nodeId, metrics]) =&gt; (
+              &lt;tr key={nodeId} className=&quot;border-b border-gray-100&quot;&gt;
+                &lt;td className=&quot;p-2 font-medium&quot;&gt;{metrics.nodeName}&lt;/td&gt;
+                &lt;td className=&quot;p-2 text-right&quot;&gt;{metrics.executionCount}&lt;/td&gt;
+                &lt;td className=&quot;p-2 text-right&quot;&gt;{metrics.averageExecutionTime.toFixed(2)}ms&lt;/td&gt;
+                &lt;td className=&quot;p-2 text-right&quot;&gt;{metrics.minExecutionTime}ms&lt;/td&gt;
+                &lt;td className=&quot;p-2 text-right&quot;&gt;{metrics.maxExecutionTime}ms&lt;/td&gt;
+                &lt;td className=&quot;p-2 text-right&quot;&gt;
+                  {(metrics.successRate * 100).toFixed(1)}%
+                &lt;/td&gt;
+              &lt;/tr&gt;
+            ))}
+          &lt;/tbody&gt;
+        &lt;/table&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h2>Integration</h2>
+<h3>Update Graph Store</h3>
+<p>Add to <code>store/graphStore.ts</code>:</p>
+<pre><code class="language-typescript">// Add to GraphState interface
+interface GraphState {
+  // ... existing
+  
+  // Incremental execution
+  previousGraphHash: string | null;
+  cachedResults: Record&lt;string, CachedResult&gt;;
+  
+  // Performance metrics
+  performanceMetrics: GraphPerformanceMetrics;
+  
+  // Visualization
+  executionTimeline: ExecutionTimeline | null;
+  
+  // Actions
+  setCachedResult: (nodeId: string, result: ExecutionResult, hash: string) =&gt; void;
+  getCachedResult: (nodeId: string, hash: string) =&gt; CachedResult | null;
+  updatePerformanceMetrics: (nodeId: string, metrics: Partial&lt;NodePerformanceMetrics&gt;) =&gt; void;
+  setExecutionTimeline: (timeline: ExecutionTimeline) =&gt; void;
+}
+</code></pre>
+<h3>Update ExecutionToolbar</h3>
+<p>Add incremental execution option and visualization toggles.</p>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

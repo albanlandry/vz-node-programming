@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Library - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" class="active">Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>Node Library</h1>
+<h2>Overview</h2>
+<p>The Node library of VZ Programming provides the <code>BaseNode</code> abstract class that serves as the foundation for all nodes. This document provides a detailed explanation of how nodes work, available methods and properties, and how to create custom nodes.</p>
+<h2>BaseNode Class</h2>
+<p><code>BaseNode</code> is an abstract base class that all nodes must extend. This class provides common functionality for node execution and implements the <code>INode</code> interface.</p>
+<h3>Class Definition</h3>
+<pre><code class="language-typescript">export abstract class BaseNode implements INode {
+  public readonly id: NodeId;
+  public readonly name: string;
+  public readonly description?: string;
+  public readonly inputs: Port[];
+  public readonly outputs: Port[];
+  protected properties: Map&lt;string, unknown&gt; = new Map();
+  private lifecycleHooks?: NodeLifecycleHooks;
+  private initialized: boolean = false;
+  private resources: Set&lt;{ cleanup: () =&gt; Promise&lt;void&gt; | void }&gt; = new Set();
+}
+</code></pre>
+<h2>Properties</h2>
+<h3>Public Properties</h3>
+<h4><code>id: NodeId</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>string</code></li>
+<li><strong>Description</strong>: Unique identifier for the node</li>
+<li><strong>Characteristics</strong>: Read-only, automatically generated or provided in constructor</li>
+</ul>
+<h4><code>name: string</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>string</code></li>
+<li><strong>Description</strong>: Name of the node</li>
+<li><strong>Characteristics</strong>: Read-only, set in constructor</li>
+</ul>
+<h4><code>description?: string</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>string | undefined</code></li>
+<li><strong>Description</strong>: Description of the node</li>
+<li><strong>Characteristics</strong>: Optional property</li>
+</ul>
+<h4><code>inputs: Port[]</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>Port[]</code></li>
+<li><strong>Description</strong>: Array of input ports for the node</li>
+<li><strong>Characteristics</strong>: Read-only, set in constructor</li>
+</ul>
+<h4><code>outputs: Port[]</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>Port[]</code></li>
+<li><strong>Description</strong>: Array of output ports for the node</li>
+<li><strong>Characteristics</strong>: Read-only, set in constructor</li>
+</ul>
+<h3>Protected Properties</h3>
+<h4><code>properties: Map&lt;string, unknown&gt;</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>Map&lt;string, unknown&gt;</code></li>
+<li><strong>Description</strong>: Storage for node properties</li>
+<li><strong>Usage</strong>: Accessed via <code>setProperty()</code> and <code>getProperty()</code> methods</li>
+</ul>
+<h3>Private Properties</h3>
+<h4><code>lifecycleHooks?: NodeLifecycleHooks</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>NodeLifecycleHooks | undefined</code></li>
+<li><strong>Description</strong>: Node lifecycle hooks</li>
+<li><strong>Characteristics</strong>: Optional property, set in constructor</li>
+</ul>
+<h4><code>initialized: boolean</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>boolean</code></li>
+<li><strong>Description</strong>: Whether the node is initialized</li>
+<li><strong>Characteristics</strong>: Internal state management</li>
+</ul>
+<h4><code>resources: Set&lt;{ cleanup: () =&gt; Promise&lt;void&gt; | void }&gt;</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>Set&lt;{ cleanup: () =&gt; Promise&lt;void&gt; | void }&gt;</code></li>
+<li><strong>Description</strong>: Set of resources that need cleanup</li>
+<li><strong>Usage</strong>: Managed via <code>registerResource()</code> and <code>unregisterResource()</code> methods</li>
+</ul>
+<h2>Methods</h2>
+<h3>Public Methods</h3>
+<h4><code>execute(context: ExecutionContext): Promise&lt;ExecutionResult&gt;</code></h4>
+<p>The main method for executing a node.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>context: ExecutionContext</code> - Execution context</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Promise&lt;ExecutionResult&gt;</code> - Execution result</li>
+</ul>
+<p><strong>Execution Flow:</strong></p>
+<ol>
+<li>Node initialization (executed once)</li>
+<li>Cancellation signal check</li>
+<li><code>onBeforeExecute</code> hook execution</li>
+<li>Input validation</li>
+<li><code>executeInternal()</code> execution (with timeout support)</li>
+<li>Output validation</li>
+<li><code>onAfterExecute</code> hook execution</li>
+<li>Return result</li>
+</ol>
+<p><strong>Error Handling:</strong></p>
+<ul>
+<li>On error, <code>onError</code> hook is executed</li>
+<li>Error is wrapped in <code>NodeError</code> and returned</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">const context: ExecutionContext = {
+  executionId: &#39;exec-123&#39;,
+  inputs: new Map([[&#39;input1&#39;, &#39;value1&#39;]]),
+  outputs: new Map(),
+  metadata: new Map()
+};
+
+const result = await node.execute(context);
+if (result.success) {
+  console.log(&#39;Outputs:&#39;, result.outputs);
+} else {
+  console.error(&#39;Error:&#39;, result.error);
+}
+</code></pre>
+<h4><code>validate(): boolean</code></h4>
+<p>Validates that the node configuration is correct.</p>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>boolean</code> - Validation success status</li>
+</ul>
+<p><strong>Validation Items:</strong></p>
+<ul>
+<li>Check for duplicate port IDs</li>
+<li>Check required fields for each port (id, name, dataType)</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">if (node.validate()) {
+  console.log(&#39;Node is valid&#39;);
+} else {
+  console.error(&#39;Node validation failed&#39;);
+}
+</code></pre>
+<h4><code>cleanup(): Promise&lt;void&gt;</code></h4>
+<p>Cleans up all resources for the node.</p>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Promise&lt;void&gt;</code></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Calls <code>cleanup()</code> method for all registered resources</li>
+<li>Executes <code>onCleanup</code> hook</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">await node.cleanup();
+</code></pre>
+<h4><code>isInitialized(): boolean</code></h4>
+<p>Checks if the node is initialized.</p>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>boolean</code> - Initialization status</li>
+</ul>
+<h4><code>setProperty(key: string, value: unknown): void</code></h4>
+<p>Sets a node property.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>key: string</code> - Property key</li>
+<li><code>value: unknown</code> - Property value</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">node.setProperty(&#39;config&#39;, { timeout: 5000 });
+</code></pre>
+<h4><code>getProperty&lt;T = unknown&gt;(key: string): T | undefined</code></h4>
+<p>Gets a node property.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>key: string</code> - Property key</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>T | undefined</code> - Property value or undefined</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">const config = node.getProperty&lt;{ timeout: number }&gt;(&#39;config&#39;);
+</code></pre>
+<h4><code>getProperties(): Record&lt;string, unknown&gt;</code></h4>
+<p>Gets all node properties.</p>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Record&lt;string, unknown&gt;</code> - Object containing all properties</li>
+</ul>
+<h3>Protected Methods</h3>
+<h4><code>executeInternal(context: ExecutionContext): Promise&lt;Map&lt;PortId, unknown&gt;&gt;</code></h4>
+<p><strong>Abstract method</strong> - Must be implemented by subclasses.</p>
+<p>Executes the actual logic of the node.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>context: ExecutionContext</code> - Execution context</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Promise&lt;Map&lt;PortId, unknown&gt;&gt;</code> - Map of output port IDs and values</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">protected async executeInternal(context: ExecutionContext): Promise&lt;Map&lt;PortId, unknown&gt;&gt; {
+  const outputs = new Map&lt;PortId, unknown&gt;();
+  const inputValue = this.getInput&lt;string&gt;(context, &#39;input1&#39;);
+  const result = inputValue.toUpperCase();
+  outputs.set(&#39;output1&#39;, result);
+  return outputs;
+}
+</code></pre>
+<h4><code>validateInputs(inputs: Map&lt;PortId, unknown&gt;): void</code></h4>
+<p>Validates input values against port definitions.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>inputs: Map&lt;PortId, unknown&gt;</code> - Map of input values</li>
+</ul>
+<p><strong>Validation Items:</strong></p>
+<ul>
+<li>Check for required input ports</li>
+<li>Validate data types (if validator is available)</li>
+</ul>
+<p><strong>Errors:</strong></p>
+<ul>
+<li>Throws <code>NodeError</code> if required input is missing</li>
+<li>Throws <code>NodeError</code> if type doesn&#39;t match</li>
+</ul>
+<h4><code>validateOutputs(outputs: Map&lt;PortId, unknown&gt;): void</code></h4>
+<p>Validates output values against port definitions.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>outputs: Map&lt;PortId, unknown&gt;</code> - Map of output values</li>
+</ul>
+<p><strong>Validation Items:</strong></p>
+<ul>
+<li>Validate data types (if validator is available)</li>
+</ul>
+<h4><code>getInput&lt;T&gt;(context: ExecutionContext, portId: PortId): T | undefined</code></h4>
+<p>Gets an input value in a type-safe manner.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>context: ExecutionContext</code> - Execution context</li>
+<li><code>portId: PortId</code> - Port ID</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>T | undefined</code> - Input value or undefined</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">const value = this.getInput&lt;string&gt;(context, &#39;message&#39;);
+if (value) {
+  console.log(value.toUpperCase());
+}
+</code></pre>
+<h4><code>setOutput(outputs: Map&lt;PortId, unknown&gt;, portId: PortId, value: unknown): void</code></h4>
+<p>Sets an output value.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>outputs: Map&lt;PortId, unknown&gt;</code> - Output map</li>
+<li><code>portId: PortId</code> - Port ID</li>
+<li><code>value: unknown</code> - Output value</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">const outputs = new Map&lt;PortId, unknown&gt;();
+this.setOutput(outputs, &#39;result&#39;, 42);
+</code></pre>
+<h4><code>createPort(id: PortId, name: string, dataType: DataType, required?: boolean, description?: string): Port</code></h4>
+<p>Helper method to create a port.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id: PortId</code> - Port ID</li>
+<li><code>name: string</code> - Port name</li>
+<li><code>dataType: DataType</code> - Data type</li>
+<li><code>required?: boolean</code> - Required flag (default: false)</li>
+<li><code>description?: string</code> - Description</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Port</code> - Created port object</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">const inputPort = this.createPort(
+  &#39;value&#39;,
+  &#39;Value&#39;,
+  DataTypes.NUMBER,
+  true,
+  &#39;Input value to process&#39;
+);
+</code></pre>
+<h4><code>registerResource(resource: { cleanup: () =&gt; Promise&lt;void&gt; | void }): void</code></h4>
+<p>Registers a resource that needs cleanup.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>resource: { cleanup: () =&gt; Promise&lt;void&gt; | void }</code> - Resource object</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">const subscription = eventEmitter.subscribe(() =&gt; {});
+this.registerResource({
+  cleanup: async () =&gt; {
+    subscription.unsubscribe();
+  }
+});
+</code></pre>
+<h4><code>unregisterResource(resource: { cleanup: () =&gt; Promise&lt;void&gt; | void }): void</code></h4>
+<p>Unregisters a resource.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>resource: { cleanup: () =&gt; Promise&lt;void&gt; | void }</code> - Resource object</li>
+</ul>
+<h2>Lifecycle Hooks</h2>
+<p>Nodes support the following lifecycle hooks:</p>
+<h3><code>onInitialize?: () =&gt; Promise&lt;void&gt; | void</code></h3>
+<p>Called once when the node is first executed. Used for resource initialization.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">const node = new MyNode({
+  name: &#39;My Node&#39;,
+  lifecycleHooks: {
+    onInitialize: async () =&gt; {
+      await initializeDatabase();
+    }
+  }
+});
+</code></pre>
+<h3><code>onBeforeExecute?: (context: ExecutionContext) =&gt; Promise&lt;void&gt; | void</code></h3>
+<p>Called before each execution. Used for pre-execution validation or setup.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">onBeforeExecute: async (context) =&gt; {
+  if (!context.inputs.has(&#39;requiredInput&#39;)) {
+    throw new Error(&#39;Required input missing&#39;);
+  }
+}
+</code></pre>
+<h3><code>onAfterExecute?: (context: ExecutionContext, result: ExecutionResult) =&gt; Promise&lt;void&gt; | void</code></h3>
+<p>Called after successful execution. Used for logging or post-processing.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">onAfterExecute: async (context, result) =&gt; {
+  logger.info(`Node executed in ${result.executionTime}ms`);
+}
+</code></pre>
+<h3><code>onError?: (context: ExecutionContext, error: NodeError) =&gt; Promise&lt;void&gt; | void</code></h3>
+<p>Called when an error occurs. Used for error handling or recovery.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">onError: async (context, error) =&gt; {
+  await sendErrorReport(error);
+}
+</code></pre>
+<h3><code>onCleanup?: () =&gt; Promise&lt;void&gt; | void</code></h3>
+<p>Called when the node is being cleaned up. Used for resource release.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">onCleanup: async () =&gt; {
+  await closeDatabaseConnection();
+}
+</code></pre>
+<h2>Creating Custom Nodes</h2>
+<h3>1. Basic Custom Node</h3>
+<p>The simplest way to create a custom node:</p>
+<pre><code class="language-typescript">import { BaseNode, DataTypes, ExecutionContext, PortId } from &#39;./src/index&#39;;
+
+export class MyCustomNode extends BaseNode {
+  constructor() {
+    super({
+      name: &#39;My Custom Node&#39;,
+      description: &#39;A simple custom node&#39;,
+      inputs: [
+        {
+          id: &#39;input1&#39;,
+          name: &#39;Input 1&#39;,
+          dataType: DataTypes.STRING,
+          required: true
+        }
+      ],
+      outputs: [
+        {
+          id: &#39;output1&#39;,
+          name: &#39;Output 1&#39;,
+          dataType: DataTypes.STRING
+        }
+      ]
+    });
+  }
+
+  protected async executeInternal(context: ExecutionContext): Promise&lt;Map&lt;PortId, unknown&gt;&gt; {
+    const outputs = new Map&lt;PortId, unknown&gt;();
+    
+    // Get input value
+    const input1 = this.getInput&lt;string&gt;(context, &#39;input1&#39;);
+    
+    // Execute logic
+    const result = input1 ? input1.toUpperCase() : &#39;&#39;;
+    
+    // Set output value
+    outputs.set(&#39;output1&#39;, result);
+    
+    return outputs;
+  }
+}
+</code></pre>
+<h3>2. Node with Properties</h3>
+<p>Using node properties to store and use configuration:</p>
+<pre><code class="language-typescript">export class ConfigurableNode extends BaseNode {
+  constructor(config?: { multiplier?: number }) {
+    super({
+      name: &#39;Configurable Node&#39;,
+      inputs: [
+        { id: &#39;value&#39;, name: &#39;Value&#39;, dataType: DataTypes.NUMBER, required: true }
+      ],
+      outputs: [
+        { id: &#39;result&#39;, name: &#39;Result&#39;, dataType: DataTypes.NUMBER }
+      ]
+    });
+    
+    // Set property
+    this.setProperty(&#39;multiplier&#39;, config?.multiplier ?? 2);
+  }
+
+  protected async executeInternal(context: ExecutionContext): Promise&lt;Map&lt;PortId, unknown&gt;&gt; {
+    const outputs = new Map&lt;PortId, unknown&gt;();
+    const value = this.getInput&lt;number&gt;(context, &#39;value&#39;);
+    const multiplier = this.getProperty&lt;number&gt;(&#39;multiplier&#39;) ?? 2;
+    
+    outputs.set(&#39;result&#39;, (value ?? 0) * multiplier);
+    return outputs;
+  }
+}
+</code></pre>
+<h3>3. Node with Lifecycle Hooks</h3>
+<p>Node requiring resource management:</p>
+<pre><code class="language-typescript">export class ResourceNode extends BaseNode {
+  private connection?: DatabaseConnection;
+
+  constructor() {
+    super({
+      name: &#39;Resource Node&#39;,
+      inputs: [],
+      outputs: [
+        { id: &#39;status&#39;, name: &#39;Status&#39;, dataType: DataTypes.STRING }
+      ],
+      lifecycleHooks: {
+        onInitialize: async () =&gt; {
+          this.connection = await connectToDatabase();
+        },
+        onCleanup: async () =&gt; {
+          if (this.connection) {
+            await this.connection.close();
+          }
+        }
+      }
+    });
+  }
+
+  protected async executeInternal(context: ExecutionContext): Promise&lt;Map&lt;PortId, unknown&gt;&gt; {
+    const outputs = new Map&lt;PortId, unknown&gt;();
+    const status = this.connection ? &#39;connected&#39; : &#39;disconnected&#39;;
+    outputs.set(&#39;status&#39;, status);
+    return outputs;
+  }
+}
+</code></pre>
+<h3>4. Node with Error Handling</h3>
+<p>Node including error handling:</p>
+<pre><code class="language-typescript">export class SafeNode extends BaseNode {
+  constructor() {
+    super({
+      name: &#39;Safe Node&#39;,
+      inputs: [
+        { id: &#39;data&#39;, name: &#39;Data&#39;, dataType: DataTypes.ANY, required: true }
+      ],
+      outputs: [
+        { id: &#39;result&#39;, name: &#39;Result&#39;, dataType: DataTypes.ANY },
+        { id: &#39;error&#39;, name: &#39;Error&#39;, dataType: DataTypes.STRING }
+      ],
+      lifecycleHooks: {
+        onError: async (context, error) =&gt; {
+          // Pass error to output port
+          const outputs = new Map&lt;PortId, unknown&gt;();
+          outputs.set(&#39;error&#39;, error.message);
+          context.outputs = outputs;
+        }
+      }
+    });
+  }
+
+  protected async executeInternal(context: ExecutionContext): Promise&lt;Map&lt;PortId, unknown&gt;&gt; {
+    const outputs = new Map&lt;PortId, unknown&gt;();
+    
+    try {
+      const data = this.getInput(context, &#39;data&#39;);
+      // Perform risky operation
+      const result = processData(data);
+      outputs.set(&#39;result&#39;, result);
+    } catch (error) {
+      // Pass error to output
+      outputs.set(&#39;error&#39;, error instanceof Error ? error.message : String(error));
+    }
+    
+    return outputs;
+  }
+}
+</code></pre>
+<h3>5. Node with Async Operations</h3>
+<p>Node performing asynchronous operations:</p>
+<pre><code class="language-typescript">export class AsyncNode extends BaseNode {
+  constructor() {
+    super({
+      name: &#39;Async Node&#39;,
+      inputs: [
+        { id: &#39;url&#39;, name: &#39;URL&#39;, dataType: DataTypes.STRING, required: true }
+      ],
+      outputs: [
+        { id: &#39;response&#39;, name: &#39;Response&#39;, dataType: DataTypes.OBJECT },
+        { id: &#39;status&#39;, name: &#39;Status&#39;, dataType: DataTypes.NUMBER }
+      ]
+    });
+  }
+
+  protected async executeInternal(context: ExecutionContext): Promise&lt;Map&lt;PortId, unknown&gt;&gt; {
+    const outputs = new Map&lt;PortId, unknown&gt;();
+    const url = this.getInput&lt;string&gt;(context, &#39;url&#39;);
+    
+    if (!url) {
+      throw new NodeError(&#39;URL is required&#39;, this.id);
+    }
+    
+    // Async HTTP request
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    outputs.set(&#39;response&#39;, data);
+    outputs.set(&#39;status&#39;, response.status);
+    
+    return outputs;
+  }
+}
+</code></pre>
+<h2>Registering Nodes</h2>
+<p>Register custom nodes with NodeRegistry to enable dynamic creation:</p>
+<pre><code class="language-typescript">import { registerNode, NodeRegistry } from &#39;./src/index&#39;;
+
+// Register node
+registerNode(MyCustomNode, {
+  type: &#39;custom.my-node&#39;,
+  displayName: &#39;My Custom Node&#39;,
+  category: &#39;Custom&#39;,
+  description: &#39;A custom node example&#39;,
+  version: &#39;1.0.0&#39;,
+  tags: [&#39;custom&#39;, &#39;example&#39;],
+  icon: &#39;🎯&#39;,
+  color: &#39;#FF6B6B&#39;,
+  inputs: [
+    { id: &#39;input1&#39;, name: &#39;Input 1&#39;, dataType: DataTypes.STRING, required: true }
+  ],
+  outputs: [
+    { id: &#39;output1&#39;, name: &#39;Output 1&#39;, dataType: DataTypes.STRING }
+  ]
+});
+
+// Use registered node
+const node = createNode(&#39;custom.my-node&#39;);
+</code></pre>
+<h2>Auto-Registration with Decorator</h2>
+<p>Use the <code>@RegisterNode</code> decorator for automatic registration:</p>
+<pre><code class="language-typescript">import { RegisterNode, BaseNode } from &#39;./src/index&#39;;
+
+@RegisterNode({
+  type: &#39;custom.decorated-node&#39;,
+  displayName: &#39;Decorated Node&#39;,
+  category: &#39;Custom&#39;,
+  description: &#39;Auto-registered node&#39;,
+  version: &#39;1.0.0&#39;,
+  tags: [&#39;custom&#39;],
+  inputs: [],
+  outputs: []
+})
+export class DecoratedNode extends BaseNode {
+  protected async executeInternal(context: ExecutionContext): Promise&lt;Map&lt;PortId, unknown&gt;&gt; {
+    return new Map();
+  }
+}
+</code></pre>
+<h2>Creating Custom Nodes with Templates</h2>
+<p>You can create custom nodes via web UI using template-based system:</p>
+<ol>
+<li><strong>Transform Template</strong>: Transform input values to output values</li>
+<li><strong>Filter Template</strong>: Filter based on conditions</li>
+<li><strong>Calculator Template</strong>: Perform mathematical operations</li>
+<li><strong>Conditional Template</strong>: Conditional logic</li>
+<li><strong>StringOp Template</strong>: String operations</li>
+</ol>
+<p>For more details, see the <a href="./CUSTOM-NODES-IMPLEMENTATION.html">Custom Nodes Implementation</a> document.</p>
+<h2>Best Practices</h2>
+<h3>1. Input Validation</h3>
+<p>Always validate input values:</p>
+<pre><code class="language-typescript">protected async executeInternal(context: ExecutionContext): Promise&lt;Map&lt;PortId, unknown&gt;&gt; {
+  const value = this.getInput&lt;number&gt;(context, &#39;value&#39;);
+  if (value === undefined || value &lt; 0) {
+    throw new NodeError(&#39;Value must be a positive number&#39;, this.id, &#39;value&#39;);
+  }
+  // ...
+}
+</code></pre>
+<h3>2. Error Handling</h3>
+<p>Provide clear error messages:</p>
+<pre><code class="language-typescript">try {
+  // Perform operation
+} catch (error) {
+  throw new NodeError(
+    `Failed to process: ${error instanceof Error ? error.message : String(error)}`,
+    this.id
+  );
+}
+</code></pre>
+<h3>3. Resource Cleanup</h3>
+<p>Register resources for automatic cleanup:</p>
+<pre><code class="language-typescript">constructor() {
+  // ...
+  const resource = { cleanup: async () =&gt; { /* cleanup logic */ } };
+  this.registerResource(resource);
+}
+</code></pre>
+<h3>4. Type Safety</h3>
+<p>Use generics for type safety:</p>
+<pre><code class="language-typescript">const value = this.getInput&lt;string&gt;(context, &#39;input1&#39;);
+// value is of type string | undefined
+</code></pre>
+<h3>5. Documentation</h3>
+<p>Provide clear descriptions for nodes:</p>
+<pre><code class="language-typescript">super({
+  name: &#39;Clear Name&#39;,
+  description: &#39;What this node does and when to use it&#39;,
+  // ...
+});
+</code></pre>
+<h2>Related Documentation</h2>
+<ul>
+<li><a href="./NODE-REGISTRY.html">Node Registry</a> - Node registration and discovery system</li>
+<li><a href="./CUSTOM-NODES-IMPLEMENTATION.html">Custom Nodes Implementation</a> - Custom node implementation guide</li>
+<li><a href="./ERROR-HANDLING.html">Error Handling</a> - Error handling guide</li>
+<li><a href="./GRAPH-EDITOR.html">Graph Editor</a> - Graph editor usage guide</li>
+</ul>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

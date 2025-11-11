@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Node Creation System - Proposal - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" class="active">System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>Custom Node Creation System - Proposal</h1>
+<h2>Overview</h2>
+<p>A system that allows users to dynamically create and register new nodes from the web frontend.</p>
+<h2>Goals</h2>
+<ol>
+<li><strong>Node Creation via Web UI</strong>: Create nodes with minimal or no code writing</li>
+<li><strong>Safe Code Execution</strong>: Security through sandboxing and validation</li>
+<li><strong>Dynamic Registration</strong>: Add nodes at runtime and use them immediately</li>
+<li><strong>Persistent Storage</strong>: Save created nodes to database/file system</li>
+</ol>
+<h2>Architecture Options</h2>
+<h3>Option 1: Template-Based Node Creation (Recommended) ⭐</h3>
+<p><strong>Concept</strong>: Create nodes using predefined node templates with configuration only</p>
+<p><strong>Structure</strong>:</p>
+<pre><code>CustomNode (extends BaseNode)
+├── Template Type (Transform, Filter, Calculator, etc.)
+├── Configuration (function/expression, input/output mapping)
+└── Validation Rules
+</code></pre>
+<p><strong>Advantages</strong>:</p>
+<ul>
+<li>✅ High security (no code execution)</li>
+<li>✅ Simple implementation</li>
+<li>✅ User-friendly (easy creation via UI)</li>
+<li>✅ Type safety</li>
+</ul>
+<p><strong>Disadvantages</strong>:</p>
+<ul>
+<li>❌ Limited flexibility</li>
+<li>❌ Difficult to implement complex logic</li>
+</ul>
+<p><strong>Implementation Example</strong>:</p>
+<pre><code class="language-typescript">// Configuration entered by user on web
+{
+  type: &#39;custom.math-power&#39;,
+  template: &#39;transform&#39;,
+  expression: &#39;Math.pow(input.value, input.exponent)&#39;,
+  inputs: [
+    { id: &#39;value&#39;, name: &#39;Value&#39;, type: &#39;number&#39;, required: true },
+    { id: &#39;exponent&#39;, name: &#39;Exponent&#39;, type: &#39;number&#39;, required: true }
+  ],
+  outputs: [
+    { id: &#39;result&#39;, name: &#39;Result&#39;, type: &#39;number&#39; }
+  ]
+}
+</code></pre>
+<hr>
+<h3>Option 2: Limited Script Execution (VM2/isolate-vm)</h3>
+<p><strong>Concept</strong>: Execute user-provided code in a sandboxed environment</p>
+<p><strong>Structure</strong>:</p>
+<pre><code>CustomNodeExecutor
+├── Code Validator (AST analysis)
+├── Sandbox (VM2/isolate-vm)
+├── Security Policies
+└── Runtime Validation
+</code></pre>
+<p><strong>Advantages</strong>:</p>
+<ul>
+<li>✅ High flexibility</li>
+<li>✅ Full JavaScript/TypeScript support</li>
+<li>✅ Can implement complex logic</li>
+</ul>
+<p><strong>Disadvantages</strong>:</p>
+<ul>
+<li>❌ Security risks (difficult to fully sandbox)</li>
+<li>❌ Complex implementation</li>
+<li>❌ Performance overhead</li>
+</ul>
+<p><strong>Security Considerations</strong>:</p>
+<ul>
+<li>Block file system access</li>
+<li>Limit network access</li>
+<li>Prevent infinite loops</li>
+<li>Memory limits</li>
+<li>Execution time limits</li>
+</ul>
+<hr>
+<h3>Option 3: Hybrid Approach (Template + Script) ⭐⭐</h3>
+<p><strong>Concept</strong>: Simple nodes via templates, complex nodes via scripts</p>
+<p><strong>Structure</strong>:</p>
+<pre><code>Node Creation System
+├── Template Engine (Option 1)
+├── Script Engine (Option 2)
+└── Router (decides which engine to use)
+</code></pre>
+<p><strong>Advantages</strong>:</p>
+<ul>
+<li>✅ Balance between flexibility and security</li>
+<li>✅ Can choose based on user level</li>
+<li>✅ Gradual complexity</li>
+</ul>
+<p><strong>Disadvantages</strong>:</p>
+<ul>
+<li>❌ Need to implement both systems</li>
+<li>❌ Increased complexity</li>
+</ul>
+<hr>
+<h2>Proposed Implementation Strategy</h2>
+<h3>Phase 1: Template-Based System (MVP)</h3>
+<p><strong>Features</strong>:</p>
+<ol>
+<li><p>Predefined node templates</p>
+<ul>
+<li>Transform (input → output transformation)</li>
+<li>Filter (conditional filtering)</li>
+<li>Calculator (mathematical operations)</li>
+<li>Conditional (branching)</li>
+<li>String Operation (string processing)</li>
+</ul>
+</li>
+<li><p>Web UI</p>
+<ul>
+<li>Node type selection</li>
+<li>Input/output port definition</li>
+<li>Expression/function input (limited JavaScript)</li>
+<li>Real-time validation and preview</li>
+</ul>
+</li>
+<li><p>API Endpoints</p>
+<ul>
+<li><code>POST /api/nodes/custom</code> - Create node</li>
+<li><code>GET /api/nodes/custom</code> - List custom nodes</li>
+<li><code>DELETE /api/nodes/custom/:id</code> - Delete node</li>
+<li><code>PUT /api/nodes/custom/:id</code> - Update node</li>
+</ul>
+</li>
+<li><p>Storage</p>
+<ul>
+<li>JSON file-based (initial)</li>
+<li>Can migrate to database later</li>
+</ul>
+</li>
+</ol>
+<h3>Phase 2: Script Execution System (Advanced)</h3>
+<p><strong>Features</strong>:</p>
+<ol>
+<li>VM2-based sandboxing</li>
+<li>AST analysis and validation</li>
+<li>Security policy application</li>
+<li>Code editor integration (Monaco Editor)</li>
+</ol>
+<hr>
+<h2>Implementation Details: Phase 1 (Template-Based)</h2>
+<h3>1. Backend Structure</h3>
+<pre><code>src/
+├── custom-nodes/
+│   ├── CustomNode.ts          # Custom node extending BaseNode
+│   ├── NodeTemplate.ts        # Template definitions
+│   ├── TemplateEngine.ts     # Template execution engine
+│   ├── ExpressionValidator.ts # Expression validation
+│   └── CustomNodeStorage.ts   # Node storage/loading
+├── api/
+│   └── custom-nodes/
+│       ├── route.ts           # GET, POST
+│       └── [id]/
+│           └── route.ts       # GET, PUT, DELETE
+</code></pre>
+<h3>2. CustomNode Class</h3>
+<pre><code class="language-typescript">export class CustomNode extends BaseNode {
+  private template: NodeTemplate;
+  private expression: string;
+  private compiledExpression?: Function;
+
+  constructor(config: CustomNodeConfig) {
+    super(config);
+    this.template = config.template;
+    this.expression = config.expression;
+    this.compiledExpression = this.compileExpression();
+  }
+
+  protected async executeInternal(
+    context: ExecutionContext
+  ): Promise&lt;Map&lt;PortId, unknown&gt;&gt; {
+    const outputs = new Map&lt;PortId, unknown&gt;();
+    
+    // Execute based on template
+    const result = await this.template.execute(
+      this.expression,
+      context.inputs,
+      this.compiledExpression
+    );
+    
+    // Set outputs
+    this.outputs.forEach((output, index) =&gt; {
+      outputs.set(output.id, result[index] ?? null);
+    });
+    
+    return outputs;
+  }
+
+  private compileExpression(): Function {
+    // Safe expression compilation
+    // Validate and restrict user input
+    return new Function(&#39;inputs&#39;, `return ${this.expression};`);
+  }
+}
+</code></pre>
+<h3>3. Template System</h3>
+<pre><code class="language-typescript">export enum TemplateType {
+  TRANSFORM = &#39;transform&#39;,
+  FILTER = &#39;filter&#39;,
+  CALCULATOR = &#39;calculator&#39;,
+  CONDITIONAL = &#39;conditional&#39;,
+  STRING_OP = &#39;string-op&#39;,
+}
+
+export interface NodeTemplate {
+  type: TemplateType;
+  name: string;
+  description: string;
+  execute: (
+    expression: string,
+    inputs: Map&lt;PortId, unknown&gt;,
+    compiledFn?: Function
+  ) =&gt; Promise&lt;unknown[]&gt;;
+  validateExpression: (expression: string) =&gt; boolean;
+}
+</code></pre>
+<h3>4. API Routes</h3>
+<pre><code class="language-typescript">// POST /api/custom-nodes
+export async function POST(request: Request) {
+  const body = await request.json();
+  
+  // 1. Validate
+  const validation = validateCustomNodeConfig(body);
+  if (!validation.valid) {
+    return NextResponse.json({ error: validation.errors }, { status: 400 });
+  }
+  
+  // 2. Create node
+  const node = createCustomNode(body);
+  
+  // 3. Register in registry
+  const registry = NodeRegistry.getInstance();
+  registry.registerCustomNode(node);
+  
+  // 4. Save
+  await CustomNodeStorage.save(node);
+  
+  return NextResponse.json({ success: true, node });
+}
+</code></pre>
+<h3>5. Frontend UI</h3>
+<pre><code>app/
+├── custom-nodes/
+│   ├── page.tsx              # Node list
+│   ├── create/
+│   │   └── page.tsx          # Node creation form
+│   └── [id]/
+│       ├── page.tsx          # Node detail/edit
+│       └── test/
+│           └── page.tsx      # Node testing
+└── components/
+    ├── NodeCreator/
+    │   ├── TemplateSelector.tsx
+    │   ├── PortEditor.tsx
+    │   ├── ExpressionEditor.tsx
+    │   └── NodePreview.tsx
+    └── CustomNodeCard.tsx
+</code></pre>
+<hr>
+<h2>Security Considerations</h2>
+<h3>Template-Based System</h3>
+<ul>
+<li>✅ Expression validation (AST analysis)</li>
+<li>✅ Only allowed functions can be used</li>
+<li>✅ Block dangerous code patterns</li>
+<li>✅ Execution time limits</li>
+</ul>
+<h3>Script-Based System (Phase 2)</h3>
+<ul>
+<li>VM2 sandboxing</li>
+<li>Resource limits (CPU, memory)</li>
+<li>Block network access</li>
+<li>Block file system access</li>
+</ul>
+<hr>
+<h2>Data Model</h2>
+<pre><code class="language-typescript">interface CustomNodeConfig {
+  id?: string;
+  type: string;                    // &#39;custom.user-defined-name&#39;
+  displayName: string;
+  category: string;                // &#39;Custom&#39;
+  description: string;
+  version: string;
+  author?: string;
+  tags: string[];
+  
+  // Template information
+  template: TemplateType;
+  expression: string;               // Expression/code to execute
+  
+  // Port definitions
+  inputs: Port[];
+  outputs: Port[];
+  
+  // Metadata
+  createdAt: Date;
+  updatedAt: Date;
+  createdBy?: string;               // User ID (when auth is implemented)
+  
+  // Storage information
+  storageId?: string;              // Unique ID in storage
+}
+</code></pre>
+<hr>
+<h2>User Experience Flow</h2>
+<ol>
+<li><p><strong>Access Node Creation Page</strong></p>
+<ul>
+<li><code>/custom-nodes/create</code></li>
+</ul>
+</li>
+<li><p><strong>Select Template</strong></p>
+<ul>
+<li>Transform, Filter, Calculator, etc.</li>
+</ul>
+</li>
+<li><p><strong>Enter Node Information</strong></p>
+<ul>
+<li>Name, description, category, tags</li>
+</ul>
+</li>
+<li><p><strong>Define Ports</strong></p>
+<ul>
+<li>Add/edit input/output ports</li>
+<li>Set type, name, required status</li>
+</ul>
+</li>
+<li><p><strong>Write Logic</strong></p>
+<ul>
+<li>Write expression or function</li>
+<li>Real-time validation and preview</li>
+</ul>
+</li>
+<li><p><strong>Test</strong></p>
+<ul>
+<li>Test with sample inputs</li>
+<li>Verify results</li>
+</ul>
+</li>
+<li><p><strong>Save and Register</strong></p>
+<ul>
+<li>Available immediately after saving</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>API Specification</h2>
+<h3>POST /api/custom-nodes</h3>
+<p>Create a new custom node</p>
+<p><strong>Request</strong>:</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;custom.my-node&quot;,
+  &quot;displayName&quot;: &quot;My Custom Node&quot;,
+  &quot;category&quot;: &quot;Custom&quot;,
+  &quot;description&quot;: &quot;Does something custom&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;tags&quot;: [&quot;custom&quot;, &quot;test&quot;],
+  &quot;template&quot;: &quot;transform&quot;,
+  &quot;expression&quot;: &quot;inputs.value * 2&quot;,
+  &quot;inputs&quot;: [
+    {
+      &quot;id&quot;: &quot;value&quot;,
+      &quot;name&quot;: &quot;Value&quot;,
+      &quot;dataType&quot;: { &quot;name&quot;: &quot;number&quot; },
+      &quot;required&quot;: true
+    }
+  ],
+  &quot;outputs&quot;: [
+    {
+      &quot;id&quot;: &quot;result&quot;,
+      &quot;name&quot;: &quot;Result&quot;,
+      &quot;dataType&quot;: { &quot;name&quot;: &quot;number&quot; }
+    }
+  ]
+}
+</code></pre>
+<p><strong>Response</strong>:</p>
+<pre><code class="language-json">{
+  &quot;success&quot;: true,
+  &quot;node&quot;: {
+    &quot;id&quot;: &quot;custom-node-uuid&quot;,
+    &quot;type&quot;: &quot;custom.my-node&quot;,
+    ...
+  }
+}
+</code></pre>
+<h3>GET /api/custom-nodes</h3>
+<p>List all custom nodes</p>
+<h3>GET /api/custom-nodes/:id</h3>
+<p>Get a specific custom node</p>
+<h3>PUT /api/custom-nodes/:id</h3>
+<p>Update a custom node</p>
+<h3>DELETE /api/custom-nodes/:id</h3>
+<p>Delete a custom node</p>
+<hr>
+<h2>File Structure</h2>
+<pre><code>src/
+├── custom-nodes/
+│   ├── CustomNode.ts
+│   ├── NodeTemplate.ts
+│   ├── templates/
+│   │   ├── TransformTemplate.ts
+│   │   ├── FilterTemplate.ts
+│   │   ├── CalculatorTemplate.ts
+│   │   └── ConditionalTemplate.ts
+│   ├── TemplateEngine.ts
+│   ├── ExpressionValidator.ts
+│   ├── CustomNodeStorage.ts
+│   └── index.ts
+├── api/
+│   └── custom-nodes/
+│       ├── route.ts
+│       └── [id]/
+│           └── route.ts
+
+app/
+├── custom-nodes/
+│   ├── page.tsx
+│   ├── create/
+│   │   └── page.tsx
+│   └── [id]/
+│       ├── page.tsx
+│       └── test/
+│           └── page.tsx
+└── components/
+    └── NodeCreator/
+        ├── index.tsx
+        ├── TemplateSelector.tsx
+        ├── PortEditor.tsx
+        ├── ExpressionEditor.tsx
+        └── NodePreview.tsx
+
+storage/
+└── custom-nodes/
+    └── *.json (JSON file per node)
+</code></pre>
+<hr>
+<h2>Next Steps</h2>
+<ol>
+<li><p><strong>Phase 1 Implementation</strong> (Template-Based)</p>
+<ul>
+<li><input disabled="" type="checkbox"> Implement CustomNode class</li>
+<li><input disabled="" type="checkbox"> Implement template system</li>
+<li><input disabled="" type="checkbox"> Implement expression validator</li>
+<li><input disabled="" type="checkbox"> Implement storage system</li>
+<li><input disabled="" type="checkbox"> Implement API endpoints</li>
+<li><input disabled="" type="checkbox"> Implement frontend UI</li>
+</ul>
+</li>
+<li><p><strong>Phase 2 Implementation</strong> (Script-Based)</p>
+<ul>
+<li><input disabled="" type="checkbox"> VM2 integration</li>
+<li><input disabled="" type="checkbox"> Implement security policies</li>
+<li><input disabled="" type="checkbox"> Code editor integration</li>
+</ul>
+</li>
+<li><p><strong>Enhancement Features</strong></p>
+<ul>
+<li><input disabled="" type="checkbox"> Node version management</li>
+<li><input disabled="" type="checkbox"> Node sharing/import</li>
+<li><input disabled="" type="checkbox"> Node marketplace</li>
+<li><input disabled="" type="checkbox"> User authentication and authorization</li>
+<li><input disabled="" type="checkbox"> Node execution statistics</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2>Conclusion</h2>
+<p><strong>Recommended Approach</strong>: <strong>Option 3 (Hybrid)</strong>, implemented in phases</p>
+<ol>
+<li><strong>Phase 1</strong>: Start with template-based system (safe and simple to implement)</li>
+<li><strong>Phase 2</strong>: Add script execution system if needed (gains flexibility)</li>
+</ol>
+<p>This approach provides a fast MVP while maintaining future extensibility.</p>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

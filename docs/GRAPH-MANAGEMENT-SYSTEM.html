@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Management System Design - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" class="active">Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>Graph Management System Design</h1>
+<h2>Overview</h2>
+<p>The Graph Management System is a complete CRUD system that allows users to save, manage, and execute graphs they create.</p>
+<h2>Functional Requirements</h2>
+<h3>1. Graph Creation (Create)</h3>
+<ul>
+<li>Enter name and description</li>
+<li>Save current graph from graph editor with a new name</li>
+<li>Store metadata (author, creation date, modification date)</li>
+</ul>
+<h3>2. Graph Update (Update)</h3>
+<ul>
+<li>Modify existing graphs</li>
+<li>Version management</li>
+<li>Update modification date</li>
+</ul>
+<h3>3. Graph Deletion (Delete)</h3>
+<ul>
+<li>Delete graphs (with confirmation dialog)</li>
+<li>Permanent deletion</li>
+</ul>
+<h3>4. Graph Listing (List)</h3>
+<ul>
+<li>Display list of all saved graphs</li>
+<li>Filtering and search</li>
+<li>Sorting (by name, creation date, modification date)</li>
+<li>Display metadata (node count, connection count)</li>
+</ul>
+<h3>5. Graph Execution (Execute)</h3>
+<ul>
+<li>Load and execute saved graphs</li>
+<li>Set input parameters</li>
+<li>Display execution results</li>
+<li>Execution logs and error handling</li>
+</ul>
+<h2>Architecture</h2>
+<h3>Backend Structure</h3>
+<pre><code>src/graph-management/
+├── GraphStorage.ts          # Graph storage (JSON file-based)
+├── GraphManager.ts          # Graph management logic
+├── GraphExecutionEngine.ts  # Graph execution engine
+└── types.ts                 # Type definitions
+</code></pre>
+<h3>API Endpoints</h3>
+<pre><code>GET    /api/graphs              # List graphs
+GET    /api/graphs/:id          # Get graph details
+POST   /api/graphs              # Create graph
+PUT    /api/graphs/:id          # Update graph
+DELETE /api/graphs/:id          # Delete graph
+POST   /api/graphs/:id/execute  # Execute graph
+</code></pre>
+<h3>Frontend Structure</h3>
+<pre><code>app/
+├── graphs/
+│   ├── page.tsx              # Graph list page
+│   ├── [id]/
+│   │   ├── page.tsx          # Graph detail/edit page
+│   │   └── execute/
+│   │       └── page.tsx      # Graph execution page
+│   └── create/
+│       └── page.tsx          # New graph creation page
+components/
+└── graphs/
+    ├── GraphList.tsx         # Graph list component
+    ├── GraphCard.tsx          # Graph card component
+    ├── GraphExecutionPanel.tsx # Execution panel
+    └── ExecutionResults.tsx  # Execution results display
+</code></pre>
+<h2>Data Model</h2>
+<h3>GraphMetadata</h3>
+<pre><code class="language-typescript">interface GraphMetadata {
+  id: string;
+  name: string;
+  description?: string;
+  author?: string;
+  version: string;
+  createdAt: string;
+  updatedAt: string;
+  tags?: string[];
+  nodeCount: number;
+  connectionCount: number;
+}
+</code></pre>
+<h3>GraphDefinition</h3>
+<pre><code class="language-typescript">interface GraphDefinition {
+  id: string;
+  metadata: GraphMetadata;
+  data: {
+    nodes: GraphNode[];
+    connections: GraphConnection[];
+    viewport: Viewport;
+  };
+}
+</code></pre>
+<h3>ExecutionRequest</h3>
+<pre><code class="language-typescript">interface ExecutionRequest {
+  inputs?: Record&lt;string, unknown&gt;; // Node ID -&gt; input value map
+  options?: {
+    timeout?: number;
+    parallel?: boolean;
+  };
+}
+</code></pre>
+<h3>ExecutionResponse</h3>
+<pre><code class="language-typescript">interface ExecutionResponse {
+  success: boolean;
+  results?: Map&lt;string, ExecutionResult&gt;;
+  errors?: NodeError[];
+  executionTime: number;
+  logs?: string[];
+}
+</code></pre>
+<h2>Storage Structure</h2>
+<h3>File System</h3>
+<pre><code>data/
+└── graphs/
+    ├── graph-{id}.json       # Individual graph files
+    └── index.json             # Graph index (metadata only)
+</code></pre>
+<h3>GraphStorage API</h3>
+<pre><code class="language-typescript">class GraphStorage {
+  async save(graph: GraphDefinition): Promise&lt;void&gt;;
+  async load(id: string): Promise&lt;GraphDefinition&gt;;
+  async list(): Promise&lt;GraphMetadata[]&gt;;
+  async delete(id: string): Promise&lt;void&gt;;
+  async update(id: string, graph: Partial&lt;GraphDefinition&gt;): Promise&lt;void&gt;;
+  async getStats(): Promise&lt;GraphStats&gt;;
+}
+</code></pre>
+<h2>Execution Engine</h2>
+<h3>GraphExecutionEngine</h3>
+<pre><code class="language-typescript">class GraphExecutionEngine {
+  constructor(
+    private registry: NodeRegistry,
+    private serializer: GraphSerializer
+  ) {}
+
+  async execute(
+    graphId: string,
+    request: ExecutionRequest
+  ): Promise&lt;ExecutionResponse&gt;;
+
+  private async buildExecutor(
+    graph: GraphDefinition
+  ): Promise&lt;NodeExecutor&gt;;
+
+  private validateGraph(graph: GraphDefinition): ValidationResult;
+}
+</code></pre>
+<h2>UI/UX Flow</h2>
+<h3>Graph List Page</h3>
+<ol>
+<li>Display list of saved graphs</li>
+<li>Search and filtering</li>
+<li>New graph creation button</li>
+<li>Actions for each graph (edit, execute, delete)</li>
+</ol>
+<h3>Graph Edit Page</h3>
+<ol>
+<li>Load graph into graph editor</li>
+<li>Save after editing</li>
+<li>Execute button</li>
+</ol>
+<h3>Graph Execution Page</h3>
+<ol>
+<li>Display graph information</li>
+<li>Set input parameters</li>
+<li>Execute button</li>
+<li>Display execution results</li>
+<li>Display logs and errors</li>
+</ol>
+<h2>Security Considerations</h2>
+<ol>
+<li>Input validation: Validate all user inputs</li>
+<li>File system access control</li>
+<li>Execution timeout settings</li>
+<li>Resource limits (memory, CPU)</li>
+</ol>
+<h2>Extensibility</h2>
+<ol>
+<li>Graph versioning</li>
+<li>Graph sharing and collaboration</li>
+<li>Graph templates</li>
+<li>Scheduled execution</li>
+<li>Execution history</li>
+</ol>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

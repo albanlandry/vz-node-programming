@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Graph Execution Phase 2 - Implementation Guide - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" class="active">Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>Live Graph Execution Phase 2 - Implementation Guide</h1>
+<h2>Implementation Overview</h2>
+<p>This document provides detailed implementation steps for Phase 2 features.</p>
+<h2>1. Real-time Streaming (SSE)</h2>
+<h3>1.1 Backend SSE Endpoint</h3>
+<p><strong>File</strong>: <code>app/api/graphs/execute-stream/route.ts</code></p>
+<pre><code class="language-typescript">import { NextRequest } from &#39;next/server&#39;;
+import { GraphExecutionEngine } from &#39;../../../../src/graph-management&#39;;
+import type { GraphDefinition, ExecutionRequest } from &#39;../../../../src/graph-management/types&#39;;
+import { logger } from &#39;../../../../src/utils/Logger&#39;;
+import { NodeExecutor } from &#39;../../../../src/core/NodeExecutor&#39;;
+import { NodeEventType } from &#39;../../../../src/core/NodeExecutor&#39;;
+
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  const { graph, inputs, options } = body as {
+    graph: GraphDefinition;
+    inputs?: Record&lt;string, Record&lt;string, unknown&gt;&gt;;
+    options?: { parallel?: boolean; timeout?: number; breakpoints?: string[]; stepMode?: boolean };
+  };
+
+  // Create SSE stream
+  const stream = new ReadableStream({
+    async start(controller) {
+      const encoder = new TextEncoder();
+      
+      const sendEvent = (event: string, data: unknown) =&gt; {
+        const message = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+        controller.enqueue(encoder.encode(message));
+      };
+
+      try {
+        const engine = new GraphExecutionEngine();
+        const executor = await engine[&#39;buildExecutor&#39;](graph);
+        
+        // Set up event listeners
+        executor.on(NodeEventType.EXECUTION_STARTED, (data) =&gt; {
+          sendEvent(&#39;execution:started&#39;, {
+            executionId: data.executionId,
+            timestamp: Date.now(),
+          });
+        });
+
+        executor.on(NodeEventType.NODE_QUEUED, (data) =&gt; {
+          sendEvent(&#39;node:queued&#39;, {
+            nodeId: data.nodeId,
+            timestamp: Date.now(),
+          });
+        });
+
+        executor.on(NodeEventType.EXECUTION_STARTED, (data) =&gt; {
+          sendEvent(&#39;node:executing&#39;, {
+            nodeId: data.nodeId,
+            timestamp: Date.now(),
+          });
+        });
+
+        executor.on(NodeEventType.EXECUTION_COMPLETED, (data) =&gt; {
+          sendEvent(&#39;node:completed&#39;, {
+            nodeId: data.nodeId,
+            result: data.result,
+            executionTime: data.result?.executionTime,
+            timestamp: Date.now(),
+          });
+        });
+
+        executor.on(NodeEventType.EXECUTION_FAILED, (data) =&gt; {
+          sendEvent(&#39;node:failed&#39;, {
+            nodeId: data.nodeId,
+            error: data.error,
+            timestamp: Date.now(),
+          });
+        });
+
+        // Execute graph
+        const initialInputs = new Map&lt;string, Map&lt;string, unknown&gt;&gt;();
+        if (inputs) {
+          for (const [nodeId, nodeInputs] of Object.entries(inputs)) {
+            const inputMap = new Map&lt;string, unknown&gt;();
+            for (const [portId, value] of Object.entries(nodeInputs)) {
+              inputMap.set(portId, value);
+            }
+            initialInputs.set(nodeId, inputMap);
+          }
+        }
+
+        const parallel = options?.parallel ?? false;
+        const results = parallel
+          ? await executor.executeParallel(initialInputs)
+          : await executor.execute(initialInputs);
+
+        // Send final results
+        sendEvent(&#39;execution:completed&#39;, {
+          results: Object.fromEntries(results),
+          timestamp: Date.now(),
+        });
+
+        controller.close();
+      } catch (error) {
+        sendEvent(&#39;execution:error&#39;, {
+          error: error instanceof Error ? error.message : String(error),
+          timestamp: Date.now(),
+        });
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      &#39;Content-Type&#39;: &#39;text/event-stream&#39;,
+      &#39;Cache-Control&#39;: &#39;no-cache&#39;,
+      &#39;Connection&#39;: &#39;keep-alive&#39;,
+    },
+  });
+}
+</code></pre>
+<h3>1.2 Frontend SSE Client Service</h3>
+<p><strong>File</strong>: <code>services/streamingExecutionService.ts</code></p>
+<pre><code class="language-typescript">import type { GraphDefinition } from &#39;../src/graph-management/types&#39;;
+
+export type ExecutionEventType =
+  | &#39;execution:started&#39;
+  | &#39;node:queued&#39;
+  | &#39;node:executing&#39;
+  | &#39;node:completed&#39;
+  | &#39;node:failed&#39;
+  | &#39;connection:data&#39;
+  | &#39;execution:completed&#39;
+  | &#39;execution:error&#39;;
+
+export interface ExecutionEvent {
+  type: ExecutionEventType;
+  data: unknown;
+  timestamp: number;
+}
+
+export interface ExecutionOptions {
+  parallel?: boolean;
+  timeout?: number;
+  breakpoints?: string[];
+  stepMode?: boolean;
+}
+
+export class StreamingExecutionService {
+  private eventSource: EventSource | null = null;
+  private eventListeners: Map&lt;ExecutionEventType, Set&lt;(event: ExecutionEvent) =&gt; void&gt;&gt; = new Map();
+  private reconnectAttempts = 0;
+  private maxReconnectAttempts = 5;
+  private reconnectDelay = 1000;
+
+  async executeStream(
+    graph: GraphDefinition,
+    inputs?: Record&lt;string, Record&lt;string, unknown&gt;&gt;,
+    options?: ExecutionOptions,
+  ): Promise&lt;EventSource&gt; {
+    // Close existing connection
+    this.close();
+
+    // Create new EventSource
+    const url = new URL(&#39;/api/graphs/execute-stream&#39;, window.location.origin);
+    const eventSource = new EventSource(url.toString(), {
+      withCredentials: false,
+    });
+
+    // Send POST request with graph data
+    // Note: EventSource doesn&#39;t support POST, so we need to use fetch + ReadableStream
+    const response = await fetch(&#39;/api/graphs/execute-stream&#39;, {
+      method: &#39;POST&#39;,
+      headers: {
+        &#39;Content-Type&#39;: &#39;application/json&#39;,
+      },
+      body: JSON.stringify({ graph, inputs, options }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to start execution: ${response.statusText}`);
+    }
+
+    // Read SSE stream from response
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+
+    if (!reader) {
+      throw new Error(&#39;Response body is not readable&#39;);
+    }
+
+    const processStream = async () =&gt; {
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split(&#39;\n&#39;);
+
+          let eventType: ExecutionEventType | null = null;
+          let eventData: string | null = null;
+
+          for (const line of lines) {
+            if (line.startsWith(&#39;event: &#39;)) {
+              eventType = line.substring(7).trim() as ExecutionEventType;
+            } else if (line.startsWith(&#39;data: &#39;)) {
+              eventData = line.substring(6).trim();
+            } else if (line === &#39;&#39; &amp;&amp; eventType &amp;&amp; eventData) {
+              // Complete event
+              try {
+                const data = JSON.parse(eventData);
+                this.emit(eventType, {
+                  type: eventType,
+                  data,
+                  timestamp: Date.now(),
+                });
+              } catch (error) {
+                console.error(&#39;Failed to parse event data:&#39;, error);
+              }
+              eventType = null;
+              eventData = null;
+            }
+          }
+        }
+      } catch (error) {
+        console.error(&#39;Stream processing error:&#39;, error);
+        this.emit(&#39;execution:error&#39;, {
+          type: &#39;execution:error&#39;,
+          data: { error: error instanceof Error ? error.message : String(error) },
+          timestamp: Date.now(),
+        });
+      }
+    };
+
+    processStream();
+
+    this.eventSource = eventSource as unknown as EventSource;
+    return eventSource as unknown as EventSource;
+  }
+
+  on(eventType: ExecutionEventType, callback: (event: ExecutionEvent) =&gt; void): void {
+    if (!this.eventListeners.has(eventType)) {
+      this.eventListeners.set(eventType, new Set());
+    }
+    this.eventListeners.get(eventType)!.add(callback);
+  }
+
+  off(eventType: ExecutionEventType, callback: (event: ExecutionEvent) =&gt; void): void {
+    this.eventListeners.get(eventType)?.delete(callback);
+  }
+
+  private emit(eventType: ExecutionEventType, event: ExecutionEvent): void {
+    this.eventListeners.get(eventType)?.forEach((callback) =&gt; {
+      try {
+        callback(event);
+      } catch (error) {
+        console.error(&#39;Error in event listener:&#39;, error);
+      }
+    });
+  }
+
+  close(): void {
+    if (this.eventSource) {
+      this.eventSource.close();
+      this.eventSource = null;
+    }
+    this.reconnectAttempts = 0;
+  }
+
+  cancel(): void {
+    this.close();
+  }
+}
+
+export const streamingExecutionService = new StreamingExecutionService();
+</code></pre>
+<h2>2. Input Configuration Panel</h2>
+<h3>2.1 Store Extension</h3>
+<p><strong>File</strong>: <code>store/graphStore.ts</code> (extend existing)</p>
+<pre><code class="language-typescript">// Add to GraphState interface
+interface GraphState {
+  // ... existing state
+  
+  // Input configuration
+  inputConfig: Record&lt;string, Record&lt;string, unknown&gt;&gt;;
+  inputTemplates: InputTemplate[];
+  
+  // Actions
+  setInputValue: (nodeId: string, portId: string, value: unknown) =&gt; void;
+  clearInputConfig: () =&gt; void;
+  saveInputTemplate: (name: string) =&gt; void;
+  loadInputTemplate: (name: string) =&gt; void;
+}
+
+// Add to store implementation
+setInputValue: (nodeId, portId, value) =&gt; {
+  set((state) =&gt; ({
+    inputConfig: {
+      ...state.inputConfig,
+      [nodeId]: {
+        ...(state.inputConfig[nodeId] || {}),
+        [portId]: value,
+      },
+    },
+  }));
+},
+
+clearInputConfig: () =&gt; {
+  set({ inputConfig: {} });
+},
+</code></pre>
+<h3>2.2 InputConfigPanel Component</h3>
+<p><strong>File</strong>: <code>components/graph/InputConfigPanel.tsx</code></p>
+<pre><code class="language-typescript">&#39;use client&#39;;
+
+import { useState, useEffect } from &#39;react&#39;;
+import { X, Save, FolderOpen } from &#39;lucide-react&#39;;
+import { useGraphStore } from &#39;../../store/graphStore&#39;;
+import type { Port, DataType } from &#39;../../src/types&#39;;
+
+interface InputConfigPanelProps {
+  isOpen: boolean;
+  onClose: () =&gt; void;
+  position?: { x: number; y: number };
+}
+
+export default function InputConfigPanel({ isOpen, onClose, position }: InputConfigPanelProps) {
+  const { nodes, inputConfig, setInputValue } = useGraphStore();
+  const [expandedNodes, setExpandedNodes] = useState&lt;Set&lt;string&gt;&gt;(new Set());
+
+  // Get nodes that require external inputs
+  const nodesWithInputs = nodes.filter((node) =&gt; {
+    // Nodes with input ports that don&#39;t have connections
+    return node.inputs.some((input) =&gt; {
+      const hasConnection = useGraphStore
+        .getState()
+        .connections.some((conn) =&gt; conn.toNode === node.id &amp;&amp; conn.toPort === input.id);
+      return !hasConnection &amp;&amp; input.required;
+    });
+  });
+
+  const toggleNode = (nodeId: string) =&gt; {
+    setExpandedNodes((prev) =&gt; {
+      const next = new Set(prev);
+      if (next.has(nodeId)) {
+        next.delete(nodeId);
+      } else {
+        next.add(nodeId);
+      }
+      return next;
+    });
+  };
+
+  const renderInputEditor = (nodeId: string, port: Port) =&gt; {
+    const currentValue = inputConfig[nodeId]?.[port.id];
+    const dataType = port.dataType.name;
+
+    const handleChange = (value: unknown) =&gt; {
+      setInputValue(nodeId, port.id, value);
+    };
+
+    switch (dataType) {
+      case &#39;string&#39;:
+        return (
+          &lt;input
+            type=&quot;text&quot;
+            value={(currentValue as string) || &#39;&#39;}
+            onChange={(e) =&gt; handleChange(e.target.value)}
+            className=&quot;w-full px-3 py-2 border border-gray-300 text-sm&quot;
+            placeholder={`Enter ${port.name}...`}
+          /&gt;
+        );
+      case &#39;number&#39;:
+        return (
+          &lt;input
+            type=&quot;number&quot;
+            value={(currentValue as number) ?? &#39;&#39;}
+            onChange={(e) =&gt; handleChange(Number.parseFloat(e.target.value) || 0)}
+            className=&quot;w-full px-3 py-2 border border-gray-300 text-sm&quot;
+            placeholder={`Enter ${port.name}...`}
+          /&gt;
+        );
+      case &#39;boolean&#39;:
+        return (
+          &lt;label className=&quot;flex items-center gap-2&quot;&gt;
+            &lt;input
+              type=&quot;checkbox&quot;
+              checked={(currentValue as boolean) ?? false}
+              onChange={(e) =&gt; handleChange(e.target.checked)}
+              className=&quot;w-4 h-4&quot;
+            /&gt;
+            &lt;span className=&quot;text-sm&quot;&gt;{port.name}&lt;/span&gt;
+          &lt;/label&gt;
+        );
+      case &#39;object&#39;:
+      case &#39;array&#39;:
+        return (
+          &lt;textarea
+            value={JSON.stringify(currentValue || (dataType === &#39;array&#39; ? [] : {}), null, 2)}
+            onChange={(e) =&gt; {
+              try {
+                handleChange(JSON.parse(e.target.value));
+              } catch {
+                // Invalid JSON, keep as is
+              }
+            }}
+            className=&quot;w-full px-3 py-2 border border-gray-300 text-sm font-mono&quot;
+            rows={4}
+            placeholder={`Enter ${port.name} as JSON...`}
+          /&gt;
+        );
+      default:
+        return (
+          &lt;input
+            type=&quot;text&quot;
+            value={String(currentValue || &#39;&#39;)}
+            onChange={(e) =&gt; handleChange(e.target.value)}
+            className=&quot;w-full px-3 py-2 border border-gray-300 text-sm&quot;
+            placeholder={`Enter ${port.name}...`}
+          /&gt;
+        );
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    &lt;div
+      className=&quot;fixed bg-white shadow-2xl border-2 border-gray-300 z-50 w-96 max-h-[600px] flex flex-col&quot;
+      style={{
+        left: position?.x ?? &#39;50%&#39;,
+        top: position?.y ?? &#39;50%&#39;,
+        transform: position ? &#39;none&#39; : &#39;translate(-50%, -50%)&#39;,
+      }}
+    &gt;
+      {/* Header */}
+      &lt;div className=&quot;bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-3 flex items-center justify-between&quot;&gt;
+        &lt;h3 className=&quot;font-semibold text-sm&quot;&gt;Input Configuration&lt;/h3&gt;
+        &lt;button onClick={onClose} className=&quot;p-1 hover:bg-blue-700 transition-colors&quot;&gt;
+          &lt;X className=&quot;w-4 h-4&quot; /&gt;
+        &lt;/button&gt;
+      &lt;/div&gt;
+
+      {/* Content */}
+      &lt;div className=&quot;flex-1 overflow-y-auto p-4 space-y-4&quot;&gt;
+        {nodesWithInputs.length === 0 ? (
+          &lt;div className=&quot;text-center text-sm text-gray-500 py-8&quot;&gt;
+            No nodes require external inputs
+          &lt;/div&gt;
+        ) : (
+          nodesWithInputs.map((node) =&gt; {
+            const requiredInputs = node.inputs.filter((input) =&gt; {
+              const hasConnection = useGraphStore
+                .getState()
+                .connections.some((conn) =&gt; conn.toNode === node.id &amp;&amp; conn.toPort === input.id);
+              return !hasConnection &amp;&amp; input.required;
+            });
+
+            if (requiredInputs.length === 0) return null;
+
+            const isExpanded = expandedNodes.has(node.id);
+
+            return (
+              &lt;div key={node.id} className=&quot;border border-gray-200&quot;&gt;
+                &lt;button
+                  onClick={() =&gt; toggleNode(node.id)}
+                  className=&quot;w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors&quot;
+                &gt;
+                  &lt;span className=&quot;font-medium text-sm text-gray-900&quot;&gt;{node.name}&lt;/span&gt;
+                  &lt;span className=&quot;text-xs text-gray-500&quot;&gt;
+                    {isExpanded ? &#39;▼&#39; : &#39;▶&#39;} {requiredInputs.length} inputs
+                  &lt;/span&gt;
+                &lt;/button&gt;
+
+                {isExpanded &amp;&amp; (
+                  &lt;div className=&quot;px-3 pb-3 space-y-3 border-t border-gray-200&quot;&gt;
+                    {requiredInputs.map((input) =&gt; (
+                      &lt;div key={input.id}&gt;
+                        &lt;label className=&quot;block text-xs font-medium text-gray-700 mb-1&quot;&gt;
+                          {input.name}
+                          &lt;span className=&quot;text-gray-500 ml-1&quot;&gt;({input.dataType.name})&lt;/span&gt;
+                        &lt;/label&gt;
+                        {renderInputEditor(node.id, input)}
+                      &lt;/div&gt;
+                    ))}
+                  &lt;/div&gt;
+                )}
+              &lt;/div&gt;
+            );
+          })
+        )}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h2>3. Data Flow Visualization</h2>
+<h3>3.1 Connection State Management</h3>
+<p><strong>File</strong>: <code>store/graphStore.ts</code> (extend)</p>
+<pre><code class="language-typescript">interface ConnectionState {
+  connectionId: string;
+  status: &#39;idle&#39; | &#39;active&#39; | &#39;error&#39;;
+  data?: unknown;
+  animationProgress?: number;
+}
+
+interface GraphState {
+  // ... existing
+  connectionStates: Record&lt;string, ConnectionState&gt;;
+  showDataFlow: boolean;
+  showConnectionValues: boolean;
+  
+  updateConnectionState: (connectionId: string, state: Partial&lt;ConnectionState&gt;) =&gt; void;
+  setShowDataFlow: (show: boolean) =&gt; void;
+  setShowConnectionValues: (show: boolean) =&gt; void;
+}
+</code></pre>
+<h3>3.2 DataFlowVisualization Component</h3>
+<p><strong>File</strong>: <code>components/graph/DataFlowVisualization.tsx</code></p>
+<pre><code class="language-typescript">&#39;use client&#39;;
+
+import { useEffect, useRef } from &#39;react&#39;;
+import { useGraphStore } from &#39;../../store/graphStore&#39;;
+
+export default function DataFlowVisualization() {
+  const { connections, connectionStates, showDataFlow, showConnectionValues } = useGraphStore();
+  const animationRef = useRef&lt;number&gt;();
+
+  useEffect(() =&gt; {
+    if (!showDataFlow) return;
+
+    const animate = () =&gt; {
+      // Update animation progress for active connections
+      // This would be called during execution
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () =&gt; {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [showDataFlow]);
+
+  // This component would be integrated into ReactFlowCanvas
+  // to overlay animated connections
+  return null;
+}
+</code></pre>
+<h2>4. Debugging Features</h2>
+<h3>4.1 Breakpoint System</h3>
+<p><strong>File</strong>: <code>store/graphStore.ts</code> (extend)</p>
+<pre><code class="language-typescript">interface Breakpoint {
+  nodeId: string;
+  enabled: boolean;
+  condition?: string;
+}
+
+interface GraphState {
+  // ... existing
+  breakpoints: Record&lt;string, Breakpoint&gt;;
+  isPaused: boolean;
+  stepMode: boolean;
+  currentStepNodeId: string | null;
+  
+  addBreakpoint: (nodeId: string, condition?: string) =&gt; void;
+  removeBreakpoint: (nodeId: string) =&gt; void;
+  toggleBreakpoint: (nodeId: string) =&gt; void;
+  pauseExecution: () =&gt; void;
+  resumeExecution: () =&gt; void;
+  stepExecution: () =&gt; void;
+}
+</code></pre>
+<h3>4.2 DebugPanel Component</h3>
+<p><strong>File</strong>: <code>components/graph/DebugPanel.tsx</code></p>
+<pre><code class="language-typescript">&#39;use client&#39;;
+
+import { useState } from &#39;react&#39;;
+import { Play, Pause, StepForward, X } from &#39;lucide-react&#39;;
+import { useGraphStore } from &#39;../../store/graphStore&#39;;
+
+export default function DebugPanel() {
+  const {
+    nodes,
+    breakpoints,
+    isPaused,
+    stepMode,
+    addBreakpoint,
+    removeBreakpoint,
+    toggleBreakpoint,
+    pauseExecution,
+    resumeExecution,
+    stepExecution,
+  } = useGraphStore();
+
+  return (
+    &lt;div className=&quot;fixed bottom-4 right-4 bg-white shadow-2xl border-2 border-gray-300 z-50 w-80 max-h-[400px] flex flex-col&quot;&gt;
+      {/* Header */}
+      &lt;div className=&quot;bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-3 flex items-center justify-between&quot;&gt;
+        &lt;h3 className=&quot;font-semibold text-sm&quot;&gt;Debug Panel&lt;/h3&gt;
+        &lt;button className=&quot;p-1 hover:bg-purple-700 transition-colors&quot;&gt;
+          &lt;X className=&quot;w-4 h-4&quot; /&gt;
+        &lt;/button&gt;
+      &lt;/div&gt;
+
+      {/* Controls */}
+      &lt;div className=&quot;px-4 py-3 border-b border-gray-200 flex items-center gap-2&quot;&gt;
+        &lt;button
+          onClick={isPaused ? resumeExecution : pauseExecution}
+          className=&quot;p-2 hover:bg-gray-100 transition-colors&quot;
+        &gt;
+          {isPaused ? &lt;Play className=&quot;w-4 h-4&quot; /&gt; : &lt;Pause className=&quot;w-4 h-4&quot; /&gt;}
+        &lt;/button&gt;
+        &lt;button
+          onClick={stepExecution}
+          disabled={!isPaused}
+          className=&quot;p-2 hover:bg-gray-100 transition-colors disabled:opacity-50&quot;
+        &gt;
+          &lt;StepForward className=&quot;w-4 h-4&quot; /&gt;
+        &lt;/button&gt;
+      &lt;/div&gt;
+
+      {/* Breakpoints */}
+      &lt;div className=&quot;flex-1 overflow-y-auto p-4&quot;&gt;
+        &lt;h4 className=&quot;text-xs font-semibold text-gray-700 mb-2&quot;&gt;Breakpoints&lt;/h4&gt;
+        {nodes.map((node) =&gt; {
+          const breakpoint = breakpoints[node.id];
+          return (
+            &lt;div key={node.id} className=&quot;flex items-center gap-2 mb-2&quot;&gt;
+              &lt;input
+                type=&quot;checkbox&quot;
+                checked={breakpoint?.enabled ?? false}
+                onChange={() =&gt; {
+                  if (breakpoint) {
+                    toggleBreakpoint(node.id);
+                  } else {
+                    addBreakpoint(node.id);
+                  }
+                }}
+                className=&quot;w-4 h-4&quot;
+              /&gt;
+              &lt;span className=&quot;text-xs text-gray-700 flex-1&quot;&gt;{node.name}&lt;/span&gt;
+              {breakpoint &amp;&amp; (
+                &lt;button
+                  onClick={() =&gt; removeBreakpoint(node.id)}
+                  className=&quot;text-xs text-red-600 hover:text-red-800&quot;
+                &gt;
+                  Remove
+                &lt;/button&gt;
+              )}
+            &lt;/div&gt;
+          );
+        })}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h2>Integration Points</h2>
+<h3>Update ExecutionToolbar</h3>
+<p><strong>File</strong>: <code>components/graph/ExecutionToolbar.tsx</code> (modify)</p>
+<ul>
+<li>Add streaming execution support</li>
+<li>Add input config panel toggle</li>
+<li>Add debug panel toggle</li>
+<li>Add data flow visualization toggle</li>
+</ul>
+<h3>Update ReactFlowCanvas</h3>
+<p><strong>File</strong>: <code>components/graph/ReactFlowCanvas.tsx</code> (modify)</p>
+<ul>
+<li>Integrate DataFlowVisualization</li>
+<li>Show connection states</li>
+<li>Display connection values when enabled</li>
+</ul>
+<h2>Testing</h2>
+<p>See <code>LIVE-GRAPH-EXECUTION-PHASE2-TESTS.md</code> for detailed test specifications.</p>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

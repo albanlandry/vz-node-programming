@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Nodes Support Strategy - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" class="active">Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>Interactive Nodes Support Strategy</h1>
+<h2>Overview</h2>
+<p>This document proposes a strategy for supporting interactive nodes in the VZ Programming system. Interactive nodes are nodes that can request user input during execution or display special types of data (images, streaming, etc.).</p>
+<h2>Goals</h2>
+<ol>
+<li><strong>User Input Nodes</strong>: Display forms to users during execution and receive and validate input</li>
+<li><strong>Image Display Nodes</strong>: Visually display image data</li>
+<li><strong>Streaming Data Nodes</strong>: Display data that updates in real-time</li>
+<li><strong>Extensible Architecture</strong>: Enable future addition of other interactive features</li>
+</ol>
+<h2>Current Architecture Analysis</h2>
+<h3>Current Execution Flow</h3>
+<pre><code>GraphExecutionEngine
+  └─&gt; NodeExecutor
+       └─&gt; INode.execute(context)
+            └─&gt; ExecutionResult (outputs, error, executionTime)
+                 └─&gt; ExecutionResultsPanel (text-based display)
+</code></pre>
+<h3>Limitations</h3>
+<ol>
+<li><strong>Synchronous Execution</strong>: Nodes wait until the <code>execute()</code> method completes</li>
+<li><strong>Simple Output</strong>: Results are only displayed as text/JSON</li>
+<li><strong>Non-Interactive</strong>: Cannot receive user input</li>
+<li><strong>Static Display</strong>: Only shows results after execution completes</li>
+</ol>
+<h2>Proposed Architecture</h2>
+<h3>1. Interactive Node Interface Extension</h3>
+<pre><code class="language-typescript">// src/types/index.ts
+
+/**
+ * Interactive node types
+ */
+export enum InteractiveNodeType {
+  USER_INPUT = &#39;user-input&#39;,      // User input request
+  IMAGE_DISPLAY = &#39;image-display&#39;, // Image display
+  STREAMING = &#39;streaming&#39;,         // Streaming data
+  CUSTOM_UI = &#39;custom-ui&#39;,         // Custom UI component
+}
+
+/**
+ * User input request
+ */
+export interface UserInputRequest {
+  type: &#39;form&#39; | &#39;prompt&#39; | &#39;confirm&#39;;
+  formSchema?: FormSchema;
+  prompt?: string;
+  defaultValue?: unknown;
+  validation?: ValidationRule[];
+}
+
+/**
+ * Form schema
+ */
+export interface FormSchema {
+  fields: FormField[];
+  title?: string;
+  description?: string;
+}
+
+export interface FormField {
+  id: string;
+  label: string;
+  type: &#39;text&#39; | &#39;number&#39; | &#39;email&#39; | &#39;password&#39; | &#39;select&#39; | &#39;checkbox&#39; | &#39;textarea&#39; | &#39;date&#39;;
+  required?: boolean;
+  placeholder?: string;
+  defaultValue?: unknown;
+  options?: { label: string; value: unknown }[]; // for select
+  validation?: ValidationRule[];
+}
+
+export interface ValidationRule {
+  type: &#39;required&#39; | &#39;min&#39; | &#39;max&#39; | &#39;pattern&#39; | &#39;custom&#39;;
+  value?: unknown;
+  message?: string;
+  validator?: (value: unknown) =&gt; boolean | string;
+}
+
+/**
+ * Interactive node execution context extension
+ */
+export interface InteractiveExecutionContext extends ExecutionContext {
+  /**
+   * Request user input
+   * When a node calls this method, execution is paused and UI is displayed
+   */
+  requestUserInput(request: UserInputRequest): Promise&lt;unknown&gt;;
+  
+  /**
+   * Request image display
+   */
+  displayImage(imageData: ImageData): void;
+  
+  /**
+   * Update streaming data
+   */
+  updateStreamingData(data: unknown): void;
+  
+  /**
+   * Request custom UI component rendering
+   */
+  renderCustomUI(componentType: string, props: Record&lt;string, unknown&gt;): void;
+}
+
+/**
+ * Image data
+ */
+export interface ImageData {
+  url?: string;
+  base64?: string;
+  blob?: Blob;
+  format: &#39;png&#39; | &#39;jpg&#39; | &#39;jpeg&#39; | &#39;gif&#39; | &#39;webp&#39; | &#39;svg&#39;;
+  alt?: string;
+  width?: number;
+  height?: number;
+}
+
+/**
+ * Interactive node interface
+ */
+export interface IInteractiveNode extends INode {
+  /**
+   * Whether this node is interactive
+   */
+  readonly isInteractive: boolean;
+  
+  /**
+   * Interactive node type
+   */
+  readonly interactiveType?: InteractiveNodeType;
+  
+  /**
+   * Interactive execution method
+   */
+  executeInteractive(context: InteractiveExecutionContext): Promise&lt;ExecutionResult&gt;;
+}
+</code></pre>
+<h3>2. Execution Engine Extension</h3>
+<pre><code class="language-typescript">// src/core/InteractiveNodeExecutor.ts
+
+/**
+ * Event types for interactive node execution
+ */
+export enum InteractiveNodeEventType {
+  USER_INPUT_REQUESTED = &#39;interactive:user-input-requested&#39;,
+  USER_INPUT_RECEIVED = &#39;interactive:user-input-received&#39;,
+  IMAGE_DISPLAY_REQUESTED = &#39;interactive:image-display-requested&#39;,
+  STREAMING_DATA_UPDATE = &#39;interactive:streaming-data-update&#39;,
+  CUSTOM_UI_RENDER = &#39;interactive:custom-ui-render&#39;,
+  NODE_PAUSED = &#39;interactive:node-paused&#39;,
+  NODE_RESUMED = &#39;interactive:node-resumed&#39;,
+}
+
+/**
+ * Interactive node execution context implementation
+ */
+export class InteractiveExecutionContext implements InteractiveExecutionContext {
+  private inputResolver?: (value: unknown) =&gt; void;
+  private inputRejecter?: (error: Error) =&gt; void;
+  private eventEmitter: EventEmitter;
+  
+  constructor(
+    private baseContext: ExecutionContext,
+    eventEmitter: EventEmitter,
+  ) {
+    this.eventEmitter = eventEmitter;
+  }
+  
+  async requestUserInput(request: UserInputRequest): Promise&lt;unknown&gt; {
+    return new Promise((resolve, reject) =&gt; {
+      this.inputResolver = resolve;
+      this.inputRejecter = reject;
+      
+      // Emit event: Display input request in UI
+      this.eventEmitter.emit(InteractiveNodeEventType.USER_INPUT_REQUESTED, {
+        nodeId: this.baseContext.executionId,
+        request,
+      });
+      
+      // Emit event: Pause node
+      this.eventEmitter.emit(InteractiveNodeEventType.NODE_PAUSED, {
+        nodeId: this.baseContext.executionId,
+      });
+    });
+  }
+  
+  displayImage(imageData: ImageData): void {
+    this.eventEmitter.emit(InteractiveNodeEventType.IMAGE_DISPLAY_REQUESTED, {
+      nodeId: this.baseContext.executionId,
+      imageData,
+    });
+  }
+  
+  updateStreamingData(data: unknown): void {
+    this.eventEmitter.emit(InteractiveNodeEventType.STREAMING_DATA_UPDATE, {
+      nodeId: this.baseContext.executionId,
+      data,
+    });
+  }
+  
+  renderCustomUI(componentType: string, props: Record&lt;string, unknown&gt;): void {
+    this.eventEmitter.emit(InteractiveNodeEventType.CUSTOM_UI_RENDER, {
+      nodeId: this.baseContext.executionId,
+      componentType,
+      props,
+    });
+  }
+  
+  // Called when user input is provided
+  provideUserInput(value: unknown): void {
+    if (this.inputResolver) {
+      this.inputResolver(value);
+      this.inputResolver = undefined;
+      this.inputRejecter = undefined;
+      
+      this.eventEmitter.emit(InteractiveNodeEventType.USER_INPUT_RECEIVED, {
+        nodeId: this.baseContext.executionId,
+      });
+      
+      this.eventEmitter.emit(InteractiveNodeEventType.NODE_RESUMED, {
+        nodeId: this.baseContext.executionId,
+      });
+    }
+  }
+  
+  // Cancel input
+  cancelUserInput(error?: Error): void {
+    if (this.inputRejecter) {
+      this.inputRejecter(error || new Error(&#39;User input cancelled&#39;));
+      this.inputResolver = undefined;
+      this.inputRejecter = undefined;
+    }
+  }
+  
+  // ExecutionContext delegation
+  get executionId() { return this.baseContext.executionId; }
+  get inputs() { return this.baseContext.inputs; }
+  get outputs() { return this.baseContext.outputs; }
+  get metadata() { return this.baseContext.metadata; }
+  get errorHandler() { return this.baseContext.errorHandler; }
+}
+</code></pre>
+<h3>3. Frontend Components</h3>
+<h4>3.1 Interactive Node UI Manager</h4>
+<pre><code class="language-typescript">// components/graph/InteractiveNodeManager.tsx
+
+&#39;use client&#39;;
+
+import { useEffect, useState } from &#39;react&#39;;
+import { streamingExecutionService } from &#39;../../services/streamingExecutionService&#39;;
+import UserInputDialog from &#39;./interactive/UserInputDialog&#39;;
+import ImageDisplayPanel from &#39;./interactive/ImageDisplayPanel&#39;;
+import StreamingDataPanel from &#39;./interactive/StreamingDataPanel&#39;;
+import CustomUIPanel from &#39;./interactive/CustomUIPanel&#39;;
+
+interface InteractiveNodeState {
+  nodeId: string;
+  type: InteractiveNodeType;
+  data: unknown;
+}
+
+export default function InteractiveNodeManager() {
+  const [userInputRequest, setUserInputRequest] = useState&lt;UserInputRequest | null&gt;(null);
+  const [pendingNodeId, setPendingNodeId] = useState&lt;string | null&gt;(null);
+  const [imageDisplays, setImageDisplays] = useState&lt;Map&lt;string, ImageData&gt;&gt;(new Map());
+  const [streamingNodes, setStreamingNodes] = useState&lt;Map&lt;string, unknown&gt;&gt;(new Map());
+  const [customUIs, setCustomUIs] = useState&lt;Map&lt;string, { componentType: string; props: unknown }&gt;&gt;(new Map());
+
+  useEffect(() =&gt; {
+    const handleUserInputRequested = (event: CustomEvent) =&gt; {
+      const { nodeId, request } = event.detail;
+      setUserInputRequest(request);
+      setPendingNodeId(nodeId);
+    };
+
+    const handleImageDisplay = (event: CustomEvent) =&gt; {
+      const { nodeId, imageData } = event.detail;
+      setImageDisplays(prev =&gt; new Map(prev).set(nodeId, imageData));
+    };
+
+    const handleStreamingUpdate = (event: CustomEvent) =&gt; {
+      const { nodeId, data } = event.detail;
+      setStreamingNodes(prev =&gt; new Map(prev).set(nodeId, data));
+    };
+
+    const handleCustomUIRender = (event: CustomEvent) =&gt; {
+      const { nodeId, componentType, props } = event.detail;
+      setCustomUIs(prev =&gt; new Map(prev).set(nodeId, { componentType, props }));
+    };
+
+    // Register SSE event listeners
+    window.addEventListener(&#39;interactive:user-input-requested&#39;, handleUserInputRequested);
+    window.addEventListener(&#39;interactive:image-display-requested&#39;, handleImageDisplay);
+    window.addEventListener(&#39;interactive:streaming-data-update&#39;, handleStreamingUpdate);
+    window.addEventListener(&#39;interactive:custom-ui-render&#39;, handleCustomUIRender);
+
+    return () =&gt; {
+      window.removeEventListener(&#39;interactive:user-input-requested&#39;, handleUserInputRequested);
+      window.removeEventListener(&#39;interactive:image-display-requested&#39;, handleImageDisplay);
+      window.removeEventListener(&#39;interactive:streaming-data-update&#39;, handleStreamingUpdate);
+      window.removeEventListener(&#39;interactive:custom-ui-render&#39;, handleCustomUIRender);
+    };
+  }, []);
+
+  const handleUserInputSubmit = async (value: unknown) =&gt; {
+    if (pendingNodeId) {
+      // Send user input to backend
+      await fetch(`/api/graphs/interactive/input/${pendingNodeId}`, {
+        method: &#39;POST&#39;,
+        headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+        body: JSON.stringify({ value }),
+      });
+      
+      setUserInputRequest(null);
+      setPendingNodeId(null);
+    }
+  };
+
+  const handleUserInputCancel = async () =&gt; {
+    if (pendingNodeId) {
+      await fetch(`/api/graphs/interactive/input/${pendingNodeId}`, {
+        method: &#39;POST&#39;,
+        headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+        body: JSON.stringify({ cancelled: true }),
+      });
+      
+      setUserInputRequest(null);
+      setPendingNodeId(null);
+    }
+  };
+
+  return (
+    &lt;&gt;
+      {/* User Input Dialog */}
+      {userInputRequest &amp;&amp; pendingNodeId &amp;&amp; (
+        &lt;UserInputDialog
+          request={userInputRequest}
+          onSubmit={handleUserInputSubmit}
+          onCancel={handleUserInputCancel}
+        /&gt;
+      )}
+
+      {/* Image Display Panels */}
+      {Array.from(imageDisplays.entries()).map(([nodeId, imageData]) =&gt; (
+        &lt;ImageDisplayPanel
+          key={nodeId}
+          nodeId={nodeId}
+          imageData={imageData}
+          onClose={() =&gt; {
+            setImageDisplays(prev =&gt; {
+              const next = new Map(prev);
+              next.delete(nodeId);
+              return next;
+            });
+          }}
+        /&gt;
+      ))}
+
+      {/* Streaming Data Panels */}
+      {Array.from(streamingNodes.entries()).map(([nodeId, data]) =&gt; (
+        &lt;StreamingDataPanel
+          key={nodeId}
+          nodeId={nodeId}
+          data={data}
+          onClose={() =&gt; {
+            setStreamingNodes(prev =&gt; {
+              const next = new Map(prev);
+              next.delete(nodeId);
+              return next;
+            });
+          }}
+        /&gt;
+      ))}
+
+      {/* Custom UI Panels */}
+      {Array.from(customUIs.entries()).map(([nodeId, { componentType, props }]) =&gt; (
+        &lt;CustomUIPanel
+          key={nodeId}
+          nodeId={nodeId}
+          componentType={componentType}
+          props={props}
+          onClose={() =&gt; {
+            setCustomUIs(prev =&gt; {
+              const next = new Map(prev);
+              next.delete(nodeId);
+              return next;
+            });
+          }}
+        /&gt;
+      ))}
+    &lt;/&gt;
+  );
+}
+</code></pre>
+<h4>3.2 User Input Dialog</h4>
+<pre><code class="language-typescript">// components/graph/interactive/UserInputDialog.tsx
+
+&#39;use client&#39;;
+
+import { useState, useEffect } from &#39;react&#39;;
+import { X } from &#39;lucide-react&#39;;
+import type { UserInputRequest, FormField, ValidationRule } from &#39;../../../src/types&#39;;
+
+interface UserInputDialogProps {
+  request: UserInputRequest;
+  onSubmit: (value: unknown) =&gt; void;
+  onCancel: () =&gt; void;
+}
+
+export default function UserInputDialog({ request, onSubmit, onCancel }: UserInputDialogProps) {
+  const [formData, setFormData] = useState&lt;Record&lt;string, unknown&gt;&gt;({});
+  const [errors, setErrors] = useState&lt;Record&lt;string, string&gt;&gt;({});
+
+  useEffect(() =&gt; {
+    // Set initial values
+    if (request.formSchema) {
+      const initial: Record&lt;string, unknown&gt; = {};
+      request.formSchema.fields.forEach(field =&gt; {
+        initial[field.id] = field.defaultValue ?? &#39;&#39;;
+      });
+      setFormData(initial);
+    } else if (request.defaultValue !== undefined) {
+      setFormData({ value: request.defaultValue });
+    }
+  }, [request]);
+
+  const validateField = (field: FormField, value: unknown): string | null =&gt; {
+    if (field.required &amp;&amp; (value === null || value === undefined || value === &#39;&#39;)) {
+      return `${field.label} is required`;
+    }
+
+    if (field.validation) {
+      for (const rule of field.validation) {
+        const error = validateRule(rule, value);
+        if (error) return error;
+      }
+    }
+
+    return null;
+  };
+
+  const validateRule = (rule: ValidationRule, value: unknown): string | null =&gt; {
+    switch (rule.type) {
+      case &#39;required&#39;:
+        if (value === null || value === undefined || value === &#39;&#39;) {
+          return rule.message || &#39;This field is required&#39;;
+        }
+        break;
+      case &#39;min&#39;:
+        if (typeof value === &#39;number&#39; &amp;&amp; value &lt; (rule.value as number)) {
+          return rule.message || `Minimum value is ${rule.value}`;
+        }
+        break;
+      case &#39;max&#39;:
+        if (typeof value === &#39;number&#39; &amp;&amp; value &gt; (rule.value as number)) {
+          return rule.message || `Maximum value is ${rule.value}`;
+        }
+        break;
+      case &#39;pattern&#39;:
+        if (typeof value === &#39;string&#39; &amp;&amp; rule.value instanceof RegExp) {
+          if (!rule.value.test(value)) {
+            return rule.message || &#39;Invalid format&#39;;
+          }
+        }
+        break;
+      case &#39;custom&#39;:
+        if (rule.validator) {
+          const result = rule.validator(value);
+          if (result !== true) {
+            return typeof result === &#39;string&#39; ? result : (rule.message || &#39;Validation failed&#39;);
+          }
+        }
+        break;
+    }
+    return null;
+  };
+
+  const handleSubmit = (e: React.FormEvent) =&gt; {
+    e.preventDefault();
+
+    // Validate entire form
+    const newErrors: Record&lt;string, string&gt; = {};
+    if (request.formSchema) {
+      request.formSchema.fields.forEach(field =&gt; {
+        const error = validateField(field, formData[field.id]);
+        if (error) {
+          newErrors[field.id] = error;
+        }
+      });
+    }
+
+    if (Object.keys(newErrors).length &gt; 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // Send single value or form data
+    const value = request.formSchema ? formData : formData.value;
+    onSubmit(value);
+  };
+
+  const renderField = (field: FormField) =&gt; {
+    const value = formData[field.id];
+    const error = errors[field.id];
+
+    return (
+      &lt;div key={field.id} className=&quot;mb-4&quot;&gt;
+        &lt;label className=&quot;block text-sm font-semibold text-gray-700 mb-2&quot;&gt;
+          {field.label}
+          {field.required &amp;&amp; &lt;span className=&quot;text-red-500 ml-1&quot;&gt;*&lt;/span&gt;}
+        &lt;/label&gt;
+        
+        {field.type === &#39;textarea&#39; ? (
+          &lt;textarea
+            value={value as string || &#39;&#39;}
+            onChange={(e) =&gt; setFormData(prev =&gt; ({ ...prev, [field.id]: e.target.value }))}
+            className={`w-full px-4 py-2 bg-white border ${error ? &#39;border-red-500&#39; : &#39;border-gray-300&#39;} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            placeholder={field.placeholder}
+            rows={4}
+          /&gt;
+        ) : field.type === &#39;select&#39; ? (
+          &lt;select
+            value={value as string || &#39;&#39;}
+            onChange={(e) =&gt; setFormData(prev =&gt; ({ ...prev, [field.id]: e.target.value }))}
+            className={`w-full px-4 py-2 bg-white border ${error ? &#39;border-red-500&#39; : &#39;border-gray-300&#39;} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+          &gt;
+            &lt;option value=&quot;&quot;&gt;Select...&lt;/option&gt;
+            {field.options?.map(opt =&gt; (
+              &lt;option key={String(opt.value)} value={String(opt.value)}&gt;
+                {opt.label}
+              &lt;/option&gt;
+            ))}
+          &lt;/select&gt;
+        ) : field.type === &#39;checkbox&#39; ? (
+          &lt;input
+            type=&quot;checkbox&quot;
+            checked={value as boolean || false}
+            onChange={(e) =&gt; setFormData(prev =&gt; ({ ...prev, [field.id]: e.target.checked }))}
+            className=&quot;w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500&quot;
+          /&gt;
+        ) : (
+          &lt;input
+            type={field.type}
+            value={value as string || &#39;&#39;}
+            onChange={(e) =&gt; setFormData(prev =&gt; ({ ...prev, [field.id]: e.target.value }))}
+            className={`w-full px-4 py-2 bg-white border ${error ? &#39;border-red-500&#39; : &#39;border-gray-300&#39;} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            placeholder={field.placeholder}
+          /&gt;
+        )}
+        
+        {error &amp;&amp; (
+          &lt;div className=&quot;text-xs text-red-600 mt-1&quot;&gt;{error}&lt;/div&gt;
+        )}
+      &lt;/div&gt;
+    );
+  };
+
+  return (
+    &lt;div className=&quot;fixed inset-0 bg-black/50 flex items-center justify-center z-50&quot;&gt;
+      &lt;div className=&quot;bg-white shadow-xl p-6 max-w-md w-full mx-4&quot;&gt;
+        &lt;div className=&quot;flex items-center justify-between mb-4&quot;&gt;
+          &lt;h3 className=&quot;text-lg font-bold text-gray-900&quot;&gt;
+            {request.formSchema?.title || request.prompt || &#39;Input Required&#39;}
+          &lt;/h3&gt;
+          &lt;button
+            onClick={onCancel}
+            className=&quot;p-1 hover:bg-gray-100 transition-colors&quot;
+          &gt;
+            &lt;X className=&quot;w-5 h-5 text-gray-600&quot; /&gt;
+          &lt;/button&gt;
+        &lt;/div&gt;
+
+        {request.formSchema?.description &amp;&amp; (
+          &lt;p className=&quot;text-sm text-gray-600 mb-4&quot;&gt;{request.formSchema.description}&lt;/p&gt;
+        )}
+
+        &lt;form onSubmit={handleSubmit}&gt;
+          {request.formSchema ? (
+            &lt;div&gt;
+              {request.formSchema.fields.map(renderField)}
+            &lt;/div&gt;
+          ) : (
+            &lt;div className=&quot;mb-4&quot;&gt;
+              &lt;p className=&quot;text-sm text-gray-700 mb-2&quot;&gt;{request.prompt}&lt;/p&gt;
+              &lt;input
+                type=&quot;text&quot;
+                value={formData.value as string || &#39;&#39;}
+                onChange={(e) =&gt; setFormData({ value: e.target.value })}
+                className=&quot;w-full px-4 py-2 bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500&quot;
+                autoFocus
+              /&gt;
+            &lt;/div&gt;
+          )}
+
+          &lt;div className=&quot;flex justify-end gap-2 pt-4&quot;&gt;
+            &lt;button
+              type=&quot;button&quot;
+              onClick={onCancel}
+              className=&quot;btn btn-secondary btn-sm&quot;
+            &gt;
+              Cancel
+            &lt;/button&gt;
+            &lt;button
+              type=&quot;submit&quot;
+              className=&quot;btn btn-primary btn-sm&quot;
+            &gt;
+              Submit
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h4>3.3 Image Display Panel</h4>
+<pre><code class="language-typescript">// components/graph/interactive/ImageDisplayPanel.tsx
+
+&#39;use client&#39;;
+
+import { X } from &#39;lucide-react&#39;;
+import type { ImageData } from &#39;../../../src/types&#39;;
+
+interface ImageDisplayPanelProps {
+  nodeId: string;
+  imageData: ImageData;
+  onClose: () =&gt; void;
+}
+
+export default function ImageDisplayPanel({ nodeId, imageData, onClose }: ImageDisplayPanelProps) {
+  const getImageSrc = () =&gt; {
+    if (imageData.url) return imageData.url;
+    if (imageData.base64) return `data:image/${imageData.format};base64,${imageData.base64}`;
+    if (imageData.blob) return URL.createObjectURL(imageData.blob);
+    return null;
+  };
+
+  const src = getImageSrc();
+  if (!src) return null;
+
+  return (
+    &lt;div className=&quot;fixed inset-0 bg-black/80 flex items-center justify-center z-50&quot;&gt;
+      &lt;div className=&quot;relative max-w-4xl max-h-[90vh] bg-white p-4&quot;&gt;
+        &lt;button
+          onClick={onClose}
+          className=&quot;absolute top-2 right-2 p-2 bg-white hover:bg-gray-100 transition-colors&quot;
+        &gt;
+          &lt;X className=&quot;w-5 h-5 text-gray-600&quot; /&gt;
+        &lt;/button&gt;
+        
+        &lt;img
+          src={src}
+          alt={imageData.alt || `Image from node ${nodeId}`}
+          className=&quot;max-w-full max-h-[85vh] object-contain&quot;
+          style={{
+            width: imageData.width ? `${imageData.width}px` : &#39;auto&#39;,
+            height: imageData.height ? `${imageData.height}px` : &#39;auto&#39;,
+          }}
+        /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h4>3.4 Streaming Data Panel</h4>
+<pre><code class="language-typescript">// components/graph/interactive/StreamingDataPanel.tsx
+
+&#39;use client&#39;;
+
+import { useState, useEffect } from &#39;react&#39;;
+import { X } from &#39;lucide-react&#39;;
+
+interface StreamingDataPanelProps {
+  nodeId: string;
+  data: unknown;
+  onClose: () =&gt; void;
+}
+
+export default function StreamingDataPanel({ nodeId, data, onClose }: StreamingDataPanelProps) {
+  const [dataHistory, setDataHistory] = useState&lt;unknown[]&gt;([]);
+
+  useEffect(() =&gt; {
+    setDataHistory(prev =&gt; [...prev, data]);
+  }, [data]);
+
+  const formatValue = (value: unknown): string =&gt; {
+    if (value === null || value === undefined) return &#39;null&#39;;
+    if (typeof value === &#39;object&#39;) {
+      try {
+        return JSON.stringify(value, null, 2);
+      } catch {
+        return String(value);
+      }
+    }
+    return String(value);
+  };
+
+  return (
+    &lt;div className=&quot;fixed bottom-4 right-4 bg-white shadow-2xl border-2 border-gray-300 z-50 w-96 max-h-[400px] flex flex-col&quot;&gt;
+      &lt;div className=&quot;bg-blue-500 text-white px-4 py-2 flex items-center justify-between&quot;&gt;
+        &lt;h3 className=&quot;font-semibold text-sm&quot;&gt;Streaming Data: {nodeId}&lt;/h3&gt;
+        &lt;button
+          onClick={onClose}
+          className=&quot;p-1 hover:bg-blue-600 transition-colors&quot;
+        &gt;
+          &lt;X className=&quot;w-4 h-4&quot; /&gt;
+        &lt;/button&gt;
+      &lt;/div&gt;
+      
+      &lt;div className=&quot;flex-1 overflow-y-auto p-4 space-y-2&quot;&gt;
+        {dataHistory.map((item, index) =&gt; (
+          &lt;div key={index} className=&quot;bg-gray-50 p-2 border border-gray-200&quot;&gt;
+            &lt;div className=&quot;text-xs text-gray-500 mb-1&quot;&gt;Update #{index + 1}&lt;/div&gt;
+            &lt;pre className=&quot;text-xs text-gray-800 font-mono overflow-x-auto&quot;&gt;
+              {formatValue(item)}
+            &lt;/pre&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h3>4. Backend API Extension</h3>
+<pre><code class="language-typescript">// app/api/graphs/interactive/input/[nodeId]/route.ts
+
+import { NextRequest, NextResponse } from &#39;next/server&#39;;
+
+/**
+ * POST /api/graphs/interactive/input/[nodeId]
+ * Receive user input and pass it to the executing node
+ */
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { nodeId: string } },
+) {
+  try {
+    const { nodeId } = params;
+    const body = await request.json();
+    const { value, cancelled } = body;
+
+    // Provide input to the InteractiveExecutionContext of the executing node
+    // This requires internal state management in the execution engine
+    
+    // TODO: Manage InteractiveExecutionContext per node in execution engine
+    // const context = getInteractiveContext(nodeId);
+    // if (cancelled) {
+    //   context.cancelUserInput();
+    // } else {
+    //   context.provideUserInput(value);
+    // }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: &#39;Failed to provide user input&#39; },
+      { status: 500 },
+    );
+  }
+}
+</code></pre>
+<h3>5. Example Node Implementations</h3>
+<h4>5.1 User Input Node</h4>
+<pre><code class="language-typescript">// src/nodes/interactive/UserInputNode.ts
+
+import { BaseNode } from &#39;../../core/BaseNode&#39;;
+import type { InteractiveExecutionContext, ExecutionResult } from &#39;../../types&#39;;
+import { InteractiveNodeType } from &#39;../../types&#39;;
+
+export class UserInputNode extends BaseNode {
+  readonly isInteractive = true;
+  readonly interactiveType = InteractiveNodeType.USER_INPUT;
+
+  protected async executeInternal(
+    context: InteractiveExecutionContext,
+  ): Promise&lt;Map&lt;string, unknown&gt;&gt; {
+    const outputs = new Map&lt;string, unknown&gt;();
+
+    // Request user input
+    const userInput = await context.requestUserInput({
+      type: &#39;form&#39;,
+      formSchema: {
+        title: &#39;Enter User Information&#39;,
+        description: &#39;Please fill in the following information&#39;,
+        fields: [
+          {
+            id: &#39;name&#39;,
+            label: &#39;Name&#39;,
+            type: &#39;text&#39;,
+            required: true,
+            placeholder: &#39;Enter your name&#39;,
+            validation: [
+              { type: &#39;required&#39;, message: &#39;Name is required&#39; },
+              { type: &#39;pattern&#39;, value: /^[a-zA-Z\s]+$/, message: &#39;Name must contain only letters&#39; },
+            ],
+          },
+          {
+            id: &#39;email&#39;,
+            label: &#39;Email&#39;,
+            type: &#39;email&#39;,
+            required: true,
+            placeholder: &#39;Enter your email&#39;,
+            validation: [
+              { type: &#39;required&#39;, message: &#39;Email is required&#39; },
+              { type: &#39;pattern&#39;, value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: &#39;Invalid email format&#39; },
+            ],
+          },
+          {
+            id: &#39;age&#39;,
+            label: &#39;Age&#39;,
+            type: &#39;number&#39;,
+            required: false,
+            validation: [
+              { type: &#39;min&#39;, value: 0, message: &#39;Age must be positive&#39; },
+              { type: &#39;max&#39;, value: 150, message: &#39;Age must be less than 150&#39; },
+            ],
+          },
+        ],
+      },
+    });
+
+    // Set input values as outputs
+    if (typeof userInput === &#39;object&#39; &amp;&amp; userInput !== null) {
+      const inputObj = userInput as Record&lt;string, unknown&gt;;
+      outputs.set(&#39;name&#39;, inputObj.name || &#39;&#39;);
+      outputs.set(&#39;email&#39;, inputObj.email || &#39;&#39;);
+      outputs.set(&#39;age&#39;, inputObj.age || null);
+      outputs.set(&#39;raw&#39;, userInput);
+    } else {
+      outputs.set(&#39;value&#39;, userInput);
+    }
+
+    return outputs;
+  }
+}
+</code></pre>
+<h4>5.2 Image Display Node</h4>
+<pre><code class="language-typescript">// src/nodes/interactive/ImageDisplayNode.ts
+
+import { BaseNode } from &#39;../../core/BaseNode&#39;;
+import type { InteractiveExecutionContext, ExecutionResult } from &#39;../../types&#39;;
+import { InteractiveNodeType } from &#39;../../types&#39;;
+
+export class ImageDisplayNode extends BaseNode {
+  readonly isInteractive = true;
+  readonly interactiveType = InteractiveNodeType.IMAGE_DISPLAY;
+
+  protected async executeInternal(
+    context: InteractiveExecutionContext,
+  ): Promise&lt;Map&lt;string, unknown&gt;&gt; {
+    const outputs = new Map&lt;string, unknown&gt;();
+
+    // Get image URL or data from inputs
+    const imageUrl = context.inputs.get(&#39;url&#39;) as string | undefined;
+    const imageData = context.inputs.get(&#39;data&#39;) as string | undefined; // base64
+
+    if (imageUrl || imageData) {
+      // Request image display
+      context.displayImage({
+        url: imageUrl,
+        base64: imageData,
+        format: &#39;png&#39;, // Or get from inputs
+        alt: &#39;Displayed image&#39;,
+      });
+    }
+
+    outputs.set(&#39;displayed&#39;, true);
+    return outputs;
+  }
+}
+</code></pre>
+<h4>5.3 Streaming Data Node</h4>
+<pre><code class="language-typescript">// src/nodes/interactive/StreamingDataNode.ts
+
+import { BaseNode } from &#39;../../core/BaseNode&#39;;
+import type { InteractiveExecutionContext, ExecutionResult } from &#39;../../types&#39;;
+import { InteractiveNodeType } from &#39;../../types&#39;;
+
+export class StreamingDataNode extends BaseNode {
+  readonly isInteractive = true;
+  readonly interactiveType = InteractiveNodeType.STREAMING;
+
+  protected async executeInternal(
+    context: InteractiveExecutionContext,
+  ): Promise&lt;Map&lt;string, unknown&gt;&gt; {
+    const outputs = new Map&lt;string, unknown&gt;();
+
+    // Simulate streaming (in reality, receive data from external source)
+    const streamSource = context.inputs.get(&#39;source&#39;) as string | undefined;
+    
+    if (streamSource) {
+      // Example: Receive data from WebSocket, SSE, etc. and update
+      const interval = setInterval(() =&gt; {
+        const data = {
+          timestamp: Date.now(),
+          value: Math.random() * 100,
+          source: streamSource,
+        };
+        
+        context.updateStreamingData(data);
+      }, 1000);
+
+      // Stop after a certain time (in reality, cleanup when node terminates)
+      setTimeout(() =&gt; {
+        clearInterval(interval);
+      }, 30000);
+    }
+
+    outputs.set(&#39;streaming&#39;, true);
+    return outputs;
+  }
+}
+</code></pre>
+<h2>Implementation Phases</h2>
+<h3>Phase 1: Basic Infrastructure (2-3 weeks)</h3>
+<ol>
+<li>Add type definitions (<code>InteractiveNodeType</code>, <code>UserInputRequest</code>, <code>ImageData</code>, etc.)</li>
+<li>Implement <code>InteractiveExecutionContext</code></li>
+<li>Extend execution engine (detect and handle interactive nodes)</li>
+<li>Build basic event system</li>
+</ol>
+<h3>Phase 2: User Input Support (2 weeks)</h3>
+<ol>
+<li>Implement <code>UserInputDialog</code> component</li>
+<li>Implement form validation system</li>
+<li>Backend API endpoint (<code>/api/graphs/interactive/input/[nodeId]</code>)</li>
+<li>User input wait/resume logic in execution engine</li>
+<li>Example <code>UserInputNode</code> implementation</li>
+</ol>
+<h3>Phase 3: Image Display Support (1 week)</h3>
+<ol>
+<li>Implement <code>ImageDisplayPanel</code> component</li>
+<li>Image data processing (URL, base64, Blob)</li>
+<li>Example <code>ImageDisplayNode</code> implementation</li>
+</ol>
+<h3>Phase 4: Streaming Data Support (2 weeks)</h3>
+<ol>
+<li>Implement <code>StreamingDataPanel</code> component</li>
+<li>Real-time data update mechanism</li>
+<li>WebSocket/SSE integration (if needed)</li>
+<li>Example <code>StreamingDataNode</code> implementation</li>
+</ol>
+<h3>Phase 5: Integration and Testing (1 week)</h3>
+<ol>
+<li>Integrate <code>InteractiveNodeManager</code></li>
+<li>Full system integration testing</li>
+<li>Documentation</li>
+<li>Example graph creation</li>
+</ol>
+<h2>Considerations</h2>
+<h3>1. Execution Pause</h3>
+<ul>
+<li>Execution must be paused while a node waits for user input</li>
+<li>Other nodes can continue executing (parallel mode)</li>
+<li>Timeout handling required</li>
+</ul>
+<h3>2. State Management</h3>
+<ul>
+<li>Manage <code>InteractiveExecutionContext</code> instances for executing nodes</li>
+<li>Map user input to node IDs</li>
+<li>Session management (on browser refresh)</li>
+</ul>
+<h3>3. Security</h3>
+<ul>
+<li>User input validation (XSS prevention)</li>
+<li>Image data size limits</li>
+<li>Streaming data rate limiting</li>
+</ul>
+<h3>4. Performance</h3>
+<ul>
+<li>Image optimization (thumbnails, lazy loading)</li>
+<li>Streaming data buffering</li>
+<li>UI update optimization (debounce, throttling)</li>
+</ul>
+<h3>5. Extensibility</h3>
+<ul>
+<li>Custom UI component plugin system</li>
+<li>Easy addition of new interactive types</li>
+<li>Third-party node developer support</li>
+</ul>
+<h2>Conclusion</h2>
+<p>This strategy is designed to support interactive nodes with minimal changes to the existing architecture. Through phased implementation, features can be added incrementally, with testing and feedback at each stage.</p>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Handling Guide - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" class="active">Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h2>AI Model: Claude Sonnet 4.5</h2>
+<h1>Error Handling Guide</h1>
+<h2>Overview</h2>
+<p>The VZ Programming system provides a comprehensive error handling framework with enterprise-grade resilience patterns. This guide covers all error handling features including retry policies, circuit breakers, fallback execution paths, error boundaries, and dead letter queues.</p>
+<h2>Features</h2>
+<ul>
+<li>✅ <strong>Retry Policies</strong> - Exponential backoff with jitter</li>
+<li>✅ <strong>Circuit Breaker</strong> - Prevent cascading failures  </li>
+<li>✅ <strong>Fallback Paths</strong> - Alternative execution strategies</li>
+<li>✅ <strong>Error Boundaries</strong> - Catch and contain errors</li>
+<li>✅ <strong>Dead Letter Queue</strong> - Track and analyze failures</li>
+</ul>
+<hr>
+<h2>Retry Policies</h2>
+<p>Automatically retry failed operations with exponential backoff.</p>
+<h3>Basic Usage</h3>
+<pre><code class="language-typescript">import { RetryPolicy, RetryPolicies, ErrorHandlingNode } from &#39;./src/index&#39;;
+
+// Use predefined policy
+const node = new ErrorHandlingNode(config, {
+  retryPolicy: RetryPolicies.Standard
+});
+
+// Or create custom policy
+const customRetry = new RetryPolicy({
+  maxAttempts: 5,
+  initialDelay: 1000,
+  maxDelay: 30000,
+  backoffMultiplier: 2,
+  useJitter: true
+});
+</code></pre>
+<h3>Predefined Policies</h3>
+<pre><code class="language-typescript">// No retry - fail immediately
+RetryPolicies.None
+
+// Quick retry - 3 attempts, short delays
+RetryPolicies.Quick
+// Config: { maxAttempts: 3, initialDelay: 500, maxDelay: 2000 }
+
+// Standard retry - balanced approach
+RetryPolicies.Standard
+// Config: { maxAttempts: 3, initialDelay: 1000, maxDelay: 30000 }
+
+// Aggressive retry - many attempts
+RetryPolicies.Aggressive
+// Config: { maxAttempts: 5, initialDelay: 2000, maxDelay: 60000 }
+
+// Network retry - optimized for network failures
+RetryPolicies.Network
+// Config: { maxAttempts: 4, initialDelay: 1000, retryCondition: networkErrors }
+</code></pre>
+<h3>Custom Retry Configuration</h3>
+<pre><code class="language-typescript">const customPolicy = new RetryPolicy({
+  maxAttempts: 3,
+  initialDelay: 1000,
+  maxDelay: 10000,
+  backoffMultiplier: 2,
+  useJitter: true,
+  
+  // Custom retry condition
+  retryCondition: (error: Error, attempt: number) =&gt; {
+    // Don&#39;t retry validation errors
+    if (error.name === &#39;ValidationError&#39;) return false;
+    // Don&#39;t retry after 2 attempts for auth errors
+    if (error.name === &#39;AuthError&#39; &amp;&amp; attempt &gt; 2) return false;
+    return true;
+  },
+  
+  // Callback on each retry
+  onRetry: (error: Error, attempt: number, delay: number) =&gt; {
+    console.log(`Retry ${attempt} in ${delay}ms: ${error.message}`);
+  }
+});
+</code></pre>
+<h3>Exponential Backoff</h3>
+<p>The retry delay grows exponentially with jitter:</p>
+<pre><code>Attempt 1: 1000ms (±250ms jitter)
+Attempt 2: 2000ms (±500ms jitter)
+Attempt 3: 4000ms (±1000ms jitter)
+</code></pre>
+<p>Formula: <code>delay = min(initialDelay * multiplier^attempt, maxDelay) ± jitter</code></p>
+<h3>API Reference</h3>
+<pre><code class="language-typescript">interface RetryConfig {
+  maxAttempts: number;           // Maximum retry attempts
+  initialDelay: number;          // Initial delay (ms)
+  maxDelay: number;              // Maximum delay (ms)
+  backoffMultiplier: number;     // Exponential multiplier
+  useJitter: boolean;            // Add randomization
+  retryCondition?: (error, attempt) =&gt; boolean;
+  onRetry?: (error, attempt, delay) =&gt; void;
+}
+
+class RetryPolicy {
+  execute&lt;T&gt;(fn: () =&gt; Promise&lt;T&gt;): Promise&lt;T&gt;;
+  getConfig(): Readonly&lt;RetryConfig&gt;;
+  updateConfig(config: Partial&lt;RetryConfig&gt;): void;
+}
+</code></pre>
+<hr>
+<h2>Circuit Breaker</h2>
+<p>Prevent cascading failures by opening the circuit after repeated failures.</p>
+<h3>How It Works</h3>
+<pre><code>CLOSED → OPEN → HALF_OPEN → CLOSED
+  ↑                           ↓
+  └───────────────────────────┘
+</code></pre>
+<p><strong>States:</strong></p>
+<ul>
+<li><strong>CLOSED</strong> - Normal operation, requests flow through</li>
+<li><strong>OPEN</strong> - Too many failures, reject requests immediately</li>
+<li><strong>HALF_OPEN</strong> - Testing if service recovered, allow limited requests</li>
+</ul>
+<h3>Basic Usage</h3>
+<pre><code class="language-typescript">import { CircuitBreaker, ErrorHandlingNode } from &#39;./src/index&#39;;
+
+const circuitBreaker = new CircuitBreaker({
+  failureThreshold: 5,      // Open after 5 failures
+  successThreshold: 2,      // Close after 2 successes
+  resetTimeout: 60000,      // Wait 60s before half-open
+  failureWindow: 10000      // Count failures in 10s window
+});
+
+const node = new ErrorHandlingNode(config, {
+  circuitBreaker
+});
+</code></pre>
+<h3>Configuration</h3>
+<pre><code class="language-typescript">interface CircuitBreakerConfig {
+  failureThreshold: number;     // Failures to trigger OPEN
+  successThreshold: number;     // Successes to return to CLOSED
+  resetTimeout: number;         // Wait before HALF_OPEN (ms)
+  failureWindow: number;        // Failure counting window (ms)
+  
+  onStateChange?: (oldState, newState) =&gt; void;
+  onOpen?: (failures: number) =&gt; void;
+  onClose?: () =&gt; void;
+}
+</code></pre>
+<h3>State Management</h3>
+<pre><code class="language-typescript">const breaker = new CircuitBreaker(config);
+
+// Get current state
+const state = breaker.getState(); // CLOSED | OPEN | HALF_OPEN
+
+// Get statistics
+const stats = breaker.getStats();
+// { state, failures, successes, nextAttemptTime }
+
+// Manual control
+breaker.reset();  // Force CLOSED
+breaker.open();   // Force OPEN
+</code></pre>
+<h3>Circuit Breaker Registry</h3>
+<p>Manage multiple circuit breakers:</p>
+<pre><code class="language-typescript">import { CircuitBreakerRegistry } from &#39;./src/index&#39;;
+
+const registry = CircuitBreakerRegistry.getInstance();
+
+// Get or create breaker for a node
+const breaker = registry.getOrCreate(
+  nodeId,
+  { failureThreshold: 3 },
+  nodeName
+);
+
+// Get all statistics
+const allStats = registry.getAllStats();
+
+// Reset all breakers
+registry.resetAll();
+</code></pre>
+<h3>Example: Protecting an API</h3>
+<pre><code class="language-typescript">const apiNode = new ErrorHandlingNode(config, {
+  circuitBreaker: new CircuitBreaker({
+    failureThreshold: 3,
+    resetTimeout: 30000,
+    onOpen: (failures) =&gt; {
+      console.log(`API circuit opened after ${failures} failures`);
+      // Alert monitoring system
+    }
+  })
+});
+</code></pre>
+<hr>
+<h2>Fallback Execution Paths</h2>
+<p>Provide alternative execution strategies when primary operations fail.</p>
+<h3>Function-based Fallback</h3>
+<pre><code class="language-typescript">const node = new ErrorHandlingNode(config, {
+  retryPolicy: RetryPolicies.Standard,
+  fallbackFn: async (error, context) =&gt; {
+    console.log(`Fallback triggered: ${error.message}`);
+    
+    // Return cached data
+    const cached = await cache.get(context.executionId);
+    
+    const outputs = new Map();
+    outputs.set(&#39;result&#39;, cached || &#39;default value&#39;);
+    return outputs;
+  }
+});
+</code></pre>
+<h3>Fallback Node</h3>
+<p>Use the built-in <code>FallbackNode</code>:</p>
+<pre><code class="language-typescript">import { FallbackNode } from &#39;./src/index&#39;;
+
+const fallback = new FallbackNode();
+
+// Connect primary source
+executor.addConnection({
+  fromNode: primaryNode.id,
+  fromPort: &#39;result&#39;,
+  toNode: fallback.id,
+  toPort: &#39;primary&#39;
+});
+
+// Provide fallback value
+const inputs = new Map();
+const fallbackInputs = new Map();
+fallbackInputs.set(&#39;fallback&#39;, &#39;Safe default value&#39;);
+inputs.set(fallback.id, fallbackInputs);
+</code></pre>
+<p><strong>Outputs:</strong></p>
+<ul>
+<li><code>result</code> - Primary value or fallback</li>
+<li><code>usedFallback</code> - Boolean indicating which was used</li>
+</ul>
+<h3>Multi-level Fallback</h3>
+<pre><code class="language-typescript">// Primary → Fallback 1 → Fallback 2 → Default
+
+const primary = new ErrorHandlingNode(config, {
+  fallbackFn: async () =&gt; {
+    // Try cache
+    return getCachedData();
+  }
+});
+
+const fallback1 = new FallbackNode();
+const fallback2 = new FallbackNode();
+
+// Chain fallbacks
+executor.addConnection({ from: primary, to: fallback1, port: &#39;primary&#39; });
+executor.addConnection({ from: fallback1, to: fallback2, port: &#39;primary&#39; });
+</code></pre>
+<hr>
+<h2>Error Boundaries</h2>
+<p>Catch and contain errors from upstream nodes.</p>
+<h3>ErrorBoundaryNode</h3>
+<pre><code class="language-typescript">import { ErrorBoundaryNode } from &#39;./src/index&#39;;
+
+const errorBoundary = new ErrorBoundaryNode({
+  name: &#39;API Error Handler&#39;
+});
+
+// Connect potentially failing node
+executor.addConnection({
+  fromNode: unreliableNode.id,
+  fromPort: &#39;result&#39;,
+  toNode: errorBoundary.id,
+  toPort: &#39;value&#39;
+});
+
+// Provide default value
+const inputs = new Map();
+const boundaryInputs = new Map();
+boundaryInputs.set(&#39;defaultValue&#39;, &#39;Safe fallback&#39;);
+inputs.set(errorBoundary.id, boundaryInputs);
+</code></pre>
+<h3>Outputs</h3>
+<p>The error boundary provides three outputs:</p>
+<pre><code class="language-typescript">{
+  result: any,           // Value or default
+  hasError: boolean,     // Whether error occurred
+  error: {              // Error details (if any)
+    message: string,
+    name: string,
+    stack: string
+  }
+}
+</code></pre>
+<h3>Example: Error Recovery Pipeline</h3>
+<pre><code class="language-typescript">// Failing Node → Error Boundary → Fallback → Logger
+
+const failing = new UnreliableNode();
+const boundary = new ErrorBoundaryNode();
+const fallback = new FallbackNode();
+const logger = new LoggerNode();
+
+executor.addNode(failing);
+executor.addNode(boundary);
+executor.addNode(fallback);
+executor.addNode(logger);
+
+// Chain connections
+executor.addConnection({ from: failing, to: boundary });
+executor.addConnection({ from: boundary, to: fallback });
+executor.addConnection({ from: fallback, to: logger });
+</code></pre>
+<hr>
+<h2>Dead Letter Queue</h2>
+<p>Track and analyze failed executions for debugging and monitoring.</p>
+<h3>Basic Usage</h3>
+<pre><code class="language-typescript">import { DeadLetterQueue } from &#39;./src/index&#39;;
+
+const dlq = DeadLetterQueue.getInstance();
+
+// Enable DLQ for a node
+const node = new ErrorHandlingNode(config, {
+  enableDLQ: true
+});
+
+// After execution, check DLQ
+const stats = dlq.getStats();
+console.log(`Total failures: ${stats.total}`);
+console.log(`Unprocessed: ${stats.unprocessed}`);
+</code></pre>
+<h3>Querying the DLQ</h3>
+<pre><code class="language-typescript">const dlq = DeadLetterQueue.getInstance();
+
+// Get all entries
+const all = dlq.getAll();
+
+// Get unprocessed entries
+const unprocessed = dlq.getUnprocessed();
+
+// Get entries for specific node
+const nodeFailures = dlq.getByNode(nodeId);
+
+// Get entries for specific execution
+const executionFailures = dlq.getByExecution(executionId);
+
+// Get specific entry
+const entry = dlq.get(entryId);
+</code></pre>
+<h3>Entry Structure</h3>
+<pre><code class="language-typescript">interface DeadLetterEntry {
+  id: string;
+  executionId: string;
+  nodeId: string;
+  nodeName: string;
+  error: Error;
+  context: ExecutionContext;
+  result: ExecutionResult;
+  timestamp: Date;
+  retryAttempts: number;
+  metadata?: Record&lt;string, any&gt;;
+  processed: boolean;
+}
+</code></pre>
+<h3>Processing Failures</h3>
+<pre><code class="language-typescript">const dlq = DeadLetterQueue.getInstance();
+
+// Get unprocessed failures
+const failures = dlq.getUnprocessed();
+
+for (const entry of failures) {
+  console.log(`Processing failure: ${entry.nodeName}`);
+  console.log(`  Error: ${entry.error.message}`);
+  console.log(`  Attempts: ${entry.retryAttempts}`);
+  
+  // Analyze, log, or retry
+  await handleFailure(entry);
+  
+  // Mark as processed
+  dlq.markProcessed(entry.id);
+}
+</code></pre>
+<h3>Statistics</h3>
+<pre><code class="language-typescript">const stats = dlq.getStats();
+
+console.log(`Total: ${stats.total}`);
+console.log(`Unprocessed: ${stats.unprocessed}`);
+console.log(`Oldest: ${stats.oldestEntry}`);
+console.log(`Newest: ${stats.newestEntry}`);
+
+// Failures by node
+stats.byNode.forEach((count, nodeId) =&gt; {
+  console.log(`Node ${nodeId}: ${count} failures`);
+});
+</code></pre>
+<h3>Export &amp; Analysis</h3>
+<pre><code class="language-typescript">// Export to JSON
+const json = dlq.export();
+fs.writeFileSync(&#39;failures.json&#39;, json);
+
+// Load from persistence
+const dlq = DeadLetterQueue.getInstance({
+  persistenceHandler: {
+    save: async (entry) =&gt; {
+      await db.save(&#39;dlq&#39;, entry);
+    },
+    load: async () =&gt; {
+      return await db.loadAll(&#39;dlq&#39;);
+    }
+  }
+});
+
+await dlq.load();
+</code></pre>
+<h3>Configuration</h3>
+<pre><code class="language-typescript">const dlq = DeadLetterQueue.getInstance({
+  maxEntries: 1000,               // Max entries to keep
+  retentionPeriod: 7 * 24 * 60 * 60 * 1000, // 7 days
+  
+  onEntryAdded: (entry) =&gt; {
+    // Send to monitoring system
+    monitoring.trackFailure(entry);
+  }
+});
+</code></pre>
+<hr>
+<h2>Combined Error Handling</h2>
+<p>Use all features together for maximum resilience:</p>
+<pre><code class="language-typescript">import {
+  ErrorHandlingNode,
+  RetryPolicies,
+  CircuitBreaker,
+  DeadLetterQueue
+} from &#39;./src/index&#39;;
+
+const resilientNode = new ErrorHandlingNode(config, {
+  // Retry with exponential backoff
+  retryPolicy: new RetryPolicy({
+    maxAttempts: 3,
+    initialDelay: 1000,
+    onRetry: (error, attempt, delay) =&gt; {
+      console.log(`Retry ${attempt} in ${delay}ms`);
+    }
+  }),
+  
+  // Circuit breaker protection
+  circuitBreaker: new CircuitBreaker({
+    failureThreshold: 5,
+    resetTimeout: 60000,
+    onOpen: (failures) =&gt; {
+      alerting.sendAlert(`Circuit opened: ${failures} failures`);
+    }
+  }),
+  
+  // Fallback strategy
+  fallbackFn: async (error, context) =&gt; {
+    return await cache.get(context.executionId);
+  },
+  
+  // Track failures in DLQ
+  enableDLQ: true
+});
+</code></pre>
+<h3>Execution Flow</h3>
+<pre><code>┌─────────────────┐
+│  Execute Node   │
+└────────┬────────┘
+         │
+         ├──[Circuit Breaker]──► OPEN? → Reject
+         │                       CLOSED → Continue
+         │
+         ├──[Retry Policy]─────► Attempt 1, 2, 3...
+         │
+         ├──[Success]──────────► Return result
+         │
+         ├──[Failure]
+         │   ├──[Fallback]─────► Try fallback
+         │   ├──[DLQ]───────────► Record failure
+         │   └──[Error]────────► Throw error
+         │
+         └──[Error Boundary]───► Catch &amp; contain
+</code></pre>
+<hr>
+<h2>Best Practices</h2>
+<h3>1. Choose Appropriate Retry Policies</h3>
+<pre><code class="language-typescript">// Network calls - aggressive retry
+apiNode.updateErrorConfig({
+  retryPolicy: RetryPolicies.Network
+});
+
+// Database operations - standard retry
+dbNode.updateErrorConfig({
+  retryPolicy: RetryPolicies.Standard
+});
+
+// Validation - no retry
+validationNode.updateErrorConfig({
+  retryPolicy: RetryPolicies.None
+});
+</code></pre>
+<h3>2. Set Realistic Circuit Breaker Thresholds</h3>
+<pre><code class="language-typescript">// High-traffic service - higher threshold
+new CircuitBreaker({
+  failureThreshold: 10,
+  failureWindow: 60000  // 1 minute
+});
+
+// Critical service - lower threshold
+new CircuitBreaker({
+  failureThreshold: 3,
+  failureWindow: 10000  // 10 seconds
+});
+</code></pre>
+<h3>3. Layer Defenses</h3>
+<pre><code class="language-typescript">// Layer 1: Retry
+// Layer 2: Circuit breaker
+// Layer 3: Fallback
+// Layer 4: Error boundary
+// Layer 5: DLQ
+
+const node = new ErrorHandlingNode(config, {
+  retryPolicy: RetryPolicies.Standard,
+  circuitBreaker: new CircuitBreaker(config),
+  fallbackFn: getCachedData,
+  enableDLQ: true
+});
+</code></pre>
+<h3>4. Monitor and Alert</h3>
+<pre><code class="language-typescript">const dlq = DeadLetterQueue.getInstance({
+  onEntryAdded: (entry) =&gt; {
+    // Critical errors
+    if (entry.retryAttempts &gt;= 3) {
+      alerting.critical(`Node ${entry.nodeName} failing repeatedly`);
+    }
+    
+    // Log to monitoring
+    monitoring.trackError(entry);
+  }
+});
+
+const breaker = new CircuitBreaker({
+  onOpen: () =&gt; {
+    alerting.warning(&#39;Circuit opened - service degraded&#39;);
+  },
+  onClose: () =&gt; {
+    alerting.info(&#39;Circuit closed - service recovered&#39;);
+  }
+});
+</code></pre>
+<h3>5. Graceful Degradation</h3>
+<pre><code class="language-typescript">// Prefer returning partial results over complete failure
+fallbackFn: async (error, context) =&gt; {
+  // Try cache
+  const cached = await cache.get(key);
+  if (cached) return cached;
+  
+  // Try alternative service
+  try {
+    return await backupService.get(key);
+  } catch {
+    // Return minimal safe response
+    return getDefaultValue();
+  }
+}
+</code></pre>
+<hr>
+<h2>Examples</h2>
+<h3>Example 1: Resilient API Call</h3>
+<pre><code class="language-typescript">const apiNode = new ErrorHandlingNode({
+  name: &#39;Weather API&#39;,
+  inputs: [{ id: &#39;city&#39;, name: &#39;City&#39;, dataType: DataTypes.STRING }],
+  outputs: [{ id: &#39;weather&#39;, name: &#39;Weather&#39;, dataType: DataTypes.OBJECT }]
+}, {
+  retryPolicy: RetryPolicies.Network,
+  circuitBreaker: new CircuitBreaker({ failureThreshold: 3 }),
+  fallbackFn: async () =&gt; {
+    const outputs = new Map();
+    outputs.set(&#39;weather&#39;, { temp: 72, condition: &#39;Cached&#39; });
+    return outputs;
+  },
+  enableDLQ: true
+});
+</code></pre>
+<h3>Example 2: Database with Retry</h3>
+<pre><code class="language-typescript">const dbNode = new ErrorHandlingNode({
+  name: &#39;User Database&#39;,
+  inputs: [{ id: &#39;userId&#39;, name: &#39;User ID&#39;, dataType: DataTypes.STRING }],
+  outputs: [{ id: &#39;user&#39;, name: &#39;User&#39;, dataType: DataTypes.OBJECT }]
+}, {
+  retryPolicy: new RetryPolicy({
+    maxAttempts: 5,
+    initialDelay: 2000,
+    retryCondition: (error) =&gt; {
+      // Retry on connection errors
+      return error.message.includes(&#39;ECONNREFUSED&#39;);
+    }
+  }),
+  enableDLQ: true
+});
+</code></pre>
+<h3>Example 3: Error Recovery Pipeline</h3>
+<pre><code class="language-typescript">// Unreliable → Retry → Circuit Breaker → Error Boundary → Fallback
+
+const unreliable = new ErrorHandlingNode(config, {
+  retryPolicy: RetryPolicies.Standard,
+  circuitBreaker: new CircuitBreaker({ failureThreshold: 5 })
+});
+
+const boundary = new ErrorBoundaryNode();
+const fallback = new FallbackNode();
+
+executor.addNode(unreliable);
+executor.addNode(boundary);
+executor.addNode(fallback);
+
+executor.addConnection({ from: unreliable, to: boundary, port: &#39;value&#39; });
+executor.addConnection({ from: boundary, to: fallback, port: &#39;primary&#39; });
+</code></pre>
+<hr>
+<h2>API Reference</h2>
+<h3>ErrorHandlingNode</h3>
+<pre><code class="language-typescript">class ErrorHandlingNode extends BaseNode {
+  constructor(
+    config: NodeConfig,
+    errorConfig?: ErrorHandlingConfig
+  );
+  
+  updateErrorConfig(config: Partial&lt;ErrorHandlingConfig&gt;): void;
+  getErrorConfig(): Readonly&lt;ErrorHandlingConfig&gt;;
+}
+
+interface ErrorHandlingConfig {
+  retryPolicy?: RetryPolicy;
+  circuitBreaker?: CircuitBreaker;
+  enableDLQ?: boolean;
+  fallbackFn?: (error: Error, context: ExecutionContext) =&gt; Promise&lt;Map&lt;PortId, any&gt;&gt;;
+  suppressErrors?: boolean;
+}
+</code></pre>
+<h3>RetryPolicy</h3>
+<pre><code class="language-typescript">class RetryPolicy {
+  constructor(config?: Partial&lt;RetryConfig&gt;);
+  execute&lt;T&gt;(fn: () =&gt; Promise&lt;T&gt;, context?: { nodeId, nodeName }): Promise&lt;T&gt;;
+  getConfig(): Readonly&lt;RetryConfig&gt;;
+  updateConfig(config: Partial&lt;RetryConfig&gt;): void;
+}
+</code></pre>
+<h3>CircuitBreaker</h3>
+<pre><code class="language-typescript">class CircuitBreaker {
+  constructor(config?: Partial&lt;CircuitBreakerConfig&gt;, context?: { nodeId, nodeName });
+  execute&lt;T&gt;(fn: () =&gt; Promise&lt;T&gt;): Promise&lt;T&gt;;
+  getState(): CircuitState;
+  getStats(): { state, failures, successes, nextAttemptTime };
+  reset(): void;
+  open(): void;
+}
+</code></pre>
+<h3>DeadLetterQueue</h3>
+<pre><code class="language-typescript">class DeadLetterQueue {
+  static getInstance(config?: Partial&lt;DLQConfig&gt;): DeadLetterQueue;
+  
+  add(params: AddEntryParams): Promise&lt;DeadLetterEntry&gt;;
+  get(id: string): DeadLetterEntry | undefined;
+  getAll(): DeadLetterEntry[];
+  getUnprocessed(): DeadLetterEntry[];
+  getByNode(nodeId: NodeId): DeadLetterEntry[];
+  getByExecution(executionId: ExecutionId): DeadLetterEntry[];
+  
+  markProcessed(id: string): boolean;
+  remove(id: string): boolean;
+  clear(): void;
+  
+  getStats(): DLQStats;
+  export(): string;
+}
+</code></pre>
+<hr>
+<h2>Troubleshooting</h2>
+<h3>Retry Not Working</h3>
+<pre><code class="language-typescript">// Check retry configuration
+const config = retryPolicy.getConfig();
+console.log(&#39;Max attempts:&#39;, config.maxAttempts);
+
+// Add retry callback to debug
+retryPolicy.updateConfig({
+  onRetry: (error, attempt, delay) =&gt; {
+    console.log(`Retry ${attempt}: ${error.message} in ${delay}ms`);
+  }
+});
+</code></pre>
+<h3>Circuit Breaker Always Open</h3>
+<pre><code class="language-typescript">// Check stats
+const stats = breaker.getStats();
+console.log(&#39;State:&#39;, stats.state);
+console.log(&#39;Failures:&#39;, stats.failures);
+
+// Reset if needed
+breaker.reset();
+
+// Or adjust thresholds
+breaker = new CircuitBreaker({
+  failureThreshold: 10,  // Higher threshold
+  failureWindow: 60000   // Longer window
+});
+</code></pre>
+<h3>DLQ Not Recording</h3>
+<pre><code class="language-typescript">// Ensure DLQ is enabled
+node.updateErrorConfig({ enableDLQ: true });
+
+// Check DLQ stats
+const stats = dlq.getStats();
+console.log(&#39;Total entries:&#39;, stats.total);
+
+// Add callback to verify
+const dlq = DeadLetterQueue.getInstance({
+  onEntryAdded: (entry) =&gt; {
+    console.log(&#39;Entry added:&#39;, entry.id);
+  }
+});
+</code></pre>
+<hr>
+<h2>See Also</h2>
+<ul>
+<li><a href="../QUICKSTART.html">Quick Start Guide</a></li>
+<li><a href="./NODE-REGISTRY.html">Node Registry</a></li>
+<li><a href="../PARALLEL-EXECUTION.html">Parallel Execution</a></li>
+<li><a href="../examples/error-handling-example.ts">Examples</a></li>
+</ul>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

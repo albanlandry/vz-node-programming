@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Graph for Live Execution - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" class="active">Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>Test Graph for Live Execution</h1>
+<h2>Overview</h2>
+<p>This document describes the test graph created for testing the live execution feature in the Graph Editor.</p>
+<h2>Graph File</h2>
+<p><strong>Location</strong>: <code>data/graphs/test-live-execution.json</code></p>
+<p><strong>Name</strong>: &quot;Live Execution Test Graph&quot;</p>
+<h2>Graph Structure</h2>
+<h3>Nodes</h3>
+<p>The test graph contains 8 nodes:</p>
+<ol>
+<li><p><strong>Constant Node 1</strong> (<code>constant-1</code>)</p>
+<ul>
+<li>Type: <code>utility.constant</code></li>
+<li>Position: (100, 100)</li>
+<li>Properties: <code>type: &quot;number&quot;</code>, <code>value: &quot;42&quot;</code></li>
+<li>Output: Number value 42</li>
+</ul>
+</li>
+<li><p><strong>Constant Node 2</strong> (<code>constant-2</code>)</p>
+<ul>
+<li>Type: <code>utility.constant</code></li>
+<li>Position: (100, 250)</li>
+<li>Properties: <code>type: &quot;number&quot;</code>, <code>value: &quot;8&quot;</code></li>
+<li>Output: Number value 8</li>
+</ul>
+</li>
+<li><p><strong>Constant Node 3</strong> (<code>constant-3</code>)</p>
+<ul>
+<li>Type: <code>utility.constant</code></li>
+<li>Position: (100, 400)</li>
+<li>Properties: <code>type: &quot;string&quot;</code>, <code>value: &quot;Hello, World!&quot;</code></li>
+<li>Output: String value &quot;Hello, World!&quot;</li>
+</ul>
+</li>
+<li><p><strong>Math Add Node</strong> (<code>math-add</code>)</p>
+<ul>
+<li>Type: <code>utility.math</code></li>
+<li>Position: (350, 100)</li>
+<li>Properties: <code>operation: &quot;add&quot;</code></li>
+<li>Inputs: Receives values from <code>constant-1</code> (A) and <code>constant-2</code> (B)</li>
+<li>Output: 42 + 8 = 50</li>
+</ul>
+</li>
+<li><p><strong>Math Multiply Node</strong> (<code>math-multiply</code>)</p>
+<ul>
+<li>Type: <code>utility.math</code></li>
+<li>Position: (350, 250)</li>
+<li>Properties: <code>operation: &quot;multiply&quot;</code></li>
+<li>Inputs: Receives values from <code>constant-1</code> (A) and <code>constant-2</code> (B)</li>
+<li>Output: 42 × 8 = 336</li>
+</ul>
+</li>
+<li><p><strong>String Uppercase Node</strong> (<code>string-upper</code>)</p>
+<ul>
+<li>Type: <code>utility.string</code></li>
+<li>Position: (350, 400)</li>
+<li>Properties: <code>operation: &quot;toUpperCase&quot;</code></li>
+<li>Inputs: Receives value from <code>constant-3</code></li>
+<li>Output: &quot;HELLO, WORLD!&quot;</li>
+</ul>
+</li>
+<li><p><strong>Logger Node 1</strong> (<code>logger-1</code>)</p>
+<ul>
+<li>Type: <code>utility.logger</code></li>
+<li>Position: (600, 150)</li>
+<li>Properties: <code>level: &quot;info&quot;</code></li>
+<li>Inputs: Receives result from <code>math-add</code></li>
+<li>Output: Logs the number 50</li>
+</ul>
+</li>
+<li><p><strong>Logger Node 2</strong> (<code>logger-2</code>)</p>
+<ul>
+<li>Type: <code>utility.logger</code></li>
+<li>Position: (600, 400)</li>
+<li>Properties: <code>level: &quot;info&quot;</code></li>
+<li>Inputs: Receives result from <code>string-upper</code></li>
+<li>Output: Logs the string &quot;HELLO, WORLD!&quot;</li>
+</ul>
+</li>
+</ol>
+<h3>Connections</h3>
+<p>The graph has 7 connections:</p>
+<ol>
+<li><code>constant-1.result</code> → <code>math-add.a</code> (42)</li>
+<li><code>constant-2.result</code> → <code>math-add.b</code> (8)</li>
+<li><code>constant-1.result</code> → <code>math-multiply.a</code> (42)</li>
+<li><code>constant-2.result</code> → <code>math-multiply.b</code> (8)</li>
+<li><code>constant-3.result</code> → <code>string-upper.input</code> (&quot;Hello, World!&quot;)</li>
+<li><code>math-add.result</code> → <code>logger-1.data</code> (50)</li>
+<li><code>string-upper.result</code> → <code>logger-2.data</code> (&quot;HELLO, WORLD!&quot;)</li>
+</ol>
+<h2>Execution Flow</h2>
+<h3>Sequential Execution</h3>
+<p>When executed in sequential mode, the execution order is:</p>
+<ol>
+<li><p><strong>Level 0</strong> (No dependencies):</p>
+<ul>
+<li><code>constant-1</code> → outputs 42</li>
+<li><code>constant-2</code> → outputs 8</li>
+<li><code>constant-3</code> → outputs &quot;Hello, World!&quot;</li>
+</ul>
+</li>
+<li><p><strong>Level 1</strong> (Depends on Level 0):</p>
+<ul>
+<li><code>math-add</code> → receives 42 and 8, outputs 50</li>
+<li><code>math-multiply</code> → receives 42 and 8, outputs 336</li>
+<li><code>string-upper</code> → receives &quot;Hello, World!&quot;, outputs &quot;HELLO, WORLD!&quot;</li>
+</ul>
+</li>
+<li><p><strong>Level 2</strong> (Depends on Level 1):</p>
+<ul>
+<li><code>logger-1</code> → receives 50, logs it</li>
+<li><code>logger-2</code> → receives &quot;HELLO, WORLD!&quot;, logs it</li>
+</ul>
+</li>
+</ol>
+<h3>Parallel Execution</h3>
+<p>When executed in parallel mode:</p>
+<ul>
+<li>All nodes in Level 0 execute simultaneously</li>
+<li>All nodes in Level 1 execute simultaneously (after Level 0 completes)</li>
+<li>All nodes in Level 2 execute simultaneously (after Level 1 completes)</li>
+</ul>
+<h2>Expected Results</h2>
+<h3>Node Execution Results</h3>
+<table>
+<thead>
+<tr>
+<th>Node ID</th>
+<th>Status</th>
+<th>Output</th>
+<th>Execution Time</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>constant-1</code></td>
+<td>✅ Completed</td>
+<td>42</td>
+<td>~1ms</td>
+</tr>
+<tr>
+<td><code>constant-2</code></td>
+<td>✅ Completed</td>
+<td>8</td>
+<td>~1ms</td>
+</tr>
+<tr>
+<td><code>constant-3</code></td>
+<td>✅ Completed</td>
+<td>&quot;Hello, World!&quot;</td>
+<td>~1ms</td>
+</tr>
+<tr>
+<td><code>math-add</code></td>
+<td>✅ Completed</td>
+<td>50</td>
+<td>~1ms</td>
+</tr>
+<tr>
+<td><code>math-multiply</code></td>
+<td>✅ Completed</td>
+<td>336</td>
+<td>~1ms</td>
+</tr>
+<tr>
+<td><code>string-upper</code></td>
+<td>✅ Completed</td>
+<td>&quot;HELLO, WORLD!&quot;</td>
+<td>~1ms</td>
+</tr>
+<tr>
+<td><code>logger-1</code></td>
+<td>✅ Completed</td>
+<td>true (logged)</td>
+<td>~1ms</td>
+</tr>
+<tr>
+<td><code>logger-2</code></td>
+<td>✅ Completed</td>
+<td>true (logged)</td>
+<td>~1ms</td>
+</tr>
+</tbody></table>
+<h3>Console Output</h3>
+<p>When executed, the Logger nodes will output:</p>
+<pre><code>[INFO] 50
+[INFO] HELLO, WORLD!
+</code></pre>
+<h2>Testing Scenarios</h2>
+<h3>1. Basic Execution Test</h3>
+<ul>
+<li>Load the graph</li>
+<li>Click &quot;Play&quot; button</li>
+<li>Verify all nodes show &quot;completed&quot; status</li>
+<li>Verify Results Panel shows all outputs correctly</li>
+</ul>
+<h3>2. Sequential vs Parallel Test</h3>
+<ul>
+<li>Execute in Sequential mode</li>
+<li>Note execution order in Results Panel</li>
+<li>Execute in Parallel mode</li>
+<li>Verify Level 0 nodes execute simultaneously</li>
+<li>Verify execution time is similar or faster</li>
+</ul>
+<h3>3. Visual State Test</h3>
+<ul>
+<li>Execute the graph</li>
+<li>Verify node borders change color:<ul>
+<li>Blue when queued</li>
+<li>Yellow when executing</li>
+<li>Green when completed</li>
+</ul>
+</li>
+<li>Verify status badges appear on nodes</li>
+</ul>
+<h3>4. Results Panel Test</h3>
+<ul>
+<li>Execute the graph</li>
+<li>Verify Results Panel appears</li>
+<li>Expand each node result</li>
+<li>Verify output values are correct</li>
+<li>Verify execution times are displayed</li>
+</ul>
+<h3>5. Constant Node Configuration Test</h3>
+<ul>
+<li>Double-click <code>constant-1</code> to open details panel</li>
+<li>Change value from &quot;42&quot; to &quot;100&quot;</li>
+<li>Execute graph</li>
+<li>Verify <code>math-add</code> now outputs 108 (100 + 8)</li>
+<li>Verify <code>math-multiply</code> now outputs 800 (100 × 8)</li>
+</ul>
+<h3>6. Error Handling Test</h3>
+<ul>
+<li>Modify <code>constant-1</code> to have invalid value (e.g., &quot;abc&quot; for number type)</li>
+<li>Execute graph</li>
+<li>Verify <code>constant-1</code> shows failed status</li>
+<li>Verify error message in Results Panel</li>
+<li>Verify dependent nodes (<code>math-add</code>, <code>math-multiply</code>) may also fail</li>
+</ul>
+<h2>Loading the Test Graph</h2>
+<h3>Method 1: Via Graph Editor UI</h3>
+<ol>
+<li>Open Graph Editor</li>
+<li>Click &quot;Load&quot; button in Graph Toolbar</li>
+<li>Select &quot;Load from Backend&quot;</li>
+<li>If saved, select &quot;Live Execution Test Graph&quot;</li>
+<li>If not saved, use Method 2</li>
+</ol>
+<h3>Method 2: Direct File Load</h3>
+<ol>
+<li>Open Graph Editor</li>
+<li>Click &quot;Load&quot; button in Graph Toolbar</li>
+<li>Select &quot;Load from File&quot;</li>
+<li>Navigate to <code>data/graphs/test-live-execution.json</code></li>
+<li>Select and load the file</li>
+</ol>
+<h3>Method 3: Save First (Recommended)</h3>
+<ol>
+<li>Load the JSON file using Method 2</li>
+<li>Click &quot;Save&quot; button</li>
+<li>Enter name: &quot;Live Execution Test Graph&quot;</li>
+<li>Save the graph</li>
+<li>Now it will appear in &quot;Load from Backend&quot; list</li>
+</ol>
+<h2>Modifications for Testing</h2>
+<h3>Test Case 1: Simple Addition</h3>
+<ul>
+<li>Keep only <code>constant-1</code>, <code>constant-2</code>, <code>math-add</code>, and <code>logger-1</code></li>
+<li>Remove other nodes and connections</li>
+<li>Expected: Logger outputs 50</li>
+</ul>
+<h3>Test Case 2: String Operations Only</h3>
+<ul>
+<li>Keep only <code>constant-3</code>, <code>string-upper</code>, and <code>logger-2</code></li>
+<li>Remove other nodes and connections</li>
+<li>Expected: Logger outputs &quot;HELLO, WORLD!&quot;</li>
+</ul>
+<h3>Test Case 3: Multiple Math Operations</h3>
+<ul>
+<li>Add more Constant nodes with different values</li>
+<li>Add more Math nodes with different operations</li>
+<li>Connect them in various ways</li>
+<li>Expected: All operations execute correctly</li>
+</ul>
+<h3>Test Case 4: Error Scenario</h3>
+<ul>
+<li>Change <code>constant-1</code> value to invalid number (e.g., &quot;not-a-number&quot;)</li>
+<li>Execute graph</li>
+<li>Expected: Error shown in Results Panel</li>
+</ul>
+<h2>Notes</h2>
+<ul>
+<li>The graph is designed to be simple enough to understand but complex enough to test various execution scenarios</li>
+<li>All nodes use built-in node types (no custom nodes required)</li>
+<li>The graph demonstrates both data flow and parallel execution capabilities</li>
+<li>Constant nodes are output-only and configured via properties</li>
+<li>Logger nodes provide visible output for verification</li>
+</ul>
+<h2>Future Enhancements</h2>
+<p>Consider adding:</p>
+<ul>
+<li>Conditional node to test branching logic</li>
+<li>Array/Object nodes to test complex data types</li>
+<li>Error boundary nodes to test error handling</li>
+<li>Custom nodes to test custom node execution</li>
+</ul>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

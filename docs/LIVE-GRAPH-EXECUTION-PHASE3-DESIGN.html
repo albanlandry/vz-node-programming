@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Graph Execution Phase 3 - Design & Architecture - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" class="active">Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>Live Graph Execution Phase 3 - Design &amp; Architecture</h1>
+<h2>Overview</h2>
+<p>Phase 3 focuses on performance optimization and advanced visualization features. It includes incremental execution (only re-executing changed nodes) and advanced visualization tools (execution timeline, performance metrics, data flow graphs).</p>
+<h2>Architecture Overview</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                    Frontend (React/Next.js)                  │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │ Graph Store  │  │ Execution    │  │ Cache        │     │
+│  │ (Zustand)    │◄─┤ Service      │◄─┤ Manager      │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
+│         │                  │                  │             │
+│         ▼                  ▼                  ▼             │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │              UI Components                          │    │
+│  │  - ExecutionTimeline  - PerformanceMetrics        │    │
+│  │  - DataFlowGraph     - IncrementalExecutor       │    │
+│  └────────────────────────────────────────────────────┘    │
+│                                                              │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ HTTP/SSE
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Backend (Next.js API)                     │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌──────────────────┐  ┌──────────────────┐               │
+│  │ /api/graphs/     │  │ Incremental      │               │
+│  │ execute-incremental│ │ Execution Engine │               │
+│  └────────┬─────────┘  └────────┬─────────┘               │
+│           │                      │                         │
+│           └──────────┬───────────┘                         │
+│                      ▼                                     │
+│           ┌────────────────────┐                           │
+│           │ GraphExecutionEngine│                          │
+│           │  - executeIncremental│                         │
+│           │  - detectChanges   │                           │
+│           └────────────────────┘                           │
+│                      │                                     │
+│                      ▼                                     │
+│           ┌────────────────────┐                           │
+│           │ ResultCache        │                          │
+│           │  - cache results    │                          │
+│           │  - validate cache  │                           │
+│           └────────────────────┘                           │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<h2>Component Architecture</h2>
+<h3>1. Incremental Execution</h3>
+<h4>Change Detection</h4>
+<pre><code class="language-typescript">interface NodeChange {
+  nodeId: string;
+  type: &#39;added&#39; | &#39;removed&#39; | &#39;modified&#39; | &#39;connection-changed&#39;;
+  affectedNodes: string[]; // Nodes that depend on this change
+}
+
+interface ChangeDetector {
+  detectChanges(
+    previousGraph: GraphDefinition,
+    currentGraph: GraphDefinition
+  ): NodeChange[];
+  
+  getAffectedSubgraph(
+    changes: NodeChange[],
+    graph: GraphDefinition
+  ): GraphDefinition;
+}
+</code></pre>
+<h4>Result Caching</h4>
+<pre><code class="language-typescript">interface CachedResult {
+  nodeId: string;
+  result: ExecutionResult;
+  graphHash: string; // Hash of node + dependencies
+  timestamp: number;
+  ttl?: number; // Time to live in ms
+}
+
+interface ResultCache {
+  get(nodeId: string, graphHash: string): CachedResult | null;
+  set(nodeId: string, result: ExecutionResult, graphHash: string): void;
+  invalidate(nodeId: string): void;
+  clear(): void;
+}
+</code></pre>
+<h4>Incremental Executor</h4>
+<pre><code class="language-typescript">interface IncrementalExecutionOptions {
+  useCache: boolean;
+  cacheTTL?: number;
+  revalidateDependencies?: boolean;
+}
+
+class IncrementalExecutor {
+  async executeIncremental(
+    graph: GraphDefinition,
+    previousGraph?: GraphDefinition,
+    previousResults?: Record&lt;string, ExecutionResult&gt;,
+    options?: IncrementalExecutionOptions
+  ): Promise&lt;ExecutionResponse&gt;;
+}
+</code></pre>
+<h3>2. Advanced Visualization</h3>
+<h4>Execution Timeline</h4>
+<pre><code class="language-typescript">interface TimelineEvent {
+  nodeId: string;
+  nodeName: string;
+  startTime: number;
+  endTime: number;
+  duration: number;
+  status: &#39;completed&#39; | &#39;failed&#39;;
+  dependencies: string[];
+}
+
+interface ExecutionTimeline {
+  events: TimelineEvent[];
+  totalDuration: number;
+  parallelExecution: boolean;
+}
+</code></pre>
+<h4>Performance Metrics</h4>
+<pre><code class="language-typescript">interface NodePerformanceMetrics {
+  nodeId: string;
+  nodeName: string;
+  executionCount: number;
+  averageExecutionTime: number;
+  minExecutionTime: number;
+  maxExecutionTime: number;
+  totalExecutionTime: number;
+  successRate: number;
+  lastExecutionTime?: number;
+}
+
+interface GraphPerformanceMetrics {
+  nodes: Record&lt;string, NodePerformanceMetrics&gt;;
+  totalExecutions: number;
+  averageGraphExecutionTime: number;
+}
+</code></pre>
+<h4>Data Flow Graph</h4>
+<pre><code class="language-typescript">interface DataFlowNode {
+  nodeId: string;
+  nodeName: string;
+  inputs: Record&lt;string, unknown&gt;;
+  outputs: Record&lt;string, unknown&gt;;
+  executionTime: number;
+}
+
+interface DataFlowEdge {
+  fromNode: string;
+  toNode: string;
+  fromPort: string;
+  toPort: string;
+  data: unknown;
+  transferTime: number;
+}
+
+interface DataFlowGraph {
+  nodes: DataFlowNode[];
+  edges: DataFlowEdge[];
+  executionId: string;
+  timestamp: number;
+}
+</code></pre>
+<h2>Data Flow</h2>
+<h3>Incremental Execution Flow</h3>
+<ol>
+<li><p><strong>Change Detection</strong></p>
+<pre><code>User modifies graph
+→ ChangeDetector.detectChanges()
+→ Returns list of changed nodes
+→ Calculate affected subgraph
+</code></pre>
+</li>
+<li><p><strong>Cache Lookup</strong></p>
+<pre><code>For each unchanged node:
+→ Check cache with graph hash
+→ If valid cache exists, use it
+→ Otherwise, mark for execution
+</code></pre>
+</li>
+<li><p><strong>Partial Execution</strong></p>
+<pre><code>Execute only changed/affected nodes
+→ Update cache with new results
+→ Merge with cached results
+→ Return complete execution response
+</code></pre>
+</li>
+</ol>
+<h3>Visualization Data Flow</h3>
+<ol>
+<li><p><strong>Timeline Generation</strong></p>
+<pre><code>Execution completes
+→ Collect all node execution events
+→ Sort by start time
+→ Calculate dependencies
+→ Generate timeline visualization
+</code></pre>
+</li>
+<li><p><strong>Performance Metrics Collection</strong></p>
+<pre><code>After each execution:
+→ Update node metrics
+→ Calculate averages
+→ Store in performance store
+→ Update visualization
+</code></pre>
+</li>
+</ol>
+<h2>State Management</h2>
+<h3>Extended Graph Store</h3>
+<pre><code class="language-typescript">interface GraphState {
+  // ... existing state
+  
+  // Incremental execution
+  previousGraphHash: string | null;
+  cachedResults: Record&lt;string, CachedResult&gt;;
+  changeHistory: NodeChange[];
+  
+  // Performance metrics
+  performanceMetrics: GraphPerformanceMetrics;
+  
+  // Visualization
+  executionTimeline: ExecutionTimeline | null;
+  dataFlowGraph: DataFlowGraph | null;
+  
+  // Actions
+  detectGraphChanges: () =&gt; NodeChange[];
+  getCachedResult: (nodeId: string) =&gt; CachedResult | null;
+  setCachedResult: (nodeId: string, result: ExecutionResult) =&gt; void;
+  invalidateCache: (nodeId?: string) =&gt; void;
+  updatePerformanceMetrics: (nodeId: string, metrics: Partial&lt;NodePerformanceMetrics&gt;) =&gt; void;
+  setExecutionTimeline: (timeline: ExecutionTimeline) =&gt; void;
+  setDataFlowGraph: (graph: DataFlowGraph) =&gt; void;
+}
+</code></pre>
+<h2>API Design</h2>
+<h3>Incremental Execution Endpoint</h3>
+<p><strong>POST /api/graphs/execute-incremental</strong></p>
+<p>Request:</p>
+<pre><code class="language-typescript">{
+  graph: GraphDefinition;
+  previousGraph?: GraphDefinition;
+  previousResults?: Record&lt;string, ExecutionResult&gt;;
+  inputs?: Record&lt;string, Record&lt;string, unknown&gt;&gt;;
+  options?: {
+    useCache?: boolean;
+    cacheTTL?: number;
+    parallel?: boolean;
+  };
+}
+</code></pre>
+<p>Response:</p>
+<pre><code class="language-typescript">{
+  success: boolean;
+  results: Record&lt;string, ExecutionResult&gt;;
+  cachedNodes: string[]; // Nodes that used cached results
+  executedNodes: string[]; // Nodes that were actually executed
+  executionTime: number;
+  cacheHitRate: number;
+  logs: string[];
+}
+</code></pre>
+<h2>Component Specifications</h2>
+<h3>1. ExecutionTimeline Component</h3>
+<p><strong>Location</strong>: <code>components/graph/ExecutionTimeline.tsx</code></p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Visual timeline of node execution</li>
+<li>Dependency visualization</li>
+<li>Parallel execution detection</li>
+<li>Interactive hover details</li>
+<li>Zoom/pan controls</li>
+</ul>
+<h3>2. PerformanceMetrics Component</h3>
+<p><strong>Location</strong>: <code>components/graph/PerformanceMetrics.tsx</code></p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Node performance table</li>
+<li>Execution statistics</li>
+<li>Success rate visualization</li>
+<li>Performance charts</li>
+<li>Export metrics</li>
+</ul>
+<h3>3. DataFlowGraph Component</h3>
+<p><strong>Location</strong>: <code>components/graph/DataFlowGraph.tsx</code></p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Visual data flow representation</li>
+<li>Node input/output visualization</li>
+<li>Connection data display</li>
+<li>Interactive exploration</li>
+<li>Export data flow</li>
+</ul>
+<h3>4. IncrementalExecutor Service</h3>
+<p><strong>Location</strong>: <code>services/incrementalExecutionService.ts</code></p>
+<p><strong>Methods</strong>:</p>
+<pre><code class="language-typescript">class IncrementalExecutionService {
+  detectChanges(
+    previous: GraphDefinition,
+    current: GraphDefinition
+  ): NodeChange[];
+  
+  executeIncremental(
+    graph: GraphDefinition,
+    previousGraph?: GraphDefinition,
+    options?: IncrementalExecutionOptions
+  ): Promise&lt;ExecutionResponse&gt;;
+  
+  getAffectedSubgraph(
+    changes: NodeChange[],
+    graph: GraphDefinition
+  ): GraphDefinition;
+}
+</code></pre>
+<h2>Performance Considerations</h2>
+<h3>Caching Strategy</h3>
+<ul>
+<li>Hash-based cache keys (node + dependencies)</li>
+<li>TTL-based expiration</li>
+<li>LRU eviction for large caches</li>
+<li>Cache invalidation on graph changes</li>
+</ul>
+<h3>Change Detection</h3>
+<ul>
+<li>Deep comparison of node properties</li>
+<li>Connection change detection</li>
+<li>Dependency graph analysis</li>
+<li>Efficient diff algorithm</li>
+</ul>
+<h3>Visualization Performance</h3>
+<ul>
+<li>Virtualized timeline rendering</li>
+<li>Throttled metric updates</li>
+<li>Lazy loading of data flow graphs</li>
+<li>Memoized calculations</li>
+</ul>
+<h2>Security Considerations</h2>
+<h3>Cache Validation</h3>
+<ul>
+<li>Verify cache integrity</li>
+<li>Validate graph hash matches</li>
+<li>Prevent stale cache usage</li>
+<li>Sanitize cached data</li>
+</ul>
+<h2>Testing Strategy</h2>
+<h3>Unit Tests</h3>
+<ul>
+<li>Change detection logic</li>
+<li>Cache management</li>
+<li>Incremental execution</li>
+<li>Timeline generation</li>
+<li>Performance metrics calculation</li>
+</ul>
+<h3>Integration Tests</h3>
+<ul>
+<li>End-to-end incremental execution</li>
+<li>Cache hit/miss scenarios</li>
+<li>Visualization data accuracy</li>
+<li>Performance under load</li>
+</ul>
+<h3>Performance Tests</h3>
+<ul>
+<li>Large graph incremental execution</li>
+<li>Cache efficiency</li>
+<li>Visualization rendering performance</li>
+<li>Memory usage</li>
+</ul>
+<h2>Migration Path</h2>
+<ol>
+<li>Add change detection to store (non-breaking)</li>
+<li>Add cache management (non-breaking)</li>
+<li>Add incremental execution API (new endpoint)</li>
+<li>Add visualization components (new components)</li>
+<li>Update ExecutionToolbar to use incremental execution</li>
+<li>Add performance metrics collection</li>
+</ol>
+<h2>Success Criteria</h2>
+<ul>
+<li>✅ Incremental execution reduces execution time by 50%+ for unchanged nodes</li>
+<li>✅ Cache hit rate &gt; 80% for repeated executions</li>
+<li>✅ Timeline visualization renders smoothly (60fps)</li>
+<li>✅ Performance metrics accurate and up-to-date</li>
+<li>✅ Data flow graph interactive and responsive</li>
+<li>✅ No memory leaks in long-running sessions</li>
+<li>✅ Change detection accurate and fast (&lt; 10ms for 100 nodes)</li>
+</ul>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAssembly Opportunities in VZ Programming - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" class="active">WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>WebAssembly Opportunities in VZ Programming</h1>
+<p>This document outlines where WebAssembly (WASM) could provide significant performance and security benefits in the VZ Programming project.</p>
+<h2>🎯 High-Impact Areas for WebAssembly</h2>
+<h3>1. <strong>Custom Node Expression Execution</strong> ⭐⭐⭐</h3>
+<p><strong>Current Implementation:</strong></p>
+<ul>
+<li>Uses VM2 sandbox for executing user-defined expressions</li>
+<li>JavaScript-based evaluation with security restrictions</li>
+<li>Performance overhead from sandboxing</li>
+</ul>
+<p><strong>WebAssembly Benefits:</strong></p>
+<ul>
+<li><strong>Performance</strong>: 10-100x faster execution for mathematical and data operations</li>
+<li><strong>Security</strong>: Native sandboxing without JavaScript eval risks</li>
+<li><strong>Isolation</strong>: Complete isolation from Node.js runtime</li>
+<li><strong>Portability</strong>: Same code runs in browser and Node.js</li>
+</ul>
+<p><strong>Implementation Approach:</strong></p>
+<ul>
+<li>Compile user expressions to WASM modules</li>
+<li>Use AssemblyScript or Rust to generate WASM</li>
+<li>Runtime compilation with caching</li>
+<li>Fallback to JavaScript for unsupported operations</li>
+</ul>
+<p><strong>Example Use Cases:</strong></p>
+<ul>
+<li>Complex mathematical calculations</li>
+<li>Data transformations on large datasets</li>
+<li>JSONPath queries on large JSON objects</li>
+<li>Array/object manipulations</li>
+</ul>
+<h3>2. <strong>Data Processing Operations</strong> ⭐⭐⭐</h3>
+<p><strong>Current Bottlenecks:</strong></p>
+<ul>
+<li>JSON parsing/stringifying large objects</li>
+<li>JSONPath evaluation (currently JavaScript-based)</li>
+<li>Array filtering, mapping, reducing on large datasets</li>
+<li>Data validation on complex schemas</li>
+</ul>
+<p><strong>WebAssembly Benefits:</strong></p>
+<ul>
+<li><strong>Speed</strong>: Native performance for parsing/processing</li>
+<li><strong>Memory</strong>: More efficient memory usage</li>
+<li><strong>Throughput</strong>: Process larger datasets without blocking</li>
+</ul>
+<p><strong>Specific Nodes to Optimize:</strong></p>
+<ul>
+<li><code>JsonPathNode</code>: JSONPath evaluation</li>
+<li><code>JsonParseNode</code> / <code>JsonStringifyNode</code>: JSON operations</li>
+<li><code>ArrayFilterNode</code>: Large array filtering</li>
+<li><code>DataValidationNode</code>: Schema validation</li>
+<li><code>TransformNode</code>: Data transformations</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">// Current: JavaScript JSONPath evaluation
+private evaluateJsonPath(data: unknown, path: string): unknown {
+  // JavaScript-based traversal - slow for large objects
+}
+
+// WASM: Compiled JSONPath evaluator
+// 10-50x faster for large JSON objects
+</code></pre>
+<h3>3. <strong>Graph Algorithm Execution</strong> ⭐⭐</h3>
+<p><strong>Current Implementation:</strong></p>
+<ul>
+<li>Dependency resolution in JavaScript</li>
+<li>Execution order calculation</li>
+<li>Circular dependency detection</li>
+<li>Level-based parallel execution grouping</li>
+</ul>
+<p><strong>WebAssembly Benefits:</strong></p>
+<ul>
+<li><strong>Performance</strong>: Faster graph traversal for large graphs (1000+ nodes)</li>
+<li><strong>Memory</strong>: More efficient graph representation</li>
+<li><strong>Scalability</strong>: Handle much larger graphs</li>
+</ul>
+<p><strong>Use Cases:</strong></p>
+<ul>
+<li><code>NodeExecutor.buildExecutionOrder()</code>: Topological sort</li>
+<li><code>NodeExecutor.buildExecutionLevels()</code>: Level calculation</li>
+<li>Graph validation and optimization</li>
+<li>Cycle detection algorithms</li>
+</ul>
+<h3>4. <strong>Mathematical &amp; Computational Nodes</strong> ⭐⭐⭐</h3>
+<p><strong>Current Nodes:</strong></p>
+<ul>
+<li><code>MathNode</code>: Basic arithmetic operations</li>
+<li><code>CalculatorNode</code>: Stateful calculations</li>
+<li><code>TransformNode</code>: Mathematical transformations</li>
+</ul>
+<p><strong>WebAssembly Benefits:</strong></p>
+<ul>
+<li><strong>Precision</strong>: Better numerical precision for complex math</li>
+<li><strong>Performance</strong>: Native math operations (10-100x faster)</li>
+<li><strong>Advanced Math</strong>: Support for complex mathematical libraries</li>
+</ul>
+<p><strong>Potential WASM Libraries:</strong></p>
+<ul>
+<li><strong>AssemblyScript Math</strong>: Fast math operations</li>
+<li><strong>WASM SIMD</strong>: Vectorized operations for arrays</li>
+<li><strong>Scientific Computing</strong>: Linear algebra, statistics</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">// Current: JavaScript Math operations
+result = Math.pow(a, b);
+result = Math.sqrt(a);
+
+// WASM: Native math with SIMD support
+// Process arrays of numbers in parallel
+</code></pre>
+<h3>5. <strong>Large File &amp; Data Processing</strong> ⭐⭐</h3>
+<p><strong>Current Limitations:</strong></p>
+<ul>
+<li>JavaScript memory limits for large files</li>
+<li>Blocking operations for large data processing</li>
+<li>Limited streaming capabilities</li>
+</ul>
+<p><strong>WebAssembly Benefits:</strong></p>
+<ul>
+<li><strong>Streaming</strong>: Process data in chunks without loading entirely</li>
+<li><strong>Memory Efficiency</strong>: Better memory management</li>
+<li><strong>Performance</strong>: Faster processing of large datasets</li>
+</ul>
+<p><strong>Use Cases:</strong></p>
+<ul>
+<li>CSV parsing for large files</li>
+<li>XML parsing</li>
+<li>Large JSON file processing</li>
+<li>Binary file operations</li>
+<li>Image processing (if added)</li>
+</ul>
+<h3>6. <strong>Security-Critical Operations</strong> ⭐⭐⭐</h3>
+<p><strong>Current Implementation:</strong></p>
+<ul>
+<li>VM2 sandbox for custom expressions</li>
+<li>Input validation in JavaScript</li>
+<li>Rate limiting in JavaScript</li>
+</ul>
+<p><strong>WebAssembly Benefits:</strong></p>
+<ul>
+<li><strong>Isolation</strong>: True sandboxing without JavaScript context</li>
+<li><strong>Security</strong>: No access to Node.js APIs or global objects</li>
+<li><strong>Performance</strong>: Fast validation without security overhead</li>
+</ul>
+<p><strong>Implementation:</strong></p>
+<ul>
+<li>Compile validation rules to WASM</li>
+<li>Execute user expressions in WASM sandbox</li>
+<li>Cryptographic operations (hashing, encryption)</li>
+</ul>
+<h3>7. <strong>Image Processing</strong> ⭐⭐</h3>
+<p><strong>Current State:</strong></p>
+<ul>
+<li><code>ImageDisplayNode</code> exists but doesn&#39;t process images</li>
+<li>No image manipulation capabilities</li>
+</ul>
+<p><strong>WebAssembly Opportunities:</strong></p>
+<ul>
+<li><strong>Image Processing</strong>: Resize, crop, filter, transform</li>
+<li><strong>Format Conversion</strong>: Convert between image formats</li>
+<li><strong>Performance</strong>: Native-speed image operations</li>
+</ul>
+<p><strong>Potential Libraries:</strong></p>
+<ul>
+<li><strong>wasm-imagemagick</strong>: ImageMagick in WASM</li>
+<li><strong>squoosh</strong>: Google&#39;s image optimization in WASM</li>
+<li><strong>Custom WASM</strong>: Lightweight image operations</li>
+</ul>
+<h3>8. <strong>Encryption &amp; Compression</strong> ⭐⭐</h3>
+<p><strong>Potential Use Cases:</strong></p>
+<ul>
+<li>Encrypt/decrypt node data</li>
+<li>Compress/decompress large data</li>
+<li>Hash generation</li>
+<li>Digital signatures</li>
+</ul>
+<p><strong>WebAssembly Benefits:</strong></p>
+<ul>
+<li><strong>Performance</strong>: Native crypto operations</li>
+<li><strong>Security</strong>: Isolated cryptographic operations</li>
+<li><strong>Libraries</strong>: Use existing WASM crypto libraries</li>
+</ul>
+<h2>📊 Performance Impact Estimates</h2>
+<h3>Expected Performance Improvements</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Current (JS)</th>
+<th>WASM</th>
+<th>Speedup</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JSONPath (large JSON)</td>
+<td>100ms</td>
+<td>5-10ms</td>
+<td><strong>10-20x</strong></td>
+</tr>
+<tr>
+<td>Array filtering (1M items)</td>
+<td>200ms</td>
+<td>10-20ms</td>
+<td><strong>10-20x</strong></td>
+</tr>
+<tr>
+<td>Math operations (1M ops)</td>
+<td>50ms</td>
+<td>2-5ms</td>
+<td><strong>10-25x</strong></td>
+</tr>
+<tr>
+<td>JSON parse (10MB)</td>
+<td>150ms</td>
+<td>15-30ms</td>
+<td><strong>5-10x</strong></td>
+</tr>
+<tr>
+<td>Custom expression eval</td>
+<td>5ms</td>
+<td>0.5-1ms</td>
+<td><strong>5-10x</strong></td>
+</tr>
+<tr>
+<td>Graph traversal (1000 nodes)</td>
+<td>20ms</td>
+<td>2-5ms</td>
+<td><strong>4-10x</strong></td>
+</tr>
+</tbody></table>
+<h3>Memory Benefits</h3>
+<ul>
+<li><strong>Reduced Memory</strong>: 30-50% less memory for large data operations</li>
+<li><strong>Better GC</strong>: Less garbage collection pressure</li>
+<li><strong>Streaming</strong>: Process data without loading entirely into memory</li>
+</ul>
+<h2>🛠️ Implementation Strategy</h2>
+<h3>Phase 1: High-Value, Low-Risk (Quick Wins)</h3>
+<ol>
+<li><p><strong>JSONPath Evaluation</strong> (2-3 days)</p>
+<ul>
+<li>Compile JSONPath to WASM</li>
+<li>Use existing WASM JSONPath library or create one</li>
+<li>Fallback to JavaScript for unsupported paths</li>
+</ul>
+</li>
+<li><p><strong>Mathematical Operations</strong> (3-5 days)</p>
+<ul>
+<li>Create WASM math module</li>
+<li>Support basic operations (add, subtract, multiply, divide, power, sqrt)</li>
+<li>Use AssemblyScript for easy compilation</li>
+</ul>
+</li>
+<li><p><strong>Array Operations</strong> (3-5 days)</p>
+<ul>
+<li>WASM modules for filter, map, reduce</li>
+<li>SIMD support for vectorized operations</li>
+<li>Handle large arrays efficiently</li>
+</ul>
+</li>
+</ol>
+<h3>Phase 2: Custom Expression Execution (1-2 weeks)</h3>
+<ol>
+<li><p><strong>Expression Compiler</strong></p>
+<ul>
+<li>Parse user expressions</li>
+<li>Compile to WASM using AssemblyScript</li>
+<li>Cache compiled WASM modules</li>
+<li>Runtime compilation with fallback</li>
+</ul>
+</li>
+<li><p><strong>Sandbox Replacement</strong></p>
+<ul>
+<li>Replace VM2 with WASM-based execution</li>
+<li>Better security and performance</li>
+<li>Support for more expression types</li>
+</ul>
+</li>
+</ol>
+<h3>Phase 3: Advanced Features (2-4 weeks)</h3>
+<ol>
+<li><p><strong>Large Data Processing</strong></p>
+<ul>
+<li>Streaming JSON parser in WASM</li>
+<li>CSV/XML parsers in WASM</li>
+<li>Binary data processing</li>
+</ul>
+</li>
+<li><p><strong>Image Processing</strong></p>
+<ul>
+<li>Image manipulation nodes</li>
+<li>Format conversion</li>
+<li>Optimization</li>
+</ul>
+</li>
+<li><p><strong>Graph Algorithms</strong></p>
+<ul>
+<li>WASM-based graph traversal</li>
+<li>Optimization algorithms</li>
+<li>Large graph support</li>
+</ul>
+</li>
+</ol>
+<h2>🔧 Technical Considerations</h2>
+<h3>Tools &amp; Libraries</h3>
+<p><strong>Compilation:</strong></p>
+<ul>
+<li><strong>AssemblyScript</strong>: TypeScript-like syntax, easy to adopt</li>
+<li><strong>Rust + wasm-pack</strong>: Maximum performance, more complex</li>
+<li><strong>Emscripten</strong>: C/C++ to WASM, for existing libraries</li>
+</ul>
+<p><strong>Runtime:</strong></p>
+<ul>
+<li><strong>@wasm-tool/wasm-pack-plugin</strong>: Webpack integration</li>
+<li><strong>wasm-bindgen</strong>: Rust/JS interop</li>
+<li><strong>@assemblyscript/loader</strong>: AssemblyScript runtime</li>
+</ul>
+<p><strong>Existing WASM Libraries:</strong></p>
+<ul>
+<li><strong>jsonpath-wasm</strong>: JSONPath in WASM</li>
+<li><strong>wasm-imagemagick</strong>: Image processing</li>
+<li><strong>wasm-crypto</strong>: Cryptographic operations</li>
+<li><strong>wasm-json</strong>: Fast JSON parsing</li>
+</ul>
+<h3>Integration Points</h3>
+<ol>
+<li><p><strong>Node Execution Layer</strong></p>
+<pre><code class="language-typescript">// In BaseNode or specific nodes
+private wasmModule?: WebAssembly.Module;
+
+async initializeWasm() {
+  if (!this.wasmModule) {
+    const wasm = await import(&#39;./wasm/math.wasm&#39;);
+    this.wasmModule = await WebAssembly.instantiate(wasm);
+  }
+}
+</code></pre>
+</li>
+<li><p><strong>Custom Node Expression Execution</strong></p>
+<pre><code class="language-typescript">// Replace SandboxExecutor with WASM compiler
+compileToWasm(expression: string): WebAssembly.Module {
+  // Compile expression to WASM
+  // Cache compiled modules
+}
+</code></pre>
+</li>
+<li><p><strong>Data Processing Nodes</strong></p>
+<pre><code class="language-typescript">// JsonPathNode with WASM
+private async evaluateJsonPathWasm(data: unknown, path: string) {
+  const wasm = await this.getWasmModule(&#39;jsonpath&#39;);
+  return wasm.exports.evaluate(data, path);
+}
+</code></pre>
+</li>
+</ol>
+<h3>Browser vs Node.js</h3>
+<p><strong>Browser:</strong></p>
+<ul>
+<li>Native WebAssembly support</li>
+<li>No additional setup needed</li>
+<li>Shared memory for performance</li>
+</ul>
+<p><strong>Node.js:</strong></p>
+<ul>
+<li>Use <code>wasmtime</code> or <code>wasmer</code> for server-side</li>
+<li>Or use Node.js built-in WASM support</li>
+<li>Consider worker threads for isolation</li>
+</ul>
+<h2>📈 Migration Path</h2>
+<h3>Step 1: Proof of Concept (1 week)</h3>
+<ul>
+<li>Implement WASM JSONPath evaluator</li>
+<li>Compare performance with JavaScript version</li>
+<li>Measure memory usage</li>
+</ul>
+<h3>Step 2: Core Operations (2-3 weeks)</h3>
+<ul>
+<li>Math operations in WASM</li>
+<li>Array operations with SIMD</li>
+<li>Expression compiler prototype</li>
+</ul>
+<h3>Step 3: Integration (2-3 weeks)</h3>
+<ul>
+<li>Integrate WASM into node execution</li>
+<li>Add fallback mechanisms</li>
+<li>Update node implementations</li>
+</ul>
+<h3>Step 4: Optimization (ongoing)</h3>
+<ul>
+<li>Profile and optimize hot paths</li>
+<li>Add more WASM modules</li>
+<li>Improve compilation caching</li>
+</ul>
+<h2>⚠️ Challenges &amp; Considerations</h2>
+<h3>Challenges</h3>
+<ol>
+<li><p><strong>Development Complexity</strong></p>
+<ul>
+<li>Learning curve for WASM tooling</li>
+<li>Debugging WASM code is harder</li>
+<li>Need to maintain JS fallbacks</li>
+</ul>
+</li>
+<li><p><strong>Bundle Size</strong></p>
+<ul>
+<li>WASM modules add to bundle size</li>
+<li>Need code splitting and lazy loading</li>
+<li>Consider CDN hosting for common modules</li>
+</ul>
+</li>
+<li><p><strong>Browser Compatibility</strong></p>
+<ul>
+<li>WASM support is good but not universal</li>
+<li>Need polyfills or fallbacks</li>
+<li>Test across browsers</li>
+</ul>
+</li>
+<li><p><strong>Maintenance</strong></p>
+<ul>
+<li>Two codebases (JS and WASM)</li>
+<li>Need to keep in sync</li>
+<li>More complex build process</li>
+</ul>
+</li>
+</ol>
+<h3>When NOT to Use WASM</h3>
+<ul>
+<li><strong>Simple Operations</strong>: Overhead not worth it for simple operations</li>
+<li><strong>I/O Operations</strong>: WASM doesn&#39;t help with network/disk I/O</li>
+<li><strong>Small Data</strong>: JavaScript is fine for small datasets</li>
+<li><strong>Rapid Prototyping</strong>: JS is faster to develop</li>
+</ul>
+<h2>🎯 Recommended Starting Points</h2>
+<h3>Priority 1: JSONPath Evaluation</h3>
+<ul>
+<li><strong>Impact</strong>: High (used frequently, processes large data)</li>
+<li><strong>Effort</strong>: Medium (can use existing library)</li>
+<li><strong>Risk</strong>: Low (easy to fallback to JS)</li>
+</ul>
+<h3>Priority 2: Mathematical Operations</h3>
+<ul>
+<li><strong>Impact</strong>: Medium-High (used in many nodes)</li>
+<li><strong>Effort</strong>: Low (simple operations)</li>
+<li><strong>Risk</strong>: Low (easy fallback)</li>
+</ul>
+<h3>Priority 3: Custom Expression Execution</h3>
+<ul>
+<li><strong>Impact</strong>: Very High (core feature)</li>
+<li><strong>Effort</strong>: High (needs compiler)</li>
+<li><strong>Risk</strong>: Medium (complex but high reward)</li>
+</ul>
+<h3>Priority 4: Array Operations</h3>
+<ul>
+<li><strong>Impact</strong>: High (used in data processing)</li>
+<li><strong>Effort</strong>: Medium (SIMD support needed)</li>
+<li><strong>Risk</strong>: Low-Medium</li>
+</ul>
+<h2>📚 Resources</h2>
+<ul>
+<li><strong>AssemblyScript</strong>: <a href="https://www.assemblyscript.org/">https://www.assemblyscript.org/</a></li>
+<li><strong>WebAssembly Documentation</strong>: <a href="https://webassembly.org/">https://webassembly.org/</a></li>
+<li><strong>wasm-pack</strong>: <a href="https://rustwasm.github.io/wasm-pack/">https://rustwasm.github.io/wasm-pack/</a></li>
+<li><strong>WASM Performance Guide</strong>: <a href="https://web.dev/webassembly/">https://web.dev/webassembly/</a></li>
+</ul>
+<h2>💡 Example Implementation</h2>
+<h3>JSONPath Node with WASM</h3>
+<pre><code class="language-typescript">// src/nodes/dataprocessing/JsonPathNode.ts
+export class JsonPathNode extends BaseNode {
+  private wasmModule?: WebAssembly.Instance;
+  private useWasm = true; // Feature flag
+
+  async initialize() {
+    if (this.useWasm) {
+      try {
+        const wasm = await import(&#39;../../wasm/jsonpath.wasm&#39;);
+        this.wasmModule = await WebAssembly.instantiate(wasm);
+      } catch (error) {
+        console.warn(&#39;WASM JSONPath not available, using JS fallback&#39;);
+        this.useWasm = false;
+      }
+    }
+  }
+
+  private evaluateJsonPath(data: unknown, path: string): unknown {
+    if (this.useWasm &amp;&amp; this.wasmModule) {
+      // Use WASM for large objects
+      const dataSize = JSON.stringify(data).length;
+      if (dataSize &gt; 100000) { // 100KB threshold
+        return this.wasmModule.exports.evaluate(
+          JSON.stringify(data),
+          path
+        );
+      }
+    }
+    
+    // Fallback to JavaScript for small data
+    return this.evaluateJsonPathJS(data, path);
+  }
+}
+</code></pre>
+<hr>
+<p><strong>Conclusion</strong>: WebAssembly can provide significant performance improvements, especially for data processing, mathematical operations, and custom expression execution. Start with high-impact, low-risk areas like JSONPath and math operations, then expand to more complex features.</p>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

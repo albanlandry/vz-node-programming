@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-group">
+                    <div class="nav-group-header">Getting Started</div>
+                    <ul class="nav-submenu expanded">
+                        <li><a href="index.html" class="active">Home</a></li>
+                        <li><a href="node-library.html">Node Library</a></li>
+                    </ul>
+                </li>
+                <li class="nav-group">
+                    <div class="nav-group-header">Core Systems</div>
+                    <ul class="nav-submenu">
+                        <li><a href="NODE-REGISTRY.html">Node Registry</a></li>
+                        <li><a href="FEATURES-SUMMARY.html">Features Summary</a></li>
+                    </ul>
+                </li>
+                <li class="nav-group">
+                    <div class="nav-group-header">Custom Nodes</div>
+                    <ul class="nav-submenu">
+                        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html">System Proposal</a></li>
+                        <li><a href="CUSTOM-NODES-DESIGN.html">Design</a></li>
+                        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html">Implementation</a></li>
+                        <li><a href="CUSTOM-NODES-SUMMARY.html">Summary</a></li>
+                    </ul>
+                </li>
+                <li class="nav-group">
+                    <div class="nav-group-header">Graph Editor</div>
+                    <ul class="nav-submenu">
+                        <li><a href="GRAPH-EDITOR.html">Overview</a></li>
+                        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html">Implementation</a></li>
+                        <li><a href="GRAPH-EDITOR-REACT-FLOW.html">React Flow Migration</a></li>
+                        <li><a href="GRAPH-EDITOR-SUMMARY.html">Quick Start</a></li>
+                        <li><a href="GRAPH-EXECUTE-PAGE.html">Execute Page</a></li>
+                        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html">Management System</a></li>
+                        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html">Improvements</a></li>
+                    </ul>
+                </li>
+                <li class="nav-group">
+                    <div class="nav-group-header">Live Execution</div>
+                    <ul class="nav-submenu">
+                        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html">Proposal</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html">Phase 1</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html">Phase 2 - Design</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html">Phase 2 - Implementation</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html">Phase 2 - Complete</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html">Phase 3 - Design</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html">Phase 3 - Implementation</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html">Phase 3 - Complete</a></li>
+                    </ul>
+                </li>
+                <li class="nav-group">
+                    <div class="nav-group-header">Error Handling & Logging</div>
+                    <ul class="nav-submenu">
+                        <li><a href="ERROR-HANDLING.html">Error Handling</a></li>
+                        <li><a href="ERROR-HANDLING-SUMMARY.html">Error Handling Summary</a></li>
+                        <li><a href="LOGGING.html">Logging</a></li>
+                    </ul>
+                </li>
+                <li class="nav-group">
+                    <div class="nav-group-header">Advanced Topics</div>
+                    <ul class="nav-submenu">
+                        <li><a href="INTERACTIVE-NODES-PROPOSAL.html">Interactive Nodes</a></li>
+                        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html">Test Graph</a></li>
+                        <li><a href="IMPROVEMENTS-PROPOSAL.html">Improvements</a></li>
+                        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html">WebAssembly</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="content">
+            <h1>VZ Programming Documentation</h1>
+            <p>VZ Programming is a node-based programming system that supports multiple programming paradigms using TypeScript/Node.js.</p>
+            
+            <h2>Key Documentation</h2>
+            
+            <h3><a href="node-library.html">Node Library</a></h3>
+            <p>Detailed explanation of how nodes work, available methods and properties, and how to create custom nodes.</p>
+            
+            <h3><a href="NODE-REGISTRY.html">Node Registry & Discovery System</a></h3>
+            <p>Complete guide to the node registration and discovery system. Learn how to register, search, and dynamically create nodes.</p>
+            
+            <h3><a href="CUSTOM-NODES-IMPLEMENTATION.html">Custom Nodes Implementation</a></h3>
+            <p>Learn how to create custom nodes via web UI. Use the template-based system to create nodes without writing TypeScript code.</p>
+            
+            <h3><a href="GRAPH-EDITOR.html">Graph Editor</a></h3>
+            <p>Guide to using the visual graph editor built with React Flow.</p>
+            
+            <h3><a href="ERROR-HANDLING.html">Error Handling</a></h3>
+            <p>Guide to the error handling system. Learn about retry, circuit breaker, fallback, and other features.</p>
+            
+            <h3><a href="LOGGING.html">Logging</a></h3>
+            <p>Guide to using the logging system. Learn about different log formats and configuration options.</p>
+            
+            <h2>Features</h2>
+            <ul>
+                <li><strong>Async Execution</strong>: Full support for Promise-based asynchronous operations</li>
+                <li><strong>Parallel Execution</strong>: Automatic parallel execution of independent nodes</li>
+                <li><strong>Node Registry</strong>: Centralized node management and discovery system</li>
+                <li><strong>Graph Serialization</strong>: Export/import workflows as JSON/YAML</li>
+                <li><strong>Error Handling</strong>: Retry, circuit breaker, fallback, and DLQ support</li>
+                <li><strong>Logging</strong>: Configurable logging system</li>
+                <li><strong>Custom Nodes</strong>: Create custom nodes via web UI</li>
+                <li><strong>Graph Editor</strong>: Visual editor built with React Flow</li>
+            </ul>
+            
+            <h2>Quick Start</h2>
+            <p>To get started with VZ Programming, read the <a href="node-library.html">Node Library</a> documentation first.</p>
+            
+            <h2>Documentation Structure</h2>
+            <p>This documentation is HTML-based and you can access all documents from the left sidebar. Documents are organized into related groups and submenus for easy navigation.</p>
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+    </script>
+</body>
+</html>

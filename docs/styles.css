@@ -1,0 +1,339 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+    max-width: 1600px;
+    margin: 0 auto;
+    background-color: #ffffff;
+}
+
+.sidebar {
+    width: 280px;
+    background-color: #1a202c;
+    color: white;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    border-right: 1px solid #2d3748;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 2rem 1.5rem 1.5rem;
+    border-bottom: 1px solid #2d3748;
+    margin-bottom: 1rem;
+}
+
+.sidebar-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.2;
+}
+
+.sidebar-header h1 a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.sidebar-header h1 a:hover {
+    color: #667eea;
+}
+
+.sidebar-header .subtitle {
+    font-size: 0.875rem;
+    color: #a0aec0;
+    margin: 0;
+    font-weight: 400;
+}
+
+.sidebar h2 {
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+    color: #a0aec0;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0 1.5rem;
+}
+
+.sidebar ul {
+    list-style: none;
+    flex: 1;
+    padding: 0 0.75rem 1.5rem;
+}
+
+.sidebar li {
+    margin-bottom: 0.25rem;
+}
+
+.sidebar a {
+    color: #cbd5e0;
+    text-decoration: none;
+    display: block;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+}
+
+.sidebar a:hover {
+    background-color: #2d3748;
+    color: #ffffff;
+    transform: translateX(2px);
+}
+
+.sidebar a.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+/* Navigation groups */
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-group {
+    margin-bottom: 0.75rem;
+}
+
+.nav-group-header {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 6px;
+    margin-bottom: 0.25rem;
+}
+
+.nav-group-header:hover {
+    color: #ffffff;
+    background-color: #2d3748;
+}
+
+.nav-group-header::after {
+    content: '▼';
+    font-size: 0.6rem;
+    transition: transform 0.3s ease;
+    opacity: 0.6;
+    margin-left: 0.5rem;
+}
+
+.nav-group-header.expanded::after {
+    transform: rotate(180deg);
+    opacity: 1;
+}
+
+.nav-submenu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-submenu.expanded {
+    max-height: 2000px;
+}
+
+.nav-submenu li {
+    margin: 0;
+}
+
+.nav-submenu a {
+    padding: 0.5rem 1rem 0.5rem 2rem;
+    font-size: 0.875rem;
+}
+
+.content {
+    flex: 1;
+    padding: 3rem 4rem;
+    overflow-y: auto;
+    background-color: #ffffff;
+    max-width: calc(100% - 280px);
+}
+
+.content h2 {
+    font-size: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #2d3748;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 0.5rem;
+}
+
+.content h3 {
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    color: #4a5568;
+}
+
+.content h4 {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    color: #718096;
+}
+
+.content p {
+    margin-bottom: 1rem;
+    line-height: 1.8;
+}
+
+.content ul, .content ol {
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+.content li {
+    margin-bottom: 0.5rem;
+}
+
+.content code {
+    background-color: #f7fafc;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9em;
+    color: #e53e3e;
+}
+
+.content pre {
+    background-color: #2d3748;
+    color: #cbd5e0;
+    padding: 1.5rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    line-height: 1.5;
+}
+
+.content pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+    font-size: 0.9rem;
+}
+
+.content blockquote {
+    border-left: 4px solid #667eea;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    color: #718096;
+    font-style: italic;
+}
+
+.content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+.content table th,
+.content table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.content table th {
+    background-color: #f7fafc;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.content table tr:hover {
+    background-color: #f7fafc;
+}
+
+.content .highlight {
+    background-color: #fff5b7;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+}
+
+.content .warning {
+    background-color: #fed7d7;
+    border-left: 4px solid #fc8181;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-radius: 4px;
+}
+
+.content .info {
+    background-color: #bee3f8;
+    border-left: 4px solid #4299e1;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-radius: 4px;
+}
+
+.content .success {
+    background-color: #c6f6d5;
+    border-left: 4px solid #48bb78;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-radius: 4px;
+}
+
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 240px;
+    }
+    
+    .content {
+        padding: 2rem 2.5rem;
+        max-width: calc(100% - 240px);
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        max-height: 60vh;
+    }
+
+    .content {
+        padding: 1.5rem;
+        max-width: 100%;
+    }
+
+    .sidebar-header h1 {
+        font-size: 1.25rem;
+    }
+}
+

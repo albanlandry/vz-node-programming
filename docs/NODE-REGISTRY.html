@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Registry & Discovery System - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" class="active">Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>Node Registry &amp; Discovery System</h1>
+<h2>Overview</h2>
+<p>The Node Registry is a central system for discovering, organizing, and instantiating nodes in the VZ Programming system. It provides a catalog of all available node types with rich metadata, search capabilities, and type-safe node creation.</p>
+<h2>Features</h2>
+<ul>
+<li>✅ Central registry for all node types</li>
+<li>✅ Rich metadata (categories, tags, icons, colors)</li>
+<li>✅ Search and filter capabilities</li>
+<li>✅ Auto-discovery and registration</li>
+<li>✅ Type-safe node creation</li>
+<li>✅ Version management</li>
+<li>✅ Documentation export</li>
+</ul>
+<h2>Quick Start</h2>
+<pre><code class="language-typescript">import { NodeRegistry, registerBuiltInNodes, createNode } from &#39;./src/index&#39;;
+
+// Register all built-in nodes
+registerBuiltInNodes();
+
+// Create a node by type
+const httpNode = createNode(&#39;async.http-request&#39;);
+
+// Get node metadata
+const registry = NodeRegistry.getInstance();
+const metadata = registry.getMetadata(&#39;async.http-request&#39;);
+console.log(metadata);
+</code></pre>
+<h2>Core Concepts</h2>
+<h3>Node Metadata</h3>
+<p>Each registered node has comprehensive metadata:</p>
+<pre><code class="language-typescript">interface NodeMetadata {
+  type: string;              // Unique identifier (e.g., &#39;async.http-request&#39;)
+  displayName: string;       // Human-readable name
+  category: string;          // Organization category
+  description: string;       // Detailed description
+  version: string;           // Semantic version
+  author?: string;           // Creator information
+  tags: string[];           // Search/filter tags
+  icon?: string;            // Visual representation (emoji/icon)
+  color?: string;           // UI color (hex)
+  deprecated?: boolean;     // Deprecation status
+  inputs: Port[];          // Input port definitions
+  outputs: Port[];         // Output port definitions
+  examples?: string[];     // Usage examples
+  docsUrl?: string;        // Documentation link
+}
+</code></pre>
+<h3>Categories</h3>
+<p>Built-in categories:</p>
+<ul>
+<li><strong>Functional</strong> - Map, Filter, Reduce, Compose</li>
+<li><strong>Object-Oriented</strong> - Calculator, Counter, BankAccount</li>
+<li><strong>Async</strong> - Delay, HTTP, PromiseAll, PromiseRace, Retry</li>
+<li><strong>Utility</strong> - Conditional, Math, String, Transform, Logger</li>
+</ul>
+<h2>API Reference</h2>
+<h3>NodeRegistry</h3>
+<p>Singleton class managing all node registrations.</p>
+<h4>Get Instance</h4>
+<pre><code class="language-typescript">const registry = NodeRegistry.getInstance();
+</code></pre>
+<h4>Register a Node</h4>
+<pre><code class="language-typescript">import { registerNode } from &#39;./src/index&#39;;
+import { MyCustomNode } from &#39;./nodes/MyCustomNode&#39;;
+
+registerNode(MyCustomNode, {
+  type: &#39;custom.my-node&#39;,
+  displayName: &#39;My Custom Node&#39;,
+  category: &#39;Custom&#39;,
+  description: &#39;Does something custom&#39;,
+  version: &#39;1.0.0&#39;,
+  tags: [&#39;custom&#39;, &#39;example&#39;],
+  icon: &#39;🎯&#39;,
+  color: &#39;#FF6B6B&#39;,
+  inputs: [...],
+  outputs: [...]
+});
+</code></pre>
+<h4>Using the Decorator</h4>
+<pre><code class="language-typescript">import { RegisterNode, BaseNode } from &#39;./src/index&#39;;
+
+@RegisterNode({
+  type: &#39;custom.decorated-node&#39;,
+  displayName: &#39;Decorated Node&#39;,
+  category: &#39;Custom&#39;,
+  description: &#39;Auto-registered node&#39;,
+  version: &#39;1.0.0&#39;,
+  tags: [&#39;custom&#39;],
+  inputs: [],
+  outputs: []
+})
+export class DecoratedNode extends BaseNode {
+  protected async executeInternal(context: ExecutionContext) {
+    // Implementation
+    return new Map();
+  }
+}
+</code></pre>
+<h4>Create a Node</h4>
+<pre><code class="language-typescript">// Create with default config
+const node = createNode(&#39;async.http-request&#39;);
+
+// Create with custom config
+const node = createNode(&#39;utility.math&#39;, {
+  id: &#39;custom-id&#39;,
+  name: &#39;My Math Node&#39;,
+  description: &#39;Custom instance&#39;
+});
+</code></pre>
+<h4>Discovery &amp; Search</h4>
+<pre><code class="language-typescript">const registry = NodeRegistry.getInstance();
+
+// Get all node types
+const types = registry.getAllTypes();
+// [&#39;functional.map&#39;, &#39;async.http-request&#39;, ...]
+
+// Get all nodes with metadata
+const allNodes = registry.getAllNodes();
+
+// Get by category
+const asyncNodes = registry.getByCategory(&#39;Async&#39;);
+
+// Get by tag
+const mathNodes = registry.getByTag(&#39;math&#39;);
+
+// Search
+const results = registry.search(&#39;http&#39;);
+// Returns nodes matching &#39;http&#39; in name, description, or tags
+
+// Get categories and tags
+const categories = registry.getCategories();
+const tags = registry.getTags();
+</code></pre>
+<h4>Statistics</h4>
+<pre><code class="language-typescript">const stats = registry.getStats();
+// {
+//   totalNodes: 17,
+//   categories: 4,
+//   tags: 31,
+//   deprecated: 0
+// }
+</code></pre>
+<h4>Export Catalog</h4>
+<pre><code class="language-typescript">// Export all metadata as JSON
+const catalog = registry.exportMetadata();
+// Save to file for documentation or API reference
+</code></pre>
+<h2>Graph Serialization</h2>
+<p>Export and import complete node graphs as JSON or YAML.</p>
+<h3>GraphSerializer</h3>
+<pre><code class="language-typescript">import { GraphSerializer, NodeExecutor } from &#39;./src/index&#39;;
+
+const serializer = new GraphSerializer();
+</code></pre>
+<h3>Export Graph</h3>
+<pre><code class="language-typescript">// From an executor
+const definition = serializer.serializeExecutor(executor, {
+  name: &#39;My Workflow&#39;,
+  description: &#39;Does something cool&#39;,
+  author: &#39;Your Name&#39;
+});
+
+// To JSON
+const json = serializer.toJSON(definition, true); // pretty print
+
+// To YAML
+const yaml = serializer.toYAML(definition);
+
+// Save to file
+import fs from &#39;fs&#39;;
+fs.writeFileSync(&#39;workflow.json&#39;, json);
+</code></pre>
+<h3>Import Graph</h3>
+<pre><code class="language-typescript">// From JSON string
+const definition = serializer.fromJSON(jsonString);
+
+// Recreate executor
+const executor = serializer.deserializeToExecutor(definition);
+
+// Now you can execute the imported workflow
+const results = await executor.executeParallel(initialInputs);
+</code></pre>
+<h3>Graph Definition Format</h3>
+<pre><code class="language-json">{
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;name&quot;: &quot;My Workflow&quot;,
+  &quot;description&quot;: &quot;Workflow description&quot;,
+  &quot;author&quot;: &quot;Author Name&quot;,
+  &quot;created&quot;: &quot;2025-10-21T10:00:00.000Z&quot;,
+  &quot;modified&quot;: &quot;2025-10-21T10:00:00.000Z&quot;,
+  &quot;nodes&quot;: [
+    {
+      &quot;id&quot;: &quot;node-1&quot;,
+      &quot;type&quot;: &quot;async.http-request&quot;,
+      &quot;name&quot;: &quot;HTTP Request&quot;,
+      &quot;config&quot;: {},
+      &quot;position&quot;: { &quot;x&quot;: 100, &quot;y&quot;: 100 },
+      &quot;metadata&quot;: {
+        &quot;category&quot;: &quot;Async&quot;,
+        &quot;icon&quot;: &quot;🌐&quot;,
+        &quot;color&quot;: &quot;#6C5CE7&quot;
+      }
+    }
+  ],
+  &quot;connections&quot;: [
+    {
+      &quot;id&quot;: &quot;conn-1&quot;,
+      &quot;from&quot;: { &quot;nodeId&quot;: &quot;node-1&quot;, &quot;portId&quot;: &quot;data&quot; },
+      &quot;to&quot;: { &quot;nodeId&quot;: &quot;node-2&quot;, &quot;portId&quot;: &quot;input&quot; }
+    }
+  ],
+  &quot;metadata&quot;: {}
+}
+</code></pre>
+<h2>Examples</h2>
+<h3>Example 1: Browse Available Nodes</h3>
+<pre><code class="language-typescript">registerBuiltInNodes();
+const registry = NodeRegistry.getInstance();
+
+// List all categories
+console.log(&#39;Categories:&#39;, registry.getCategories());
+
+// Browse each category
+registry.getCategories().forEach(category =&gt; {
+  const nodes = registry.getByCategory(category);
+  console.log(`\n${category}:`);
+  nodes.forEach(node =&gt; {
+    console.log(`  ${node.icon} ${node.displayName} - ${node.description}`);
+  });
+});
+</code></pre>
+<h3>Example 2: Create Workflow Dynamically</h3>
+<pre><code class="language-typescript">// Discover what nodes are available
+const httpNode = createNode(&#39;async.http-request&#39;);
+const transformNode = createNode(&#39;utility.transform&#39;);
+const loggerNode = createNode(&#39;utility.logger&#39;);
+
+// Build workflow
+const executor = new NodeExecutor();
+executor.addNode(httpNode);
+executor.addNode(transformNode);
+executor.addNode(loggerNode);
+
+// Connect nodes
+executor.addConnection({
+  id: &#39;conn1&#39;,
+  fromNode: httpNode.id,
+  fromPort: &#39;data&#39;,
+  toNode: transformNode.id,
+  toPort: &#39;data&#39;
+});
+
+// Execute
+const results = await executor.executeParallel(inputs);
+</code></pre>
+<h3>Example 3: Save and Load Workflows</h3>
+<pre><code class="language-typescript">// Create and save
+const serializer = new GraphSerializer();
+const definition = serializer.serializeExecutor(executor, {
+  name: &#39;Data Processing Pipeline&#39;,
+  author: &#39;Me&#39;
+});
+
+fs.writeFileSync(&#39;workflow.json&#39;, serializer.toJSON(definition));
+
+// Load later
+const loaded = serializer.fromJSON(
+  fs.readFileSync(&#39;workflow.json&#39;, &#39;utf-8&#39;)
+);
+
+const newExecutor = serializer.deserializeToExecutor(loaded);
+</code></pre>
+<h3>Example 4: Custom Node Registration</h3>
+<pre><code class="language-typescript">import { BaseNode, registerNode } from &#39;./src/index&#39;;
+
+class WeatherNode extends BaseNode {
+  constructor(config?: Partial&lt;NodeConfig&gt;) {
+    super({
+      ...config,
+      name: config?.name || &#39;Weather&#39;,
+      inputs: [
+        { id: &#39;city&#39;, name: &#39;City&#39;, dataType: DataTypes.STRING, required: true }
+      ],
+      outputs: [
+        { id: &#39;temperature&#39;, name: &#39;Temperature&#39;, dataType: DataTypes.NUMBER },
+        { id: &#39;conditions&#39;, name: &#39;Conditions&#39;, dataType: DataTypes.STRING }
+      ]
+    });
+  }
+
+  protected async executeInternal(context: ExecutionContext) {
+    const city = this.getInput&lt;string&gt;(context, &#39;city&#39;);
+    // Fetch weather data
+    const outputs = new Map();
+    outputs.set(&#39;temperature&#39;, 72);
+    outputs.set(&#39;conditions&#39;, &#39;Sunny&#39;);
+    return outputs;
+  }
+}
+
+// Register it
+registerNode(WeatherNode, {
+  type: &#39;custom.weather&#39;,
+  displayName: &#39;Weather API&#39;,
+  category: &#39;Custom&#39;,
+  description: &#39;Fetches weather data for a city&#39;,
+  version: &#39;1.0.0&#39;,
+  author: &#39;Me&#39;,
+  tags: [&#39;weather&#39;, &#39;api&#39;, &#39;custom&#39;],
+  icon: &#39;🌤️&#39;,
+  color: &#39;#87CEEB&#39;,
+  inputs: [
+    { id: &#39;city&#39;, name: &#39;City&#39;, dataType: DataTypes.STRING, required: true }
+  ],
+  outputs: [
+    { id: &#39;temperature&#39;, name: &#39;Temperature&#39;, dataType: DataTypes.NUMBER },
+    { id: &#39;conditions&#39;, name: &#39;Conditions&#39;, dataType: DataTypes.STRING }
+  ],
+  examples: [
+    &#39;Get weather for New York&#39;,
+    &#39;Check current conditions&#39;
+  ]
+});
+
+// Use it
+const weatherNode = createNode(&#39;custom.weather&#39;);
+</code></pre>
+<h2>Best Practices</h2>
+<h3>1. Consistent Naming</h3>
+<p>Use dot notation for type names:</p>
+<ul>
+<li><code>category.specific-name</code></li>
+<li>Examples: <code>async.http-request</code>, <code>utility.math</code></li>
+</ul>
+<h3>2. Rich Metadata</h3>
+<p>Provide comprehensive metadata:</p>
+<ul>
+<li>Clear descriptions</li>
+<li>Relevant tags</li>
+<li>Useful examples</li>
+<li>Visual identifiers (icons, colors)</li>
+</ul>
+<h3>3. Versioning</h3>
+<p>Use semantic versioning:</p>
+<ul>
+<li><code>1.0.0</code> - Initial release</li>
+<li><code>1.1.0</code> - New features</li>
+<li><code>2.0.0</code> - Breaking changes</li>
+</ul>
+<h3>4. Documentation</h3>
+<p>Include:</p>
+<ul>
+<li>Input/output descriptions</li>
+<li>Usage examples</li>
+<li>Links to detailed docs</li>
+</ul>
+<h3>5. Categories</h3>
+<p>Organize nodes logically:</p>
+<ul>
+<li>Group by functionality</li>
+<li>Keep categories focused</li>
+<li>Use standard names</li>
+</ul>
+<h2>Advanced Topics</h2>
+<h3>Custom Node Discovery</h3>
+<p>Implement auto-discovery from file system:</p>
+<pre><code class="language-typescript">import fs from &#39;fs&#39;;
+import path from &#39;path&#39;;
+
+function discoverNodes(directory: string) {
+  const files = fs.readdirSync(directory);
+  
+  files.forEach(file =&gt; {
+    if (file.endsWith(&#39;Node.ts&#39;)) {
+      const nodePath = path.join(directory, file);
+      const NodeClass = require(nodePath).default;
+      
+      // Auto-register if metadata is available
+      if (NodeClass.metadata) {
+        registerNode(NodeClass, NodeClass.metadata);
+      }
+    }
+  });
+}
+
+discoverNodes(&#39;./custom-nodes&#39;);
+</code></pre>
+<h3>Plugin System</h3>
+<p>Load nodes from plugins:</p>
+<pre><code class="language-typescript">interface NodePlugin {
+  name: string;
+  version: string;
+  nodes: {
+    class: new () =&gt; INode;
+    metadata: NodeMetadata;
+  }[];
+}
+
+function loadPlugin(plugin: NodePlugin) {
+  plugin.nodes.forEach(({ class: NodeClass, metadata }) =&gt; {
+    registerNode(NodeClass, metadata);
+  });
+}
+</code></pre>
+<h3>Marketplace Integration</h3>
+<p>Export registry for marketplace:</p>
+<pre><code class="language-typescript">const catalog = registry.exportMetadata();
+
+// Upload to marketplace API
+await fetch(&#39;https://marketplace.api/nodes&#39;, {
+  method: &#39;POST&#39;,
+  body: catalog
+});
+</code></pre>
+<h2>Troubleshooting</h2>
+<h3>Node Already Registered</h3>
+<pre><code class="language-typescript">// Check before registering
+if (!registry.isRegistered(&#39;custom.my-node&#39;)) {
+  registerNode(MyNode, metadata);
+}
+
+// Or unregister first
+registry.unregister(&#39;custom.my-node&#39;);
+registerNode(MyNode, metadata);
+</code></pre>
+<h3>Node Type Not Found</h3>
+<pre><code class="language-typescript">// Check if type exists
+if (registry.isRegistered(&#39;async.http-request&#39;)) {
+  const node = createNode(&#39;async.http-request&#39;);
+}
+
+// Or search for similar
+const similar = registry.search(&#39;http&#39;);
+</code></pre>
+<h3>Serialization Errors</h3>
+<pre><code class="language-typescript">// Validate before deserializing
+try {
+  const definition = serializer.fromJSON(json);
+  const executor = serializer.deserializeToExecutor(definition);
+} catch (error) {
+  console.error(&#39;Invalid graph definition:&#39;, error);
+}
+</code></pre>
+<h2>See Also</h2>
+<ul>
+<li><a href="../QUICKSTART.html">Quick Start Guide</a></li>
+<li><a href="../PARALLEL-EXECUTION.html">Parallel Execution</a></li>
+<li><a href="../README.html">API Reference</a></li>
+<li><a href="../examples/registry-example.ts">Examples</a></li>
+</ul>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

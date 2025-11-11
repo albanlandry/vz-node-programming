@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Graph Execution Phase 2 - Implementation Complete - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" >Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" class="active">Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>Live Graph Execution Phase 2 - Implementation Complete</h1>
+<h2>구현 완료 요약</h2>
+<p>Phase 2의 모든 기능이 성공적으로 구현되었습니다.</p>
+<h2>구현된 기능</h2>
+<h3>1. Real-time Streaming (SSE) ✅</h3>
+<h4>백엔드</h4>
+<ul>
+<li><strong>파일</strong>: <code>app/api/graphs/execute-stream/route.ts</code></li>
+<li>Server-Sent Events (SSE)를 사용한 실시간 실행 업데이트</li>
+<li>NodeExecutor의 이벤트를 SSE 스트림으로 변환</li>
+<li>이벤트 타입:<ul>
+<li><code>execution:started</code>: 실행 시작</li>
+<li><code>node:executing</code>: 노드 실행 중</li>
+<li><code>node:completed</code>: 노드 완료</li>
+<li><code>node:failed</code>: 노드 실패</li>
+<li><code>execution:completed</code>: 실행 완료</li>
+<li><code>execution:error</code>: 실행 오류</li>
+</ul>
+</li>
+</ul>
+<h4>프론트엔드</h4>
+<ul>
+<li><strong>파일</strong>: <code>services/streamingExecutionService.ts</code></li>
+<li>SSE 스트림 읽기 및 파싱</li>
+<li>이벤트 리스너 등록/해제</li>
+<li>실행 취소 지원</li>
+<li>자동 재연결 로직 (향후 확장 가능)</li>
+</ul>
+<h3>2. Input Configuration Panel ✅</h3>
+<h4>컴포넌트</h4>
+<ul>
+<li><strong>파일</strong>: <code>components/graph/InputConfigPanel.tsx</code></li>
+<li>외부 입력이 필요한 노드 목록 표시</li>
+<li>데이터 타입별 입력 편집기:<ul>
+<li>String: 텍스트 입력</li>
+<li>Number: 숫자 입력</li>
+<li>Boolean: 체크박스</li>
+<li>Object/Array: JSON 편집기</li>
+</ul>
+</li>
+<li>입력 템플릿 저장/로드 기능</li>
+<li>입력 값 검증</li>
+</ul>
+<h4>Store 통합</h4>
+<ul>
+<li><code>inputConfig</code>: 노드별 입력 값 저장</li>
+<li><code>inputTemplates</code>: 입력 템플릿 목록</li>
+<li><code>setInputValue</code>: 입력 값 설정</li>
+<li><code>saveInputTemplate</code>: 템플릿 저장</li>
+<li><code>loadInputTemplate</code>: 템플릿 로드</li>
+</ul>
+<h3>3. Data Flow Visualization ✅</h3>
+<h4>컴포넌트</h4>
+<ul>
+<li><strong>파일</strong>: <code>components/graph/DataFlowVisualization.tsx</code></li>
+<li>연결 상태 관리</li>
+<li>연결 스타일 동적 변경</li>
+<li>연결 레이블에 값 표시 (토글 가능)</li>
+</ul>
+<h4>Store 통합</h4>
+<ul>
+<li><code>connectionStates</code>: 연결별 상태 저장</li>
+<li><code>showDataFlow</code>: 데이터 플로우 시각화 토글</li>
+<li><code>showConnectionValues</code>: 연결 값 표시 토글</li>
+<li><code>updateConnectionState</code>: 연결 상태 업데이트</li>
+</ul>
+<h4>ReactFlowCanvas 통합</h4>
+<ul>
+<li>연결 스타일 동적 적용</li>
+<li>실행 중 연결 애니메이션</li>
+<li>연결 레이블에 값 표시</li>
+</ul>
+<h3>4. Debugging Features ✅</h3>
+<h4>컴포넌트</h4>
+<ul>
+<li><strong>파일</strong>: <code>components/graph/DebugPanel.tsx</code></li>
+<li>브레이크포인트 관리:<ul>
+<li>노드별 브레이크포인트 추가/제거</li>
+<li>브레이크포인트 활성화/비활성화</li>
+<li>조건부 브레이크포인트 (향후 확장)</li>
+</ul>
+</li>
+<li>실행 제어:<ul>
+<li>일시정지/재개</li>
+<li>단계별 실행</li>
+</ul>
+</li>
+<li>노드 상태 표시</li>
+</ul>
+<h4>Store 통합</h4>
+<ul>
+<li><code>breakpoints</code>: 브레이크포인트 목록</li>
+<li><code>isPaused</code>: 일시정지 상태</li>
+<li><code>stepMode</code>: 단계별 실행 모드</li>
+<li><code>addBreakpoint</code>: 브레이크포인트 추가</li>
+<li><code>removeBreakpoint</code>: 브레이크포인트 제거</li>
+<li><code>toggleBreakpoint</code>: 브레이크포인트 토글</li>
+<li><code>pauseExecution</code>: 실행 일시정지</li>
+<li><code>resumeExecution</code>: 실행 재개</li>
+<li><code>stepExecution</code>: 단계별 실행</li>
+</ul>
+<h2>업데이트된 컴포넌트</h2>
+<h3>ExecutionToolbar</h3>
+<ul>
+<li>스트리밍 실행 지원</li>
+<li>Input Configuration Panel 토글 버튼</li>
+<li>Debug Panel 토글 버튼</li>
+<li>Data Flow Visualization 토글 버튼</li>
+<li>스트리밍/일반 실행 모드 선택</li>
+</ul>
+<h3>ReactFlowCanvas</h3>
+<ul>
+<li>데이터 플로우 시각화 통합</li>
+<li>연결 상태에 따른 스타일 변경</li>
+<li>연결 레이블에 값 표시</li>
+</ul>
+<h3>GraphStore</h3>
+<ul>
+<li>Phase 2 기능을 위한 상태 확장</li>
+<li>새로운 액션 메서드 추가</li>
+<li>타입 정의 확장</li>
+</ul>
+<h2>아키텍처 개선사항</h2>
+<h3>GraphExecutionEngine</h3>
+<ul>
+<li><code>buildExecutor</code> 메서드를 public으로 변경하여 SSE 엔드포인트에서 접근 가능</li>
+</ul>
+<h3>타입 시스템</h3>
+<ul>
+<li><code>SerializedExecutionResult</code>: JSON 직렬화를 위한 타입 추가</li>
+<li><code>InputTemplate</code>: 입력 템플릿 타입</li>
+<li><code>Breakpoint</code>: 브레이크포인트 타입</li>
+<li><code>ConnectionState</code>: 연결 상태 타입</li>
+</ul>
+<h2>테스트</h2>
+<h3>단위 테스트 작성 완료</h3>
+<ol>
+<li><p><strong>streamingExecutionService.test.ts</strong></p>
+<ul>
+<li>SSE 스트림 실행 테스트</li>
+<li>이벤트 처리 테스트</li>
+<li>실행 취소 테스트</li>
+</ul>
+</li>
+<li><p><strong>graphStore.test.ts</strong></p>
+<ul>
+<li>입력 설정 테스트</li>
+<li>브레이크포인트 테스트</li>
+<li>실행 제어 테스트</li>
+<li>데이터 플로우 시각화 테스트</li>
+</ul>
+</li>
+<li><p><strong>InputConfigPanel.test.tsx</strong></p>
+<ul>
+<li>컴포넌트 렌더링 테스트</li>
+<li>입력 값 변경 테스트</li>
+<li>템플릿 저장 테스트</li>
+</ul>
+</li>
+<li><p><strong>execute-stream.test.ts</strong></p>
+<ul>
+<li>API 엔드포인트 테스트</li>
+<li>오류 처리 테스트</li>
+<li>SSE 스트림 생성 테스트</li>
+</ul>
+</li>
+</ol>
+<h2>사용 방법</h2>
+<h3>1. 스트리밍 실행 사용</h3>
+<pre><code class="language-typescript">// ExecutionToolbar에서 자동으로 스트리밍 모드 사용
+// 또는 useStreaming 상태로 제어 가능
+</code></pre>
+<h3>2. 입력 설정</h3>
+<ol>
+<li>ExecutionToolbar에서 Settings 아이콘 클릭</li>
+<li>InputConfigPanel에서 노드별 입력 값 설정</li>
+<li>템플릿 저장/로드 가능</li>
+</ol>
+<h3>3. 데이터 플로우 시각화</h3>
+<ol>
+<li>ExecutionToolbar에서 Eye 아이콘 클릭</li>
+<li>실행 중 연결에 데이터 플로우 애니메이션 표시</li>
+<li>연결 값 표시 토글 가능</li>
+</ol>
+<h3>4. 디버깅</h3>
+<ol>
+<li>ExecutionToolbar에서 Bug 아이콘 클릭</li>
+<li>DebugPanel에서 브레이크포인트 설정</li>
+<li>실행 일시정지/재개/단계별 실행</li>
+</ol>
+<h2>성능 고려사항</h2>
+<ul>
+<li>SSE 스트림은 효율적인 이벤트 기반 업데이트 사용</li>
+<li>UI 업데이트는 React의 자동 최적화 활용</li>
+<li>연결 상태 업데이트는 필요한 경우에만 수행</li>
+</ul>
+<h2>향후 개선 사항</h2>
+<ol>
+<li><p><strong>브레이크포인트 조건 평가</strong></p>
+<ul>
+<li>조건식 파싱 및 평가 엔진</li>
+<li>변수 인스펙터 통합</li>
+</ul>
+</li>
+<li><p><strong>변수 인스펙터</strong></p>
+<ul>
+<li>노드 입력/출력 값 실시간 확인</li>
+<li>Watch 표현식 지원</li>
+</ul>
+</li>
+<li><p><strong>실행 타임라인</strong></p>
+<ul>
+<li>노드 실행 순서 시각화</li>
+<li>성능 메트릭 표시</li>
+</ul>
+</li>
+<li><p><strong>증분 실행</strong></p>
+<ul>
+<li>변경된 노드만 재실행</li>
+<li>결과 캐싱</li>
+</ul>
+</li>
+</ol>
+<h2>문서</h2>
+<ul>
+<li><strong>설계 문서</strong>: <code>LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.md</code></li>
+<li><strong>구현 가이드</strong>: <code>LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.md</code></li>
+<li><strong>테스트</strong>: <code>__tests__/</code> 디렉토리</li>
+</ul>
+<h2>결론</h2>
+<p>Phase 2의 모든 기능이 성공적으로 구현되었으며, 단위 테스트도 작성되었습니다. 실시간 스트리밍, 입력 설정, 데이터 플로우 시각화, 디버깅 기능이 모두 작동합니다.</p>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

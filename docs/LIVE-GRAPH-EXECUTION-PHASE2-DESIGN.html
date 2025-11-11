@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Graph Execution Phase 2 - Design & Architecture - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">VZ Programming</a></h1>
+                <p class="subtitle">Documentation</p>
+            </div>
+            <ul class="nav-menu">
+<li class="nav-group">
+      <div class="nav-group-header">Getting Started</div>
+      <ul class="nav-submenu">        <li><a href="index.html" >Home</a></li>
+        <li><a href="node-library.html" >Node Library</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Core Systems</div>
+      <ul class="nav-submenu">        <li><a href="NODE-REGISTRY.html" >Node Registry</a></li>
+        <li><a href="FEATURES-SUMMARY.html" >Features Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Custom Nodes</div>
+      <ul class="nav-submenu">        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html" >System Proposal</a></li>
+        <li><a href="CUSTOM-NODES-DESIGN.html" >Design</a></li>
+        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="CUSTOM-NODES-SUMMARY.html" >Summary</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Graph Editor</div>
+      <ul class="nav-submenu">        <li><a href="GRAPH-EDITOR.html" >Overview</a></li>
+        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html" >Implementation</a></li>
+        <li><a href="GRAPH-EDITOR-REACT-FLOW.html" >React Flow Migration</a></li>
+        <li><a href="GRAPH-EDITOR-SUMMARY.html" >Quick Start</a></li>
+        <li><a href="GRAPH-EXECUTE-PAGE.html" >Execute Page</a></li>
+        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html" >Management System</a></li>
+        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html" >Improvements</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Live Execution</div>
+      <ul class="nav-submenu">        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html" >Proposal</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html" >Phase 1</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html" class="active">Phase 2 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html" >Phase 2 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html" >Phase 2 - Complete</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html" >Phase 3 - Design</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html" >Phase 3 - Implementation</a></li>
+        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html" >Phase 3 - Complete</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Error Handling & Logging</div>
+      <ul class="nav-submenu">        <li><a href="ERROR-HANDLING.html" >Error Handling</a></li>
+        <li><a href="ERROR-HANDLING-SUMMARY.html" >Error Handling Summary</a></li>
+        <li><a href="LOGGING.html" >Logging</a></li>
+      </ul>
+    </li><li class="nav-group">
+      <div class="nav-group-header">Advanced Topics</div>
+      <ul class="nav-submenu">        <li><a href="INTERACTIVE-NODES-PROPOSAL.html" >Interactive Nodes</a></li>
+        <li><a href="TEST-GRAPH-LIVE-EXECUTION.html" >Test Graph</a></li>
+        <li><a href="IMPROVEMENTS-PROPOSAL.html" >Improvements</a></li>
+        <li><a href="WEBASSEMBLY-OPPORTUNITIES.html" >WebAssembly</a></li>
+      </ul>
+    </li>
+            </ul>
+        </div>
+        <div class="content">
+<h1>Live Graph Execution Phase 2 - Design &amp; Architecture</h1>
+<h2>Overview</h2>
+<p>Phase 2 extends the basic live execution (Phase 1) with advanced features including real-time streaming, input configuration, data flow visualization, and debugging capabilities.</p>
+<h2>Architecture Overview</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                    Frontend (React/Next.js)                  │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │ Graph Store  │  │ Execution    │  │ SSE Client   │     │
+│  │ (Zustand)    │◄─┤ Service      │◄─┤ (EventSource)│     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
+│         │                  │                  │             │
+│         ▼                  ▼                  ▼             │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │              UI Components                          │    │
+│  │  - ExecutionToolbar  - InputConfigPanel            │    │
+│  │  - ExecutionResults  - DataFlowVisualization       │    │
+│  │  - DebugPanel       - BreakpointManager           │    │
+│  └────────────────────────────────────────────────────┘    │
+│                                                              │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ HTTP/SSE
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Backend (Next.js API)                     │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌──────────────────┐  ┌──────────────────┐               │
+│  │ /api/graphs/     │  │ /api/graphs/     │               │
+│  │ execute-stream   │  │ execute-inline   │               │
+│  │ (SSE Endpoint)   │  │ (HTTP Endpoint)  │               │
+│  └────────┬─────────┘  └────────┬─────────┘               │
+│           │                      │                         │
+│           └──────────┬───────────┘                         │
+│                      ▼                                     │
+│           ┌────────────────────┐                           │
+│           │ GraphExecutionEngine│                          │
+│           │  - execute()        │                           │
+│           │  - executeStream() │                           │
+│           └────────────────────┘                           │
+│                      │                                     │
+│                      ▼                                     │
+│           ┌────────────────────┐                           │
+│           │ NodeExecutor        │                          │
+│           │  - EventEmitter     │                          │
+│           └────────────────────┘                           │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<h2>Component Architecture</h2>
+<h3>1. Real-time Streaming (SSE)</h3>
+<h4>Backend: SSE Endpoint</h4>
+<pre><code class="language-typescript">// app/api/graphs/execute-stream/route.ts
+POST /api/graphs/execute-stream
+- Accepts graph definition and execution options
+- Returns SSE stream with incremental updates
+- Events:
+  - execution:started
+  - node:queued
+  - node:executing
+  - node:completed
+  - node:failed
+  - execution:completed
+  - execution:error
+</code></pre>
+<h4>Frontend: SSE Client Service</h4>
+<pre><code class="language-typescript">// services/streamingExecutionService.ts
+- EventSource wrapper
+- Automatic reconnection
+- Event parsing and dispatch
+- Error handling
+</code></pre>
+<h3>2. Input Configuration Panel</h3>
+<h4>Component Structure</h4>
+<pre><code>InputConfigPanel
+├── InputSection (per node)
+│   ├── PortInputEditor
+│   │   ├── StringInput
+│   │   ├── NumberInput
+│   │   ├── BooleanInput
+│   │   ├── ObjectInput (JSON editor)
+│   │   └── ArrayInput
+│   └── InputTemplateSelector
+├── QuickInputPresets
+└── InputValidation
+</code></pre>
+<h4>State Management</h4>
+<ul>
+<li>Input values stored in <code>graphStore.inputConfig</code></li>
+<li>Per-node input configuration</li>
+<li>Input templates (save/load)</li>
+</ul>
+<h3>3. Data Flow Visualization</h3>
+<h4>Connection State Management</h4>
+<pre><code class="language-typescript">interface ConnectionState {
+  connectionId: string;
+  status: &#39;idle&#39; | &#39;active&#39; | &#39;error&#39;;
+  data?: unknown;
+  animationProgress?: number;
+}
+</code></pre>
+<h4>Visualization Features</h4>
+<ul>
+<li>Animated data flow along connections</li>
+<li>Value display on connection labels (toggleable)</li>
+<li>Color-coded connections by data type</li>
+<li>Connection state indicators</li>
+</ul>
+<h3>4. Debugging Features</h3>
+<h4>Breakpoint System</h4>
+<pre><code class="language-typescript">interface Breakpoint {
+  nodeId: string;
+  enabled: boolean;
+  condition?: string; // Optional condition expression
+}
+</code></pre>
+<h4>Step Execution</h4>
+<ul>
+<li>Execute one node at a time</li>
+<li>Step over/into controls</li>
+<li>Execution pause/resume</li>
+</ul>
+<h4>Variable Inspector</h4>
+<ul>
+<li>Inspect node inputs/outputs at any point</li>
+<li>Watch expressions</li>
+<li>Call stack visualization</li>
+</ul>
+<h2>Data Flow</h2>
+<h3>Execution Flow with Streaming</h3>
+<ol>
+<li><p><strong>User Initiates Execution</strong></p>
+<pre><code>User clicks Play
+→ ExecutionToolbar.handleExecute()
+→ graphStore.startExecution()
+→ streamingExecutionService.executeStream()
+→ POST /api/graphs/execute-stream
+</code></pre>
+</li>
+<li><p><strong>Backend Streams Updates</strong></p>
+<pre><code>GraphExecutionEngine.executeStream()
+→ NodeExecutor (EventEmitter)
+→ Stream events via SSE
+→ Frontend receives events
+→ graphStore.updateNodeState()
+→ UI updates reactively
+</code></pre>
+</li>
+<li><p><strong>Real-time UI Updates</strong></p>
+<pre><code>SSE Event Received
+→ streamingExecutionService.handleEvent()
+→ graphStore.updateNodeState()
+→ React components re-render
+→ Visual feedback updates
+</code></pre>
+</li>
+</ol>
+<h2>State Management</h2>
+<h3>Extended Graph Store</h3>
+<pre><code class="language-typescript">interface GraphState {
+  // ... existing state
+  
+  // Input configuration
+  inputConfig: Record&lt;string, Record&lt;string, unknown&gt;&gt;;
+  inputTemplates: InputTemplate[];
+  
+  // Debugging
+  breakpoints: Record&lt;string, Breakpoint&gt;;
+  isPaused: boolean;
+  stepMode: boolean;
+  currentStepNodeId: string | null;
+  
+  // Data flow visualization
+  connectionStates: Record&lt;string, ConnectionState&gt;;
+  showDataFlow: boolean;
+  showConnectionValues: boolean;
+  
+  // Actions
+  setInputValue: (nodeId: string, portId: string, value: unknown) =&gt; void;
+  addBreakpoint: (nodeId: string, condition?: string) =&gt; void;
+  removeBreakpoint: (nodeId: string) =&gt; void;
+  toggleBreakpoint: (nodeId: string) =&gt; void;
+  pauseExecution: () =&gt; void;
+  resumeExecution: () =&gt; void;
+  stepExecution: () =&gt; void;
+  setShowDataFlow: (show: boolean) =&gt; void;
+  setShowConnectionValues: (show: boolean) =&gt; void;
+  updateConnectionState: (connectionId: string, state: ConnectionState) =&gt; void;
+}
+</code></pre>
+<h2>API Design</h2>
+<h3>SSE Endpoint</h3>
+<p><strong>POST /api/graphs/execute-stream</strong></p>
+<p>Request:</p>
+<pre><code class="language-typescript">{
+  graph: GraphDefinition;
+  inputs?: Record&lt;string, Record&lt;string, unknown&gt;&gt;;
+  options?: {
+    parallel?: boolean;
+    timeout?: number;
+    breakpoints?: string[]; // Node IDs with breakpoints
+    stepMode?: boolean;
+  };
+}
+</code></pre>
+<p>Response (SSE Stream):</p>
+<pre><code>event: execution:started
+data: {&quot;executionId&quot;: &quot;exec-123&quot;, &quot;timestamp&quot;: 1234567890}
+
+event: node:queued
+data: {&quot;nodeId&quot;: &quot;node-1&quot;, &quot;timestamp&quot;: 1234567891}
+
+event: node:executing
+data: {&quot;nodeId&quot;: &quot;node-1&quot;, &quot;timestamp&quot;: 1234567892}
+
+event: node:completed
+data: {
+  &quot;nodeId&quot;: &quot;node-1&quot;,
+  &quot;result&quot;: {...},
+  &quot;executionTime&quot;: 5,
+  &quot;timestamp&quot;: 1234567897
+}
+
+event: node:failed
+data: {
+  &quot;nodeId&quot;: &quot;node-1&quot;,
+  &quot;error&quot;: {...},
+  &quot;timestamp&quot;: 1234567897
+}
+
+event: connection:data
+data: {
+  &quot;connectionId&quot;: &quot;conn-1&quot;,
+  &quot;fromNode&quot;: &quot;node-1&quot;,
+  &quot;toNode&quot;: &quot;node-2&quot;,
+  &quot;data&quot;: {...}
+}
+
+event: execution:completed
+data: {
+  &quot;executionId&quot;: &quot;exec-123&quot;,
+  &quot;executionTime&quot;: 100,
+  &quot;timestamp&quot;: 1234567990
+}
+
+event: execution:error
+data: {
+  &quot;executionId&quot;: &quot;exec-123&quot;,
+  &quot;error&quot;: {...},
+  &quot;timestamp&quot;: 1234567990
+}
+</code></pre>
+<h2>Component Specifications</h2>
+<h3>1. InputConfigPanel</h3>
+<p><strong>Location</strong>: <code>components/graph/InputConfigPanel.tsx</code></p>
+<p><strong>Props</strong>:</p>
+<pre><code class="language-typescript">interface InputConfigPanelProps {
+  isOpen: boolean;
+  onClose: () =&gt; void;
+  position?: { x: number; y: number };
+}
+</code></pre>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>List all nodes requiring external inputs</li>
+<li>Input editor per port (type-aware)</li>
+<li>Input validation</li>
+<li>Save/load input templates</li>
+<li>Quick input presets</li>
+</ul>
+<h3>2. DataFlowVisualization</h3>
+<p><strong>Location</strong>: <code>components/graph/DataFlowVisualization.tsx</code></p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Animate connections during execution</li>
+<li>Show values on connection labels</li>
+<li>Color-code by data type</li>
+<li>Toggle visibility</li>
+</ul>
+<h3>3. DebugPanel</h3>
+<p><strong>Location</strong>: <code>components/graph/DebugPanel.tsx</code></p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Breakpoint management</li>
+<li>Step execution controls</li>
+<li>Variable inspector</li>
+<li>Call stack</li>
+<li>Watch expressions</li>
+</ul>
+<h3>4. StreamingExecutionService</h3>
+<p><strong>Location</strong>: <code>services/streamingExecutionService.ts</code></p>
+<p><strong>Methods</strong>:</p>
+<pre><code class="language-typescript">class StreamingExecutionService {
+  executeStream(
+    graph: GraphDefinition,
+    inputs?: Record&lt;string, Record&lt;string, unknown&gt;&gt;,
+    options?: ExecutionOptions
+  ): Promise&lt;EventSource&gt;;
+  
+  cancelExecution(executionId: string): void;
+  
+  onEvent(callback: (event: ExecutionEvent) =&gt; void): void;
+  offEvent(callback: (event: ExecutionEvent) =&gt; void): void;
+}
+</code></pre>
+<h2>Error Handling</h2>
+<h3>Streaming Errors</h3>
+<ul>
+<li>Connection failures → Auto-reconnect with exponential backoff</li>
+<li>Parse errors → Log and continue</li>
+<li>Execution errors → Stream error event, continue with other nodes</li>
+</ul>
+<h3>Input Validation</h3>
+<ul>
+<li>Type validation per port</li>
+<li>Required field validation</li>
+<li>JSON validation for object/array inputs</li>
+<li>Real-time validation feedback</li>
+</ul>
+<h3>Debugging Errors</h3>
+<ul>
+<li>Breakpoint condition evaluation errors</li>
+<li>Step execution errors</li>
+<li>Variable inspection errors</li>
+</ul>
+<h2>Performance Considerations</h2>
+<h3>SSE Optimization</h3>
+<ul>
+<li>Throttle high-frequency events</li>
+<li>Batch node state updates</li>
+<li>Connection pooling</li>
+</ul>
+<h3>UI Performance</h3>
+<ul>
+<li>Virtualize large node lists in InputConfigPanel</li>
+<li>Debounce input validation</li>
+<li>Lazy load debug panel</li>
+<li>Throttle data flow animations</li>
+</ul>
+<h3>Memory Management</h3>
+<ul>
+<li>Limit connection state history</li>
+<li>Clear old execution data</li>
+<li>Garbage collect unused breakpoints</li>
+</ul>
+<h2>Security Considerations</h2>
+<h3>Input Validation</h3>
+<ul>
+<li>Sanitize all user inputs</li>
+<li>Validate JSON inputs</li>
+<li>Prevent code injection in breakpoint conditions</li>
+</ul>
+<h3>SSE Security</h3>
+<ul>
+<li>Validate execution requests</li>
+<li>Rate limiting</li>
+<li>Timeout enforcement</li>
+</ul>
+<h2>Testing Strategy</h2>
+<h3>Unit Tests</h3>
+<ul>
+<li>StreamingExecutionService</li>
+<li>InputConfigPanel components</li>
+<li>DataFlowVisualization logic</li>
+<li>DebugPanel functionality</li>
+<li>Breakpoint evaluation</li>
+</ul>
+<h3>Integration Tests</h3>
+<ul>
+<li>End-to-end streaming execution</li>
+<li>Input configuration flow</li>
+<li>Data flow visualization</li>
+<li>Debugging workflow</li>
+</ul>
+<h3>Performance Tests</h3>
+<ul>
+<li>Large graph streaming (100+ nodes)</li>
+<li>Concurrent executions</li>
+<li>Memory usage with long-running streams</li>
+</ul>
+<h2>Migration Path</h2>
+<ol>
+<li>Add streaming endpoint (non-breaking)</li>
+<li>Add SSE client service</li>
+<li>Update ExecutionToolbar to use streaming</li>
+<li>Add InputConfigPanel (new component)</li>
+<li>Add DataFlowVisualization (new component)</li>
+<li>Add DebugPanel (new component)</li>
+<li>Extend graph store with new state</li>
+<li>Update UI to show new features</li>
+</ol>
+<h2>Success Criteria</h2>
+<ul>
+<li>✅ Real-time updates visible within 100ms</li>
+<li>✅ Input configuration supports all data types</li>
+<li>✅ Data flow visualization smooth (60fps)</li>
+<li>✅ Breakpoints pause execution correctly</li>
+<li>✅ Step execution works reliably</li>
+<li>✅ Variable inspector shows accurate data</li>
+<li>✅ No memory leaks in long-running executions</li>
+<li>✅ Error handling graceful and informative</li>
+</ul>
+
+        </div>
+    </div>
+    <script>
+        // Toggle submenu visibility
+        document.querySelectorAll('.nav-group-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                submenu.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+            });
+        });
+        
+        // Expand active menu group
+        const activeLink = document.querySelector('.nav-menu .active');
+        if (activeLink) {
+            const navGroup = activeLink.closest('.nav-group');
+            if (navGroup) {
+                const submenu = navGroup.querySelector('.nav-submenu');
+                const header = navGroup.querySelector('.nav-group-header');
+                if (submenu && header) {
+                    submenu.classList.add('expanded');
+                    header.classList.add('expanded');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
