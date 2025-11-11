@@ -7,7 +7,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { UIDefinition } from '../src/types/uiDefinition';
+import type { UIDefinition, UIComponent } from '../src/types/uiDefinition';
 
 /**
  * Generate a unique ID
@@ -38,6 +38,12 @@ interface UIBuilderState {
   
   // Helper methods
   duplicateDefinition: (id: string) => UIDefinition | undefined;
+  
+  // Component management (Phase 2)
+  addComponent: (definitionId: string, component: UIComponent) => void;
+  updateComponent: (definitionId: string, componentId: string, updates: Partial<UIComponent>) => void;
+  deleteComponent: (definitionId: string, componentId: string) => void;
+  reorderComponents: (definitionId: string, componentIds: string[]) => void;
 }
 
 const STORAGE_KEY = 'vz-ui-builder-definitions';
@@ -133,6 +139,86 @@ export const useUIBuilderStore = create<UIBuilderState>()(
         }));
 
         return duplicated;
+      },
+
+      /**
+       * Add a component to a UI definition (Phase 2)
+       */
+      addComponent: (definitionId: string, component: UIComponent) => {
+        set((state) => ({
+          definitions: state.definitions.map((def) =>
+            def.id === definitionId
+              ? {
+                  ...def,
+                  components: [...def.components, component],
+                  updatedAt: new Date().toISOString(),
+                }
+              : def
+          ),
+        }));
+      },
+
+      /**
+       * Update a component in a UI definition (Phase 2)
+       */
+      updateComponent: (definitionId: string, componentId: string, updates: Partial<UIComponent>) => {
+        set((state) => ({
+          definitions: state.definitions.map((def) =>
+            def.id === definitionId
+              ? {
+                  ...def,
+                  components: def.components.map((comp) =>
+                    comp.id === componentId ? { ...comp, ...updates } : comp
+                  ),
+                  updatedAt: new Date().toISOString(),
+                }
+              : def
+          ),
+        }));
+      },
+
+      /**
+       * Delete a component from a UI definition (Phase 2)
+       */
+      deleteComponent: (definitionId: string, componentId: string) => {
+        set((state) => ({
+          definitions: state.definitions.map((def) =>
+            def.id === definitionId
+              ? {
+                  ...def,
+                  components: def.components.filter((comp) => comp.id !== componentId),
+                  updatedAt: new Date().toISOString(),
+                }
+              : def
+          ),
+        }));
+      },
+
+      /**
+       * Reorder components in a UI definition (Phase 2)
+       */
+      reorderComponents: (definitionId: string, componentIds: string[]) => {
+        set((state) => {
+          const definition = state.definitions.find((def) => def.id === definitionId);
+          if (!definition) return state;
+
+          const componentMap = new Map(definition.components.map((comp) => [comp.id, comp]));
+          const reorderedComponents = componentIds
+            .map((id) => componentMap.get(id))
+            .filter((comp): comp is UIComponent => comp !== undefined);
+
+          return {
+            definitions: state.definitions.map((def) =>
+              def.id === definitionId
+                ? {
+                    ...def,
+                    components: reorderedComponents,
+                    updatedAt: new Date().toISOString(),
+                  }
+                : def
+            ),
+          };
+        });
       },
     }),
     {

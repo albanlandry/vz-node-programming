@@ -4,13 +4,14 @@
  * UI Builder Page
  * 
  * Main page for the WYSIWYG UI Builder
- * Phase 1: List and manage UI definitions
+ * Phase 2: List, manage, and edit UI definitions with visual builder
  */
 
 import { useState } from 'react';
 import { useUIBuilderStore } from '../../store/uiBuilderStore';
-import { Plus, Trash2, Copy, Eye, FileText } from 'lucide-react';
+import { Plus, Trash2, Copy, Eye, FileText, Edit2, ArrowLeft } from 'lucide-react';
 import UIRenderer from '../../components/ui-runtime/UIRenderer';
+import UIBuilder from '../../components/ui-builder/UIBuilder';
 import type { UIDefinition, FormData } from '../../src/types/uiDefinition';
 
 export default function UIBuilderPage() {
@@ -18,6 +19,7 @@ export default function UIBuilderPage() {
     useUIBuilderStore();
   const [selectedDefinition, setSelectedDefinition] = useState<UIDefinition | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   const [previewData, setPreviewData] = useState<FormData>({});
 
   const handleCreateNew = () => {
@@ -59,6 +61,46 @@ export default function UIBuilderPage() {
   const handleFormChange = (data: FormData) => {
     setPreviewData(data);
   };
+
+  // If in edit mode, show the builder
+  if (editMode && selectedDefinition) {
+    return (
+      <div className="h-screen flex flex-col">
+        <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setEditMode(false)}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </button>
+            <div>
+              <h1 className="text-xl font-semibold text-gray-900">{selectedDefinition.name}</h1>
+              {selectedDefinition.description && (
+                <p className="text-sm text-gray-500">{selectedDefinition.description}</p>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                setShowPreview(true);
+                setEditMode(false);
+              }}
+              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+            >
+              <Eye className="w-4 h-4" />
+              Preview
+            </button>
+          </div>
+        </div>
+        <div className="flex-1 overflow-hidden">
+          <UIBuilder definitionId={selectedDefinition.id} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -118,6 +160,18 @@ export default function UIBuilderPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 mt-3">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedDefinition(def);
+                          setEditMode(true);
+                        }}
+                        className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                        title="Edit"
+                      >
+                        <Edit2 className="w-3 h-3" />
+                        Edit
+                      </button>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -198,13 +252,24 @@ export default function UIBuilderPage() {
                         <p className="text-sm text-gray-600 mt-1">{selectedDefinition.description}</p>
                       )}
                     </div>
-                    <button
-                      onClick={() => handlePreview(selectedDefinition)}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                      <Eye className="w-4 h-4" />
-                      Preview
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditMode(true);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handlePreview(selectedDefinition)}
+                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                      >
+                        <Eye className="w-4 h-4" />
+                        Preview
+                      </button>
+                    </div>
                   </div>
 
                   <div className="space-y-4">
@@ -240,7 +305,7 @@ export default function UIBuilderPage() {
                         <div className="bg-gray-50 rounded-lg p-8 text-center text-gray-500">
                           <p className="text-sm">No components yet</p>
                           <p className="text-xs text-gray-400 mt-1">
-                            Phase 2 will include the visual builder
+                            Click "Edit" to start building your UI
                           </p>
                         </div>
                       ) : (
