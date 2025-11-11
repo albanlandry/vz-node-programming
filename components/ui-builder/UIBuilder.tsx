@@ -28,6 +28,7 @@ export default function UIBuilder({ definitionId }: UIBuilderProps) {
     updateComponent,
     deleteComponent,
     reorderComponents,
+    moveComponentToContainer,
     saveToHistory,
     undo,
     redo,
@@ -64,8 +65,8 @@ export default function UIBuilder({ definitionId }: UIBuilderProps) {
   const selectedComponent = definition.components.find((comp) => comp.id === selectedComponentId) || null;
 
   const handleComponentAdd = useCallback(
-    (component: UIComponent) => {
-      addComponent(definitionId, component);
+    (component: UIComponent, parentId?: string) => {
+      addComponent(definitionId, component, parentId);
       setSelectedComponentId(component.id);
       saveToHistory(definitionId);
     },
@@ -102,11 +103,19 @@ export default function UIBuilder({ definitionId }: UIBuilderProps) {
   );
 
   const handleComponentReorder = useCallback(
-    (componentIds: string[]) => {
-      reorderComponents(definitionId, componentIds);
+    (componentIds: string[], parentId?: string) => {
+      reorderComponents(definitionId, componentIds, parentId);
       saveToHistory(definitionId);
     },
     [definitionId, reorderComponents, saveToHistory]
+  );
+
+  const handleMoveToContainer = useCallback(
+    (componentId: string, containerId: string) => {
+      moveComponentToContainer(definitionId, componentId, containerId);
+      saveToHistory(definitionId);
+    },
+    [definitionId, moveComponentToContainer, saveToHistory]
   );
 
   const handleUndo = useCallback(() => {
@@ -214,6 +223,7 @@ export default function UIBuilder({ definitionId }: UIBuilderProps) {
           onComponentUpdate={handleComponentUpdate}
           onComponentCopy={handleCopy}
           onComponentPaste={handlePaste}
+          onMoveToContainer={handleMoveToContainer}
           gridEnabled={gridEnabled}
           gridSize={8}
         />

@@ -48,10 +48,12 @@ interface UIBuilderState {
   rollbackToVersion: (id: string, version: string) => boolean;
   
   // Component management (Phase 2)
-  addComponent: (definitionId: string, component: UIComponent) => void;
+  addComponent: (definitionId: string, component: UIComponent, parentId?: string) => void;
   updateComponent: (definitionId: string, componentId: string, updates: Partial<UIComponent>) => void;
   deleteComponent: (definitionId: string, componentId: string) => void;
-  reorderComponents: (definitionId: string, componentIds: string[]) => void;
+  reorderComponents: (definitionId: string, componentIds: string[], parentId?: string) => void;
+  moveComponentToContainer: (definitionId: string, componentId: string, containerId: string) => void;
+  removeComponentFromContainer: (definitionId: string, componentId: string) => void;
   
   // Enhanced features (Phase 4)
   // History management
@@ -170,19 +172,40 @@ export const useUIBuilderStore = create<UIBuilderState>()(
 
       /**
        * Add a component to a UI definition (Phase 2)
+       * Supports nesting by adding to a container's children array
        */
-      addComponent: (definitionId: string, component: UIComponent) => {
-        set((state) => ({
-          definitions: state.definitions.map((def) =>
-            def.id === definitionId
-              ? {
-                  ...def,
-                  components: [...def.components, component],
-                  updatedAt: new Date().toISOString(),
-                }
-              : def
-          ),
-        }));
+      addComponent: (definitionId: string, component: UIComponent, parentId?: string) => {
+        set((state) => {
+          const definition = state.definitions.find((def) => def.id === definitionId);
+          if (!definition) return state;
+
+          // Add component to the components array
+          const updatedComponents = [...definition.components, component];
+
+          // If parentId is provided, add component to parent's children array
+          if (parentId) {
+            const parent = updatedComponents.find((c) => c.id === parentId);
+            if (parent && (parent.type === 'container' || parent.type === 'row' || parent.type === 'column')) {
+              const parentWithChildren = parent as UIComponent & { children?: string[] };
+              if (!parentWithChildren.children) {
+                parentWithChildren.children = [];
+              }
+              parentWithChildren.children.push(component.id);
+            }
+          }
+
+          return {
+            definitions: state.definitions.map((def) =>
+              def.id === definitionId
+                ? {
+                    ...def,
+                    components: updatedComponents,
+                    updatedAt: new Date().toISOString(),
+                  }
+                : def
+            ),
+          };
+        });
       },
 
       /**
@@ -223,12 +246,37 @@ export const useUIBuilderStore = create<UIBuilderState>()(
 
       /**
        * Reorder components in a UI definition (Phase 2)
+       * Supports reordering within containers
        */
-      reorderComponents: (definitionId: string, componentIds: string[]) => {
+      reorderComponents: (definitionId: string, componentIds: string[], parentId?: string) => {
         set((state) => {
           const definition = state.definitions.find((def) => def.id === definitionId);
           if (!definition) return state;
 
+          if (parentId) {
+            // Reorder within a container
+            const parent = definition.components.find((c) => c.id === parentId);
+            if (parent && (parent.type === 'container' || parent.type === 'row' || parent.type === 'column')) {
+              const parentWithChildren = parent as UIComponent & { children?: string[] };
+              return {
+                definitions: state.definitions.map((def) =>
+                  def.id === definitionId
+                    ? {
+                        ...def,
+                        components: def.components.map((comp) =>
+                          comp.id === parentId
+                            ? { ...comp, children: componentIds } as UIComponent
+                            : comp
+                        ),
+                        updatedAt: new Date().toISOString(),
+                      }
+                    : def
+                ),
+              };
+            }
+          }
+
+          // Reorder root-level components
           const componentMap = new Map(definition.components.map((comp) => [comp.id, comp]));
           const reorderedComponents = componentIds
             .map((id) => componentMap.get(id))
@@ -240,6 +288,85 @@ export const useUIBuilderStore = create<UIBuilderState>()(
                 ? {
                     ...def,
                     components: reorderedComponents,
+                    updatedAt: new Date().toISOString(),
+                  }
+                : def
+            ),
+          };
+        });
+      },
+
+      /**
+       * Move a component into a container
+       */
+      moveComponentToContainer: (definitionId: string, componentId: string, containerId: string) => {
+        set((state) => {
+          const definition = state.definitions.find((def) => def.id === definitionId);
+          if (!definition) return state;
+
+          // Remove component from any existing parent
+          const updatedComponents = definition.components.map((comp) => {
+            if ((comp.type === 'container' || comp.type === 'row' || comp.type === 'column') && comp.id !== containerId) {
+              const compWithChildren = comp as UIComponent & { children?: string[] };
+              if (compWithChildren.children?.includes(componentId)) {
+                return {
+                  ...comp,
+                  children: compWithChildren.children.filter((id) => id !== componentId),
+                } as UIComponent;
+              }
+            }
+            return comp;
+          });
+
+          // Add component to target container
+          return {
+            definitions: state.definitions.map((def) =>
+              def.id === definitionId
+                ? {
+                    ...def,
+                    components: updatedComponents.map((comp) => {
+                      if (comp.id === containerId && (comp.type === 'container' || comp.type === 'row' || comp.type === 'column')) {
+                        const containerWithChildren = comp as UIComponent & { children?: string[] };
+                        const children = containerWithChildren.children || [];
+                        if (!children.includes(componentId)) {
+                          return { ...comp, children: [...children, componentId] } as UIComponent;
+                        }
+                      }
+                      return comp;
+                    }),
+                    updatedAt: new Date().toISOString(),
+                  }
+                : def
+            ),
+          };
+        });
+      },
+
+      /**
+       * Remove a component from its container (move to root level)
+       */
+      removeComponentFromContainer: (definitionId: string, componentId: string) => {
+        set((state) => {
+          const definition = state.definitions.find((def) => def.id === definitionId);
+          if (!definition) return state;
+
+          return {
+            definitions: state.definitions.map((def) =>
+              def.id === definitionId
+                ? {
+                    ...def,
+                    components: definition.components.map((comp) => {
+                      if ((comp.type === 'container' || comp.type === 'row' || comp.type === 'column')) {
+                        const compWithChildren = comp as UIComponent & { children?: string[] };
+                        if (compWithChildren.children?.includes(componentId)) {
+                          return {
+                            ...comp,
+                            children: compWithChildren.children.filter((id) => id !== componentId),
+                          } as UIComponent;
+                        }
+                      }
+                      return comp;
+                    }),
                     updatedAt: new Date().toISOString(),
                   }
                 : def

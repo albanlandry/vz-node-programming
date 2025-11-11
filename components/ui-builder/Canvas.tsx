@@ -4,11 +4,11 @@
  * Design Canvas
  * 
  * The main canvas where UI components are placed and arranged
- * Phase 4: Enhanced with resize, grid, undo/redo, copy/paste, containers
+ * Enhanced with mouse-based drag-and-drop reordering and nested layout support
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { Trash2, GripVertical, Copy, Maximize2, Grid3x3 } from 'lucide-react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { Trash2, GripVertical, Copy, Grid3x3 } from 'lucide-react';
 import type { UIComponent, UIDefinition } from '../../src/types/uiDefinition';
 
 interface CanvasProps {
@@ -16,13 +16,25 @@ interface CanvasProps {
   selectedComponentId: string | null;
   onComponentSelect: (componentId: string | null) => void;
   onComponentDelete: (componentId: string) => void;
-  onComponentAdd: (component: UIComponent) => void;
-  onComponentReorder: (componentIds: string[]) => void;
+  onComponentAdd: (component: UIComponent, parentId?: string) => void;
+  onComponentReorder: (componentIds: string[], parentId?: string) => void;
   onComponentUpdate?: (componentId: string, updates: Partial<UIComponent>) => void;
   onComponentCopy?: (componentId: string) => void;
   onComponentPaste?: (afterComponentId?: string) => void;
+  onMoveToContainer?: (componentId: string, containerId: string) => void;
   gridEnabled?: boolean;
   gridSize?: number;
+}
+
+interface DragState {
+  componentId: string;
+  startX: number;
+  startY: number;
+  currentX: number;
+  currentY: number;
+  offsetX: number;
+  offsetY: number;
+  element: HTMLElement | null;
 }
 
 export default function Canvas({
@@ -35,32 +47,32 @@ export default function Canvas({
   onComponentUpdate,
   onComponentCopy,
   onComponentPaste,
+  onMoveToContainer,
   gridEnabled = false,
   gridSize = 8,
 }: CanvasProps) {
-  const [draggedOverIndex, setDraggedOverIndex] = useState<number | null>(null);
-  const [draggedComponentIndex, setDraggedComponentIndex] = useState<number | null>(null);
+  const [draggingState, setDraggingState] = useState<DragState | null>(null);
+  const [dragOverContainerId, setDragOverContainerId] = useState<string | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [resizingComponentId, setResizingComponentId] = useState<string | null>(null);
   const [resizeStart, setResizeStart] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
+  const dragPreviewRef = useRef<HTMLDivElement | null>(null);
 
-  // Keyboard shortcuts (Phase 4)
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Copy (Ctrl/Cmd + C)
       if ((e.ctrlKey || e.metaKey) && e.key === 'c' && selectedComponentId) {
         e.preventDefault();
         if (onComponentCopy) {
           onComponentCopy(selectedComponentId);
         }
       }
-      // Paste (Ctrl/Cmd + V)
       if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
         e.preventDefault();
         if (onComponentPaste) {
           onComponentPaste(selectedComponentId || undefined);
         }
       }
-      // Delete (Delete or Backspace)
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedComponentId) {
         e.preventDefault();
         onComponentDelete(selectedComponentId);
@@ -71,21 +83,148 @@ export default function Canvas({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedComponentId, onComponentCopy, onComponentPaste, onComponentDelete]);
 
+  // Mouse-based drag handling
+  useEffect(() => {
+    if (!draggingState) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setDraggingState((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          currentX: e.clientX,
+          currentY: e.clientY,
+        };
+      });
+
+      // Update drag preview position
+      if (dragPreviewRef.current) {
+        dragPreviewRef.current.style.left = `${e.clientX - draggingState.offsetX}px`;
+        dragPreviewRef.current.style.top = `${e.clientY - draggingState.offsetY}px`;
+      }
+
+      // Find element under cursor
+      const elementUnder = document.elementFromPoint(e.clientX, e.clientY);
+      if (elementUnder) {
+        const containerElement = elementUnder.closest('[data-container-id]');
+        const componentElement = elementUnder.closest('[data-component-id]');
+        
+        if (containerElement) {
+          const containerId = containerElement.getAttribute('data-container-id');
+          setDragOverContainerId(containerId);
+        } else {
+          setDragOverContainerId(null);
+        }
+
+        if (componentElement && componentElement !== draggingState.element) {
+          const componentId = componentElement.getAttribute('data-component-id');
+          const index = parseInt(componentElement.getAttribute('data-index') || '0');
+          setDragOverIndex(index);
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (draggingState && dragOverContainerId && onMoveToContainer) {
+        // Move component to container
+        onMoveToContainer(draggingState.componentId, dragOverContainerId);
+      } else if (draggingState && dragOverIndex !== null) {
+        // Reorder components
+        const rootComponents = getRootComponents(definition.components);
+        const dragIndex = rootComponents.findIndex((c) => c.id === draggingState.componentId);
+        
+        if (dragIndex !== -1 && dragIndex !== dragOverIndex) {
+          const newOrder = [...rootComponents];
+          const [removed] = newOrder.splice(dragIndex, 1);
+          newOrder.splice(dragOverIndex, 0, removed);
+          onComponentReorder(newOrder.map((c) => c.id));
+        }
+      }
+
+      setDraggingState(null);
+      setDragOverContainerId(null);
+      setDragOverIndex(null);
+      if (dragPreviewRef.current) {
+        dragPreviewRef.current.style.display = 'none';
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [draggingState, dragOverContainerId, dragOverIndex, definition, onComponentReorder, onMoveToContainer]);
+
   /**
-   * Snap to grid
+   * Get root-level components (not nested in containers)
    */
-  const snapToGrid = useCallback((value: number): number => {
-    if (!gridEnabled) return value;
-    return Math.round(value / gridSize) * gridSize;
-  }, [gridEnabled, gridSize]);
+  const getRootComponents = useCallback((components: UIComponent[]): UIComponent[] => {
+    const allChildIds = new Set<string>();
+    components.forEach((comp) => {
+      if (comp.type === 'container' || comp.type === 'row' || comp.type === 'column') {
+        const containerComp = comp as UIComponent & { children?: string[] };
+        containerComp.children?.forEach((id) => allChildIds.add(id));
+      }
+    });
+    return components.filter((comp) => !allChildIds.has(comp.id));
+  }, []);
+
+  /**
+   * Get child components of a container
+   */
+  const getChildComponents = useCallback((container: UIComponent, allComponents: UIComponent[]): UIComponent[] => {
+    if (container.type !== 'container' && container.type !== 'row' && container.type !== 'column') {
+      return [];
+    }
+    const containerWithChildren = container as UIComponent & { children?: string[] };
+    if (!containerWithChildren.children) return [];
+    
+    const childMap = new Map(allComponents.map((c) => [c.id, c]));
+    return containerWithChildren.children
+      .map((id) => childMap.get(id))
+      .filter((c): c is UIComponent => c !== undefined);
+  }, []);
+
+  /**
+   * Handle mouse down on drag handle
+   */
+  const handleDragStart = useCallback((e: React.MouseEvent, component: UIComponent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+
+    setDraggingState({
+      componentId: component.id,
+      startX: e.clientX,
+      startY: e.clientY,
+      currentX: e.clientX,
+      currentY: e.clientY,
+      offsetX,
+      offsetY,
+      element: e.currentTarget as HTMLElement,
+    });
+
+    if (dragPreviewRef.current) {
+      dragPreviewRef.current.style.display = 'block';
+      dragPreviewRef.current.style.left = `${e.clientX - offsetX}px`;
+      dragPreviewRef.current.style.top = `${e.clientY - offsetY}px`;
+    }
+  }, []);
 
   /**
    * Handle drop from palette
    */
   const handleDrop = useCallback(
-    (e: React.DragEvent) => {
+    (e: React.DragEvent, parentId?: string) => {
       e.preventDefault();
-      setDraggedOverIndex(null);
+      e.stopPropagation();
+      setDragOverContainerId(null);
 
       const data = e.dataTransfer.getData('application/ui-component');
       if (!data) return;
@@ -94,9 +233,8 @@ export default function Canvas({
         const { type } = JSON.parse(data);
         if (!type) return;
 
-        // Create new component based on type
         const newComponent = createComponentFromType(type, definition.components.length);
-        onComponentAdd(newComponent);
+        onComponentAdd(newComponent, parentId);
       } catch (error) {
         console.error('Failed to parse dropped component:', error);
       }
@@ -109,41 +247,9 @@ export default function Canvas({
    */
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     e.dataTransfer.dropEffect = 'copy';
   }, []);
-
-  /**
-   * Handle component drag start (for reordering)
-   */
-  const handleComponentDragStart = useCallback((e: React.DragEvent, index: number) => {
-    setDraggedComponentIndex(index);
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('application/ui-component-reorder', index.toString());
-  }, []);
-
-  /**
-   * Handle component drop (for reordering)
-   */
-  const handleComponentDrop = useCallback(
-    (e: React.DragEvent, dropIndex: number) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const dragIndex = draggedComponentIndex;
-      if (dragIndex === null || dragIndex === dropIndex) {
-        setDraggedComponentIndex(null);
-        return;
-      }
-
-      const newOrder = [...definition.components];
-      const [removed] = newOrder.splice(dragIndex, 1);
-      newOrder.splice(dropIndex, 0, removed);
-
-      onComponentReorder(newOrder.map((comp) => comp.id));
-      setDraggedComponentIndex(null);
-    },
-    [definition.components, draggedComponentIndex, onComponentReorder]
-  );
 
   /**
    * Handle resize start
@@ -168,8 +274,8 @@ export default function Canvas({
 
     const handleMouseMove = (e: MouseEvent) => {
       const deltaX = e.clientX - resizeStart.x;
-      const newWidth = snapToGrid(resizeStart.width + deltaX);
-      const newHeight = snapToGrid(resizeStart.height + (e.clientY - resizeStart.y));
+      const newWidth = gridEnabled ? Math.round((resizeStart.width + deltaX) / gridSize) * gridSize : resizeStart.width + deltaX;
+      const newHeight = gridEnabled ? Math.round((resizeStart.height + (e.clientY - resizeStart.y)) / gridSize) * gridSize : resizeStart.height + (e.clientY - resizeStart.y);
 
       onComponentUpdate(resizingComponentId, {
         width: Math.max(50, newWidth),
@@ -189,34 +295,27 @@ export default function Canvas({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [resizingComponentId, resizeStart, onComponentUpdate, snapToGrid]);
+  }, [resizingComponentId, resizeStart, onComponentUpdate, gridEnabled, gridSize]);
 
   /**
-   * Render a component preview
+   * Render a component (recursive for nested components)
    */
-  const renderComponentPreview = (component: UIComponent, index: number) => {
+  const renderComponent = useCallback((component: UIComponent, index: number, parentId?: string) => {
     const isSelected = selectedComponentId === component.id;
-    const isDraggedOver = draggedOverIndex === index;
+    const isDragging = draggingState?.componentId === component.id;
     const isResizing = resizingComponentId === component.id;
-
-    // Check if component is a container
     const isContainer = component.type === 'container' || component.type === 'row' || component.type === 'column';
     const containerComponent = isContainer ? component as UIComponent & { children?: string[] } : null;
-    const childComponents = containerComponent?.children
-      ? definition.components.filter((c) => containerComponent.children!.includes(c.id))
-      : [];
+    const childComponents = isContainer ? getChildComponents(component, definition.components) : [];
+    const isDragOverContainer = dragOverContainerId === component.id;
+    const isDragOverIndex = dragOverIndex === index && !parentId;
 
     return (
       <div
         key={component.id}
-        draggable={!isContainer}
-        onDragStart={(e) => !isContainer && handleComponentDragStart(e, index)}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDraggedOverIndex(index);
-        }}
-        onDragLeave={() => setDraggedOverIndex(null)}
-        onDrop={(e) => handleComponentDrop(e, index)}
+        data-component-id={component.id}
+        data-index={index}
+        data-container-id={isContainer ? component.id : undefined}
         onClick={(e) => {
           e.stopPropagation();
           onComponentSelect(component.id);
@@ -224,7 +323,9 @@ export default function Canvas({
         className={`
           relative group p-3 border-2 rounded-lg cursor-pointer transition-all
           ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white hover:border-gray-300'}
-          ${isDraggedOver ? 'border-green-400 bg-green-50' : ''}
+          ${isDragging ? 'opacity-50' : ''}
+          ${isDragOverContainer ? 'border-green-400 bg-green-50 ring-2 ring-green-300' : ''}
+          ${isDragOverIndex ? 'border-purple-400 bg-purple-50' : ''}
           ${isResizing ? 'border-purple-500' : ''}
         `}
         style={{
@@ -236,27 +337,32 @@ export default function Canvas({
           backgroundColor: isContainer ? (component as any).backgroundColor : undefined,
           border: isContainer ? (component as any).border : undefined,
           borderRadius: isContainer ? (component as any).borderRadius : undefined,
+          display: isContainer ? (component.type === 'row' ? 'flex' : component.type === 'column' ? 'flex' : 'block') : undefined,
+          flexDirection: component.type === 'row' ? 'row' : component.type === 'column' ? 'column' : undefined,
+          gap: containerComponent && (component.type === 'row' || component.type === 'column') ? `${(component as any).gap || 8}px` : undefined,
+          padding: containerComponent ? (component as any).padding || '8px' : undefined,
         }}
+        onDrop={(e) => handleDrop(e, isContainer ? component.id : undefined)}
+        onDragOver={handleDragOver}
       >
         {/* Drag handle */}
         {!isContainer && (
-          <div className="absolute left-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div
+            className="absolute left-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move z-10"
+            onMouseDown={(e) => handleDragStart(e, component)}
+          >
             <GripVertical className="w-4 h-4 text-gray-400" />
           </div>
         )}
 
-        {/* Component preview */}
+        {/* Component header */}
         <div className={isContainer ? '' : 'ml-6'}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-gray-500 uppercase">{component.type}</span>
-              {component.required && (
-                <span className="text-xs text-red-500">*</span>
-              )}
+              {component.required && <span className="text-xs text-red-500">*</span>}
               {isContainer && (
-                <span className="text-xs text-gray-400">
-                  ({containerComponent?.children?.length || 0} children)
-                </span>
+                <span className="text-xs text-gray-400">({childComponents.length} children)</span>
               )}
             </div>
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -285,23 +391,31 @@ export default function Canvas({
             </div>
           </div>
 
-          {/* Container children preview */}
-          {isContainer && childComponents.length > 0 && (
-            <div className="mt-2 space-y-2 pl-4 border-l-2 border-gray-300">
-              {childComponents.map((child) => (
-                <div key={child.id} className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
-                  {child.type}: {child.label || child.name}
+          {/* Container children */}
+          {isContainer && (
+            <div
+              className={`min-h-[60px] space-y-2 ${
+                childComponents.length === 0 ? 'border-2 border-dashed border-gray-300 rounded p-4' : ''
+              }`}
+              style={{
+                display: 'flex',
+                flexDirection: component.type === 'row' ? 'row' : 'column',
+                gap: `${(component as any).gap || 8}px`,
+              }}
+            >
+              {childComponents.map((child, childIndex) => renderComponent(child, childIndex, component.id))}
+              {childComponents.length === 0 && (
+                <div className="text-xs text-gray-400 italic text-center w-full">
+                  Drop components here
                 </div>
-              ))}
+              )}
             </div>
           )}
 
           {/* Component content preview */}
           {!isContainer && (
             <div className="text-sm text-gray-700">
-              {component.label && (
-                <div className="font-medium mb-1">{component.label}</div>
-              )}
+              {component.label && <div className="font-medium mb-1">{component.label}</div>}
               {component.type === 'input' && (
                 <div className="px-2 py-1 bg-gray-100 rounded border border-gray-300 text-gray-500 text-xs">
                   {component.placeholder || 'Enter text...'}
@@ -341,17 +455,10 @@ export default function Canvas({
               )}
             </div>
           )}
-
-          {/* Empty container message */}
-          {isContainer && childComponents.length === 0 && (
-            <div className="text-xs text-gray-400 italic mt-2">
-              Drop components here
-            </div>
-          )}
         </div>
 
-        {/* Resize handle (Phase 4) */}
-        {isSelected && onComponentUpdate && (
+        {/* Resize handle */}
+        {isSelected && onComponentUpdate && !isContainer && (
           <div
             className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 cursor-nwse-resize opacity-75 hover:opacity-100 transition-opacity"
             onMouseDown={(e) => {
@@ -365,9 +472,26 @@ export default function Canvas({
         )}
       </div>
     );
-  };
+  }, [
+    selectedComponentId,
+    draggingState,
+    dragOverContainerId,
+    dragOverIndex,
+    resizingComponentId,
+    definition.components,
+    getChildComponents,
+    onComponentSelect,
+    onComponentDelete,
+    onComponentCopy,
+    onComponentUpdate,
+    handleDragStart,
+    handleDrop,
+    handleDragOver,
+    handleResizeStart,
+  ]);
 
   const layout = definition.layout || { direction: 'column', gap: 16, padding: 16 };
+  const rootComponents = getRootComponents(definition.components);
 
   return (
     <div className="flex-1 flex flex-col bg-gray-50 relative">
@@ -382,9 +506,6 @@ export default function Canvas({
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => {
-                // Toggle grid (would need to be passed as prop or managed in parent)
-              }}
               className={`p-2 rounded transition-colors ${
                 gridEnabled ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'
               }`}
@@ -396,7 +517,7 @@ export default function Canvas({
         </div>
       </div>
 
-      {/* Grid background (Phase 4) */}
+      {/* Grid background */}
       {gridEnabled && (
         <div
           className="absolute inset-0 pointer-events-none opacity-20"
@@ -410,22 +531,32 @@ export default function Canvas({
         />
       )}
 
+      {/* Drag preview */}
+      {draggingState && (
+        <div
+          ref={dragPreviewRef}
+          className="fixed pointer-events-none z-50 opacity-75"
+          style={{ display: 'none' }}
+        >
+          <div className="px-3 py-2 bg-blue-500 text-white rounded shadow-lg text-sm">
+            Dragging component
+          </div>
+        </div>
+      )}
+
       {/* Canvas Content */}
       <div
         className="flex-1 overflow-y-auto p-4 relative"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onClick={(e) => {
-          // Deselect if clicking on empty space
           if (e.target === e.currentTarget) {
             onComponentSelect(null);
           }
         }}
-        style={{
-          minHeight: '400px',
-        }}
+        style={{ minHeight: '400px' }}
       >
-        {definition.components.length === 0 ? (
+        {rootComponents.length === 0 ? (
           <div className="flex items-center justify-center h-full border-2 border-dashed border-gray-300 rounded-lg">
             <div className="text-center">
               <p className="text-gray-500 mb-2">Drag components here to build your UI</p>
@@ -444,7 +575,7 @@ export default function Canvas({
               justifyContent: layout.justifyContent,
             }}
           >
-            {definition.components.map((component, index) => renderComponentPreview(component, index))}
+            {rootComponents.map((component, index) => renderComponent(component, index))}
           </div>
         )}
       </div>
