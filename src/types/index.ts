@@ -2,6 +2,9 @@
  * Core types and interfaces for the Node-based programming system
  */
 
+// Export UI Definition types
+export * from './uiDefinition';
+
 export type NodeId = string;
 export type PortId = string;
 export type ExecutionId = string;

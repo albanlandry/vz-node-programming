@@ -18,7 +18,8 @@ import {
   Workflow,
   Box,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  Layout
 } from 'lucide-react';
 import { useUIStore } from '../store/uiStore';
 import Tooltip from './Tooltip';
@@ -40,6 +41,11 @@ const nodeRegistryItems: NavItem[] = [
 const graphItems: NavItem[] = [
   { href: '/graphs', label: 'Graph List', icon: List },
   { href: '/graph-editor', label: 'Graph Editor', icon: Workflow },
+];
+
+// UI Builder menu items
+const uiBuilderItems: NavItem[] = [
+  { href: '/ui-builder', label: 'UI Builder', icon: Layout },
 ];
 
 // Logo Section Component with Tooltip
@@ -216,6 +222,14 @@ export default function Navigation() {
           
           {/* Graph Items */}
           {graphItems.map((item) => (
+            <NavItemComponent key={item.href} item={item} />
+          ))}
+          
+          {/* Horizontal Separator */}
+          <div className={`my-2 ${sidebarCollapsed ? 'w-10' : 'w-full'} border-t border-blue-400/30`}></div>
+          
+          {/* UI Builder Items */}
+          {uiBuilderItems.map((item) => (
             <NavItemComponent key={item.href} item={item} />
           ))}
         </div>
