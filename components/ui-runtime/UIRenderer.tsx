@@ -7,11 +7,12 @@
  * Phase 5: Enhanced with validation
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useImperativeHandle, forwardRef } from 'react';
 import type { UIDefinition, UIComponent, FormData, UIRendererProps } from '../../src/types/uiDefinition';
 import { validateForm, getFieldError } from '../../services/validationService';
 import type { FormValidationResult } from '../../src/types/validation';
 import ValidationDisplay from './ValidationDisplay';
+import { applyTheme, getTheme } from '../../services/themeService';
 
 const UIRenderer = forwardRef<{ submit: () => void }, UIRendererProps>(({
   definition,
@@ -120,7 +121,38 @@ const UIRenderer = forwardRef<{ submit: () => void }, UIRendererProps>(({
   }, [definition]);
 
   /**
-   * Render a single component (Phase 5: Support validation)
+   * Get component style (Phase 7) - moved before renderComponent
+   */
+  const getComponentStyle = useCallback((component: UIComponent): React.CSSProperties => {
+    const style: React.CSSProperties = {};
+    
+    if (component.style) {
+      const s = component.style;
+      if (s.color) style.color = s.color;
+      if (s.backgroundColor) style.backgroundColor = s.backgroundColor;
+      if (s.border) style.border = s.border;
+      if (s.borderRadius) style.borderRadius = s.borderRadius;
+      if (s.padding) style.padding = s.padding;
+      if (s.margin) style.margin = s.margin;
+      if (s.fontSize) style.fontSize = s.fontSize;
+      if (s.fontWeight) style.fontWeight = s.fontWeight;
+      if (s.fontFamily) style.fontFamily = s.fontFamily;
+      if (s.textAlign) style.textAlign = s.textAlign;
+      if (s.width !== undefined) style.width = typeof s.width === 'number' ? `${s.width}px` : s.width;
+      if (s.height !== undefined) style.height = typeof s.height === 'number' ? `${s.height}px` : s.height;
+      if (s.minWidth !== undefined) style.minWidth = typeof s.minWidth === 'number' ? `${s.minWidth}px` : s.minWidth;
+      if (s.maxWidth !== undefined) style.maxWidth = typeof s.maxWidth === 'number' ? `${s.maxWidth}px` : s.maxWidth;
+      if (s.minHeight !== undefined) style.minHeight = typeof s.minHeight === 'number' ? `${s.minHeight}px` : s.minHeight;
+      if (s.maxHeight !== undefined) style.maxHeight = typeof s.maxHeight === 'number' ? `${s.maxHeight}px` : s.maxHeight;
+      if (s.boxShadow) style.boxShadow = s.boxShadow;
+      if (s.opacity !== undefined) style.opacity = s.opacity;
+    }
+    
+    return style;
+  }, []);
+
+  /**
+   * Render a single component (Phase 7: Support styling)
    */
   const renderComponent = (component: UIComponent, componentMap?: Map<string, UIComponent>): React.ReactNode => {
     const fieldName = component.name;
@@ -129,10 +161,12 @@ const UIRenderer = forwardRef<{ submit: () => void }, UIRendererProps>(({
     const fieldError = showError ? getFieldError(fieldName, validation) : undefined;
     const hasError = !!fieldError;
 
+    const componentStyle = getComponentStyle(component);
     const commonProps = {
       id: component.id,
       name: component.name,
       disabled,
+      style: componentStyle,
       className: `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
         hasError
           ? 'border-red-500 focus:ring-red-500'
@@ -409,6 +443,16 @@ const UIRenderer = forwardRef<{ submit: () => void }, UIRendererProps>(({
   const layout = definition.layout || { direction: 'column', gap: 16, padding: 16 };
   const { rootComponents, componentMap } = buildComponentTree();
 
+  // Apply theme (Phase 7)
+  useEffect(() => {
+    if (definition.theme?.themeId) {
+      const theme = getTheme(definition.theme.themeId) || definition.theme.customTheme;
+      if (theme && formRef.current) {
+        applyTheme(formRef.current, theme);
+      }
+    }
+  }, [definition.theme]);
+
   // Expose form submit method (Phase 5: For external submit buttons)
   useImperativeHandle(ref, () => ({
     submit: () => {
@@ -418,21 +462,66 @@ const UIRenderer = forwardRef<{ submit: () => void }, UIRendererProps>(({
     },
   }));
 
+  /**
+   * Get component style (Phase 7)
+   */
+  const getComponentStyle = (component: UIComponent): React.CSSProperties => {
+    const style: React.CSSProperties = {};
+    
+    if (component.style) {
+      const s = component.style;
+      if (s.color) style.color = s.color;
+      if (s.backgroundColor) style.backgroundColor = s.backgroundColor;
+      if (s.border) style.border = s.border;
+      if (s.borderRadius) style.borderRadius = s.borderRadius;
+      if (s.padding) style.padding = s.padding;
+      if (s.margin) style.margin = s.margin;
+      if (s.fontSize) style.fontSize = s.fontSize;
+      if (s.fontWeight) style.fontWeight = s.fontWeight;
+      if (s.fontFamily) style.fontFamily = s.fontFamily;
+      if (s.textAlign) style.textAlign = s.textAlign;
+      if (s.width !== undefined) style.width = typeof s.width === 'number' ? `${s.width}px` : s.width;
+      if (s.height !== undefined) style.height = typeof s.height === 'number' ? `${s.height}px` : s.height;
+      if (s.minWidth !== undefined) style.minWidth = typeof s.minWidth === 'number' ? `${s.minWidth}px` : s.minWidth;
+      if (s.maxWidth !== undefined) style.maxWidth = typeof s.maxWidth === 'number' ? `${s.maxWidth}px` : s.maxWidth;
+      if (s.minHeight !== undefined) style.minHeight = typeof s.minHeight === 'number' ? `${s.minHeight}px` : s.minHeight;
+      if (s.maxHeight !== undefined) style.maxHeight = typeof s.maxHeight === 'number' ? `${s.maxHeight}px` : s.maxHeight;
+      if (s.boxShadow) style.boxShadow = s.boxShadow;
+      if (s.opacity !== undefined) style.opacity = s.opacity;
+    }
+    
+    return style;
+  };
+
+  // Get global styles (Phase 7)
+  const globalStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: layout.direction || 'column',
+    gap: `${layout.gap || 16}px`,
+    padding: typeof layout.padding === 'number' ? `${layout.padding}px` : layout.padding || '16px',
+    alignItems: layout.alignItems,
+    justifyContent: layout.justifyContent,
+    backgroundColor: layout.backgroundColor,
+    maxWidth: layout.maxWidth ? (typeof layout.maxWidth === 'number' ? `${layout.maxWidth}px` : layout.maxWidth) : undefined,
+    minWidth: layout.minWidth ? (typeof layout.minWidth === 'number' ? `${layout.minWidth}px` : layout.minWidth) : undefined,
+  };
+
+  // Apply global styles (Phase 7)
+  if (definition.globalStyles) {
+    const gs = definition.globalStyles;
+    if (gs.backgroundColor) globalStyle.backgroundColor = gs.backgroundColor;
+    if (gs.color) globalStyle.color = gs.color;
+    if (gs.fontSize) globalStyle.fontSize = gs.fontSize;
+    if (gs.fontWeight) globalStyle.fontWeight = gs.fontWeight;
+    if (gs.fontFamily) globalStyle.fontFamily = gs.fontFamily;
+    if (gs.padding) globalStyle.padding = gs.padding;
+  }
+
   return (
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      style={{
-        display: 'flex',
-        flexDirection: layout.direction || 'column',
-        gap: `${layout.gap || 16}px`,
-        padding: typeof layout.padding === 'number' ? `${layout.padding}px` : layout.padding || '16px',
-        alignItems: layout.alignItems,
-        justifyContent: layout.justifyContent,
-        backgroundColor: layout.backgroundColor,
-        maxWidth: layout.maxWidth ? (typeof layout.maxWidth === 'number' ? `${layout.maxWidth}px` : layout.maxWidth) : undefined,
-        minWidth: layout.minWidth ? (typeof layout.minWidth === 'number' ? `${layout.minWidth}px` : layout.minWidth) : undefined,
-      }}
+      style={globalStyle}
       className="ui-renderer"
     >
       {/* Show all validation errors at top if submit attempted (Phase 5) */}

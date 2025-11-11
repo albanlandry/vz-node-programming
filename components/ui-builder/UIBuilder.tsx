@@ -8,12 +8,14 @@
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { Undo2, Redo2, Grid3x3 } from 'lucide-react';
+import { Undo2, Redo2, Grid3x3, Palette, Monitor } from 'lucide-react';
 import ComponentPalette from './ComponentPalette';
 import Canvas from './Canvas';
 import PropertyPanel from './PropertyPanel';
+import StylePanel from './StylePanel';
+import ResponsivePreview from './ResponsivePreview';
 import { useUIBuilderStore } from '../../store/uiBuilderStore';
-import type { UIDefinition, UIComponent } from '../../src/types/uiDefinition';
+import type { UIDefinition, UIComponent, ComponentStyle } from '../../src/types/uiDefinition';
 
 interface UIBuilderProps {
   definitionId: string;
@@ -37,6 +39,8 @@ export default function UIBuilder({ definitionId }: UIBuilderProps) {
   } = useUIBuilderStore();
   const [selectedComponentId, setSelectedComponentId] = useState<string | null>(null);
   const [gridEnabled, setGridEnabled] = useState(false);
+  const [showStylePanel, setShowStylePanel] = useState(false);
+  const [showResponsivePreview, setShowResponsivePreview] = useState(false);
 
   const definition = getDefinition(definitionId);
 
@@ -178,6 +182,25 @@ export default function UIBuilder({ definitionId }: UIBuilderProps) {
             >
               <Grid3x3 className="w-4 h-4" />
             </button>
+            <div className="w-px h-6 bg-gray-300 mx-1" />
+            <button
+              onClick={() => setShowStylePanel(!showStylePanel)}
+              className={`p-2 rounded transition-colors ${
+                showStylePanel
+                  ? 'bg-blue-100 text-blue-600'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              title="Toggle Style Panel"
+            >
+              <Palette className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setShowResponsivePreview(true)}
+              className="p-2 rounded transition-colors text-gray-700 hover:bg-gray-100"
+              title="Responsive Preview"
+            >
+              <Monitor className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
@@ -198,6 +221,26 @@ export default function UIBuilder({ definitionId }: UIBuilderProps) {
 
       {/* Property Panel */}
       <PropertyPanel component={selectedComponent} onUpdate={handlePropertyUpdate} />
+      
+      {/* Style Panel (Phase 7) */}
+      {showStylePanel && (
+        <StylePanel
+          component={selectedComponent}
+          definitionTheme={definition.theme}
+          globalStyles={definition.globalStyles}
+          onComponentStyleUpdate={handleComponentStyleUpdate}
+          onThemeChange={handleThemeChange}
+          onGlobalStylesChange={handleGlobalStylesChange}
+        />
+      )}
+
+      {/* Responsive Preview (Phase 7) */}
+      {showResponsivePreview && (
+        <ResponsivePreview
+          definition={definition}
+          onClose={() => setShowResponsivePreview(false)}
+        />
+      )}
     </div>
   );
 }

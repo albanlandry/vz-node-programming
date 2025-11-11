@@ -28,6 +28,8 @@ export interface UIComponentBase {
   margin?: string; // CSS margin
   padding?: string; // CSS padding
   alignSelf?: 'start' | 'end' | 'center' | 'stretch';
+  // Styling (Phase 7)
+  style?: ComponentStyle;
 }
 
 /**
@@ -166,6 +168,52 @@ export interface LayoutConfig {
 }
 
 /**
+ * Component styling (Phase 7)
+ */
+export interface ComponentStyle {
+  /**
+   * CSS properties
+   */
+  color?: string;
+  backgroundColor?: string;
+  border?: string;
+  borderRadius?: string;
+  padding?: string;
+  margin?: string;
+  fontSize?: string;
+  fontWeight?: string | number;
+  fontFamily?: string;
+  textAlign?: 'left' | 'center' | 'right' | 'justify';
+  width?: string | number;
+  height?: string | number;
+  minWidth?: string | number;
+  maxWidth?: string | number;
+  minHeight?: string | number;
+  maxHeight?: string | number;
+  boxShadow?: string;
+  opacity?: number;
+  /**
+   * Custom CSS (will be applied as inline style)
+   */
+  customCSS?: string;
+}
+
+/**
+ * Theme reference (Phase 7)
+ */
+export interface ThemeReference {
+  /**
+   * Theme ID (predefined or custom)
+   */
+  themeId?: string;
+  
+  /**
+   * Custom theme definition (if not using predefined)
+   */
+  customTheme?: import('../services/themeService').Theme;
+}
+
+/**
  * UI Definition
  * Complete definition of a UI form that can be rendered and used by interactive nodes
  */
@@ -178,6 +226,9 @@ export interface UIDefinition {
   layout?: LayoutConfig;
   createdAt: string;
   updatedAt: string;
+  // Styling & Theming (Phase 7)
+  theme?: ThemeReference;
+  globalStyles?: ComponentStyle;
 }
 
 /**
