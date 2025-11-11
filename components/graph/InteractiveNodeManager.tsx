@@ -10,12 +10,15 @@ import { useState, useEffect, useCallback } from 'react';
 import UserInputDialog from './UserInputDialog';
 import ImageDisplayPanel from './ImageDisplayPanel';
 import StreamingDataPanel from './StreamingDataPanel';
+import UIDialog from '../interactive-nodes/UIDialog';
+import { useGraphStore } from '../../store/graphStore';
 import type {
   UserInputRequest,
   ImageData,
   InteractiveNodeEventType,
 } from '../../src/types';
 import { streamingExecutionService } from '../../services/streamingExecutionService';
+import type { UINodeConfig } from '../../src/types/uiNodeConfig';
 
 interface PendingInputRequest {
   nodeId: string;
@@ -35,9 +38,16 @@ interface ActiveStreamingNode {
 }
 
 export default function InteractiveNodeManager() {
+  const { nodes } = useGraphStore();
   const [pendingInput, setPendingInput] = useState<PendingInputRequest | null>(null);
   const [pendingImage, setPendingImage] = useState<PendingImageDisplay | null>(null);
   const [streamingNodes, setStreamingNodes] = useState<Map<string, ActiveStreamingNode>>(new Map());
+  
+  // Check if node has UI config
+  const getNodeUIConfig = useCallback((nodeId: string): UINodeConfig | undefined => {
+    const node = nodes.find((n) => n.id === nodeId);
+    return node?.properties?.uiConfig as UINodeConfig | undefined;
+  }, [nodes]);
 
   useEffect(() => {
     // Listen for user input requests from streaming execution
@@ -158,17 +168,34 @@ export default function InteractiveNodeManager() {
     });
   }, []);
 
+  // Check if pending input node has UI config
+  const pendingNodeUIConfig = pendingInput ? getNodeUIConfig(pendingInput.nodeId) : null;
+
   return (
     <>
       {pendingInput && (
-        <UserInputDialog
-          open={true}
-          nodeId={pendingInput.nodeId}
-          executionId={pendingInput.executionId}
-          request={pendingInput.request}
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-        />
+        <>
+          {pendingNodeUIConfig ? (
+            // Use UI Definition if configured
+            <UIDialog
+              open={true}
+              nodeId={pendingInput.nodeId}
+              executionId={pendingInput.executionId}
+              onSubmit={handleSubmit}
+              onCancel={handleCancel}
+            />
+          ) : (
+            // Fallback to standard UserInputDialog
+            <UserInputDialog
+              open={true}
+              nodeId={pendingInput.nodeId}
+              executionId={pendingInput.executionId}
+              request={pendingInput.request}
+              onSubmit={handleSubmit}
+              onCancel={handleCancel}
+            />
+          )}
+        </>
       )}
       {pendingImage && (
         <ImageDisplayPanel

@@ -6,8 +6,9 @@
  */
 
 import { useState, useEffect } from 'react';
-import { X, GripVertical } from 'lucide-react';
+import { X, GripVertical, Layout } from 'lucide-react';
 import { useGraphStore, GraphNode } from '../../store/graphStore';
+import UINodeConfigPanel from '../interactive-nodes/UINodeConfigPanel';
 
 interface NodeDetailsPanelProps {
   nodeId: string | null;
@@ -21,8 +22,13 @@ export default function NodeDetailsPanel({ nodeId, onClose }: NodeDetailsPanelPr
   const [position, setPosition] = useState({ x: 20, y: 100 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [showUIConfig, setShowUIConfig] = useState(false);
 
   const node = nodes.find((n) => n.id === nodeId);
+  
+  // Check if node is interactive (has outputs that could use UI)
+  const isInteractiveNode = node?.outputs && node.outputs.length > 0;
+  const hasUIConfig = node?.properties?.uiConfig !== undefined;
 
   // Load position from localStorage on mount
   useEffect(() => {
@@ -146,13 +152,31 @@ export default function NodeDetailsPanel({ nodeId, onClose }: NodeDetailsPanelPr
           <GripVertical className="w-4 h-4 opacity-75" />
           <h3 className="font-semibold text-sm">Node Details</h3>
         </div>
-        <button
-          onClick={onClose}
-          className="p-1 rounded hover:bg-blue-700 transition-colors"
-          title="Close"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-2">
+          {isInteractiveNode && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowUIConfig(true);
+              }}
+              className={`p-1.5 rounded transition-colors ${
+                hasUIConfig
+                  ? 'bg-blue-700 hover:bg-blue-800'
+                  : 'hover:bg-blue-700'
+              }`}
+              title="Configure UI"
+            >
+              <Layout className="w-4 h-4" />
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="p-1 rounded hover:bg-blue-700 transition-colors"
+            title="Close"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Content */}
@@ -266,6 +290,44 @@ export default function NodeDetailsPanel({ nodeId, onClose }: NodeDetailsPanelPr
           </div>
         )}
 
+        {/* UI Configuration Status */}
+        {isInteractiveNode && (
+          <div className="mb-4">
+            <label className="block text-xs font-semibold text-gray-700 mb-2">
+              UI Configuration
+            </label>
+            {hasUIConfig ? (
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-1">
+                  <Layout className="w-4 h-4 text-green-600" />
+                  <span className="text-sm font-medium text-green-800">UI Configured</span>
+                </div>
+                <p className="text-xs text-green-700">
+                  This node will use a custom UI form during execution
+                </p>
+                <button
+                  onClick={() => setShowUIConfig(true)}
+                  className="mt-2 text-xs text-green-700 hover:text-green-900 underline"
+                >
+                  Edit Configuration
+                </button>
+              </div>
+            ) : (
+              <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                <p className="text-xs text-gray-600 mb-2">
+                  No UI configured. Click the layout icon above to configure.
+                </p>
+                <button
+                  onClick={() => setShowUIConfig(true)}
+                  className="text-xs text-blue-600 hover:text-blue-800 underline"
+                >
+                  Configure UI
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Other Properties */}
         {node.properties && Object.keys(node.properties).length > 0 && !isConstantNode && (
           <div className="mb-4">
@@ -273,16 +335,23 @@ export default function NodeDetailsPanel({ nodeId, onClose }: NodeDetailsPanelPr
               Properties
             </label>
             <div className="space-y-1">
-              {Object.entries(node.properties).map(([key, value]) => (
-                <div key={key} className="text-xs text-gray-600">
-                  <span className="font-medium">{key}:</span>{' '}
-                  <span className="font-mono">{String(value)}</span>
-                </div>
-              ))}
+              {Object.entries(node.properties)
+                .filter(([key]) => key !== 'uiConfig') // Exclude uiConfig from generic properties display
+                .map(([key, value]) => (
+                  <div key={key} className="text-xs text-gray-600">
+                    <span className="font-medium">{key}:</span>{' '}
+                    <span className="font-mono">{String(value)}</span>
+                  </div>
+                ))}
             </div>
           </div>
         )}
       </div>
+
+      {/* UI Configuration Panel */}
+      {showUIConfig && nodeId && (
+        <UINodeConfigPanel nodeId={nodeId} onClose={() => setShowUIConfig(false)} />
+      )}
     </div>
   );
 }
