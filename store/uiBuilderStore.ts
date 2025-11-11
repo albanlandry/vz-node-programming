@@ -13,7 +13,7 @@ import type { UIDefinition, UIComponent } from '../src/types/uiDefinition';
  * Generate a unique ID
  * Browser-compatible UUID v4 generator
  */
-function generateId(): string {
+export function generateId(): string {
   if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
     return window.crypto.randomUUID();
   }
@@ -29,6 +29,9 @@ interface UIBuilderState {
   // UI Definitions
   definitions: UIDefinition[];
   
+  // Version history (Phase 8)
+  versionHistory: Record<string, UIDefinition[]>; // definitionId -> all versions
+  
   // Actions
   createDefinition: (name: string, description?: string) => UIDefinition;
   updateDefinition: (id: string, updates: Partial<UIDefinition>) => void;
@@ -38,6 +41,11 @@ interface UIBuilderState {
   
   // Helper methods
   duplicateDefinition: (id: string) => UIDefinition | undefined;
+  
+  // Versioning (Phase 8)
+  createVersion: (id: string, type: 'major' | 'minor' | 'patch', description?: string) => void;
+  getVersionHistory: (id: string) => UIDefinition[];
+  rollbackToVersion: (id: string, version: string) => boolean;
   
   // Component management (Phase 2)
   addComponent: (definitionId: string, component: UIComponent) => void;
@@ -67,6 +75,7 @@ export const useUIBuilderStore = create<UIBuilderState>()(
   persist(
     (set, get) => ({
       definitions: [],
+      versionHistory: {},
       history: {},
       historyIndex: {},
       copiedComponent: null,
@@ -417,11 +426,93 @@ export const useUIBuilderStore = create<UIBuilderState>()(
         // Save to history
         get().saveToHistory(definitionId);
       },
+
+      // Versioning (Phase 8)
+      createVersion: (id: string, type: 'major' | 'minor' | 'patch', description?: string) => {
+        const state = get();
+        const definition = state.definitions.find((d) => d.id === id);
+        if (!definition) return;
+
+        // Import versioning service dynamically
+        import('../services/versioningService').then(({ createVersion: createVersionFn }) => {
+          const newVersion = createVersionFn(definition, type, description);
+
+          // Save current version to history
+          const history = state.versionHistory[id] || [];
+          set({
+            definitions: state.definitions.map((d) => (d.id === id ? newVersion : d)),
+            versionHistory: {
+              ...state.versionHistory,
+              [id]: [...history, definition],
+            },
+          });
+        });
+      },
+
+      getVersionHistory: (id: string) => {
+        return get().versionHistory[id] || [];
+      },
+
+      rollbackToVersion: (id: string, version: string) => {
+        const state = get();
+        const history = state.versionHistory[id] || [];
+        const targetVersion = history.find((v) => v.version === version);
+        
+        if (!targetVersion) {
+          // Check current definition
+          const current = state.definitions.find((d) => d.id === id);
+          if (current && current.version === version) {
+            return true; // Already at this version
+          }
+          return false;
+        }
+
+        // Create a new version from the rolled back version
+        const rolledBack = {
+          ...targetVersion,
+          updatedAt: new Date().toISOString(),
+        };
+
+        set({
+          definitions: state.definitions.map((d) => (d.id === id ? rolledBack : d)),
+        });
+
+        return true;
+      },
+
+      // Import/Export (Phase 8)
+      importDefinition: (definition: UIDefinition) => {
+        // Generate new IDs for definition and all components
+        const newId = generateId();
+        const componentIdMap = new Map<string, string>();
+        
+        const newDefinition: UIDefinition = {
+          ...definition,
+          id: newId,
+          components: definition.components.map((comp) => {
+            const newCompId = generateId();
+            componentIdMap.set(comp.id, newCompId);
+            return {
+              ...comp,
+              id: newCompId,
+            };
+          }),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        set((state) => ({
+          definitions: [...state.definitions, newDefinition],
+        }));
+
+        return newDefinition;
+      },
     }),
     {
       name: STORAGE_KEY,
       partialize: (state) => ({ 
         definitions: state.definitions,
+        versionHistory: state.versionHistory,
         // Don't persist history and copied component
       }),
     }

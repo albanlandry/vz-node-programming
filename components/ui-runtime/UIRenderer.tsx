@@ -462,37 +462,6 @@ const UIRenderer = forwardRef<{ submit: () => void }, UIRendererProps>(({
     },
   }));
 
-  /**
-   * Get component style (Phase 7)
-   */
-  const getComponentStyle = (component: UIComponent): React.CSSProperties => {
-    const style: React.CSSProperties = {};
-    
-    if (component.style) {
-      const s = component.style;
-      if (s.color) style.color = s.color;
-      if (s.backgroundColor) style.backgroundColor = s.backgroundColor;
-      if (s.border) style.border = s.border;
-      if (s.borderRadius) style.borderRadius = s.borderRadius;
-      if (s.padding) style.padding = s.padding;
-      if (s.margin) style.margin = s.margin;
-      if (s.fontSize) style.fontSize = s.fontSize;
-      if (s.fontWeight) style.fontWeight = s.fontWeight;
-      if (s.fontFamily) style.fontFamily = s.fontFamily;
-      if (s.textAlign) style.textAlign = s.textAlign;
-      if (s.width !== undefined) style.width = typeof s.width === 'number' ? `${s.width}px` : s.width;
-      if (s.height !== undefined) style.height = typeof s.height === 'number' ? `${s.height}px` : s.height;
-      if (s.minWidth !== undefined) style.minWidth = typeof s.minWidth === 'number' ? `${s.minWidth}px` : s.minWidth;
-      if (s.maxWidth !== undefined) style.maxWidth = typeof s.maxWidth === 'number' ? `${s.maxWidth}px` : s.maxWidth;
-      if (s.minHeight !== undefined) style.minHeight = typeof s.minHeight === 'number' ? `${s.minHeight}px` : s.minHeight;
-      if (s.maxHeight !== undefined) style.maxHeight = typeof s.maxHeight === 'number' ? `${s.maxHeight}px` : s.maxHeight;
-      if (s.boxShadow) style.boxShadow = s.boxShadow;
-      if (s.opacity !== undefined) style.opacity = s.opacity;
-    }
-    
-    return style;
-  };
-
   // Get global styles (Phase 7)
   const globalStyle: React.CSSProperties = {
     display: 'flex',
