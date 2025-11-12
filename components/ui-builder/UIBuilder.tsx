@@ -230,7 +230,13 @@ export default function UIBuilder({ definitionId }: UIBuilderProps) {
       </div>
 
       {/* Property Panel */}
-      <PropertyPanel component={selectedComponent} onUpdate={handlePropertyUpdate} />
+      <PropertyPanel 
+        component={selectedComponent} 
+        onUpdate={handlePropertyUpdate}
+        definition={definition}
+        selectedComponentId={selectedComponentId}
+        onComponentSelect={setSelectedComponentId}
+      />
       
       {/* Style Panel (Phase 7) */}
       {showStylePanel && (

@@ -5,19 +5,48 @@
  * 
  * Displays and allows editing of selected component properties
  * Phase 2: Basic property editing
+ * Enhanced with Hierarchy tab
  */
 
-import React from 'react';
-import type { UIComponent } from '../../src/types/uiDefinition';
+import React, { useState } from 'react';
+import type { UIComponent, UIDefinition } from '../../src/types/uiDefinition';
 import ValidationPanel from './ValidationPanel';
+import HierarchyPanel from './HierarchyPanel';
 
 interface PropertyPanelProps {
   component: UIComponent | null;
   onUpdate: (updates: Partial<UIComponent>) => void;
+  definition?: UIDefinition;
+  selectedComponentId?: string | null;
+  onComponentSelect?: (componentId: string | null) => void;
 }
 
-export default function PropertyPanel({ component, onUpdate }: PropertyPanelProps) {
-  if (!component) {
+export default function PropertyPanel({ 
+  component, 
+  onUpdate, 
+  definition,
+  selectedComponentId,
+  onComponentSelect 
+}: PropertyPanelProps) {
+  const [activeTab, setActiveTab] = useState<'properties' | 'hierarchy'>('properties');
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+
+  const handleToggleExpand = (componentId: string) => {
+    setExpandedNodes((prev) => {
+      const next = new Set(prev);
+      if (next.has(componentId)) {
+        next.delete(componentId);
+      } else {
+        next.add(componentId);
+      }
+      return next;
+    });
+  };
+
+  // Show hierarchy tab even when no component is selected
+  if (definition && onComponentSelect) {
+    // Allow showing hierarchy tab even without selected component
+  } else if (!component) {
     return (
       <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full">
         <div className="p-4 border-b border-gray-200">
@@ -40,10 +69,47 @@ export default function PropertyPanel({ component, onUpdate }: PropertyPanelProp
     <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full">
       <div className="p-4 border-b border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900">Properties</h2>
-        <p className="text-xs text-gray-500 mt-1 capitalize">{component.type}</p>
+        {component && (
+          <p className="text-xs text-gray-500 mt-1 capitalize">{component.type}</p>
+        )}
+        
+        {/* Tabs */}
+        <div className="flex gap-1 border border-gray-300 rounded-md overflow-hidden mt-3">
+          <button
+            onClick={() => setActiveTab('properties')}
+            className={`flex-1 px-2 py-1.5 text-xs font-medium transition-colors ${
+              activeTab === 'properties'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            Properties
+          </button>
+          {definition && onComponentSelect && (
+            <button
+              onClick={() => setActiveTab('hierarchy')}
+              className={`flex-1 px-2 py-1.5 text-xs font-medium transition-colors ${
+                activeTab === 'hierarchy'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              Hierarchy
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {activeTab === 'hierarchy' && definition && onComponentSelect ? (
+        <HierarchyPanel
+          definition={definition}
+          selectedComponentId={selectedComponentId || null}
+          onComponentSelect={onComponentSelect}
+          expandedNodes={expandedNodes}
+          onToggleExpand={handleToggleExpand}
+        />
+      ) : activeTab === 'properties' && component ? (
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Common Properties */}
         <div>
           <h3 className="text-sm font-semibold text-gray-700 mb-3">Basic</h3>
@@ -572,7 +638,14 @@ export default function PropertyPanel({ component, onUpdate }: PropertyPanelProp
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      ) : activeTab === 'properties' ? (
+        <div className="flex-1 flex items-center justify-center p-8">
+          <p className="text-sm text-gray-500 text-center">
+            Select a component to edit its properties
+          </p>
+        </div>
+      ) : null}
     </div>
   );
 }
