@@ -155,7 +155,7 @@ Theme support
 Responsive design
 Estimated Time: 2-3 weeks
 
-Phase 8: Advanced Features (Low Priority)
+Phase 8:          c (Low Priority)
 Goal: Power user features
 Components:
 UI Versioning

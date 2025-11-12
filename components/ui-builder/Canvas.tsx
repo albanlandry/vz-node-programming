@@ -345,15 +345,13 @@ export default function Canvas({
         onDrop={(e) => handleDrop(e, isContainer ? component.id : undefined)}
         onDragOver={handleDragOver}
       >
-        {/* Drag handle */}
-        {!isContainer && (
-          <div
-            className="absolute left-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move z-10"
-            onMouseDown={(e) => handleDragStart(e, component)}
-          >
-            <GripVertical className="w-4 h-4 text-gray-400" />
-          </div>
-        )}
+        {/* Drag handle - Allow dragging for all components including layout components */}
+        <div
+          className="absolute left-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move z-10"
+          onMouseDown={(e) => handleDragStart(e, component)}
+        >
+          <GripVertical className="w-4 h-4 text-gray-400" />
+        </div>
 
         {/* Component header */}
         <div className={isContainer ? '' : 'ml-6'}>
