@@ -19,7 +19,8 @@ import {
   Box,
   ChevronRight,
   ChevronLeft,
-  Layout
+  Layout,
+  MousePointerClick
 } from 'lucide-react';
 import { useUIStore } from '../store/uiStore';
 import Tooltip from './Tooltip';
@@ -34,7 +35,7 @@ interface NavItem {
 const nodeRegistryItems: NavItem[] = [
   { href: '/', label: 'Browse Nodes', icon: BookOpen },
   { href: '/custom-nodes', label: 'Custom Nodes', icon: Palette },
-  { href: '/custom-nodes/create', label: 'Create Node', icon: Plus },
+  { href: '/interactive-nodes', label: 'Interactive Nodes', icon: MousePointerClick },
 ];
 
 // Graphs menu items
@@ -47,6 +48,7 @@ const graphItems: NavItem[] = [
 const uiBuilderItems: NavItem[] = [
   { href: '/ui-builder', label: 'UI Builder', icon: Layout },
 ];
+
 
 // Logo Section Component with Tooltip
 function LogoSectionWithTooltip({ 

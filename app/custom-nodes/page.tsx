@@ -15,6 +15,7 @@ import ContentCard from '../../components/layout/ContentCard';
 import EmptyState from '../../components/layout/EmptyState';
 import ErrorAlert from '../../components/layout/ErrorAlert';
 import LoadingState from '../../components/layout/LoadingState';
+import CreateCustomNodeModal from '../../components/custom-nodes/CreateCustomNodeModal';
 
 interface CustomNode {
   id: string;
@@ -34,6 +35,7 @@ export default function CustomNodesPage() {
   const [nodes, setNodes] = useState<CustomNode[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     fetchNodes();
@@ -83,14 +85,22 @@ export default function CustomNodesPage() {
         title="Custom Nodes"
         description="Manage your custom-created nodes"
         action={
-          <Link
-            href="/custom-nodes/create"
+          <button
+            onClick={() => setShowCreateModal(true)}
             className="group p-2 rounded-lg hover:bg-gray-100 transition-colors"
             title="Create New Node"
           >
             <Plus className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
-          </Link>
+          </button>
         }
+      />
+
+      <CreateCustomNodeModal
+        isOpen={showCreateModal}
+        onClose={() => {
+          setShowCreateModal(false);
+          fetchNodes();
+        }}
       />
 
       {error && <ErrorAlert message={error} onRetry={fetchNodes} />}
@@ -105,13 +115,13 @@ export default function CustomNodesPage() {
               description="Create your first custom node to get started"
               icon="🎨"
               action={
-                <Link
-                  href="/custom-nodes/create"
+                <button
+                  onClick={() => setShowCreateModal(true)}
                   className="group p-2 rounded-lg hover:bg-gray-100 transition-colors inline-block"
                   title="Create Your First Node"
                 >
                   <Plus className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
-                </Link>
+                </button>
               }
             />
           ) : (

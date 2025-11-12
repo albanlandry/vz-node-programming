@@ -1,0 +1,83 @@
+{
+  "id": "interactive-1762929560151",
+  "type": "interactive.testinginode",
+  "config": {
+    "name": "TestingInode",
+    "description": "An interesting node",
+    "template": "transform",
+    "expression": "ui",
+    "inputs": [
+      {
+        "id": "content",
+        "name": "Content",
+        "dataType": {
+          "name": "any",
+          "description": "Any type"
+        },
+        "required": false,
+        "description": "Content to display to the user (optional)"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "output",
+        "name": "Textarea 5",
+        "dataType": {
+          "name": "ANY"
+        },
+        "description": "Mapped from Textarea 5"
+      }
+    ],
+    "storageId": "interactive-1762929560151"
+  },
+  "metadata": {
+    "type": "interactive.testinginode",
+    "displayName": "TestingInode",
+    "category": "Interactive",
+    "description": "An interesting node",
+    "version": "1.0.0",
+    "tags": [
+      "interactive",
+      "user-input"
+    ],
+    "template": "transform",
+    "expression": "ui",
+    "inputs": [
+      {
+        "id": "content",
+        "name": "Content",
+        "dataType": {
+          "name": "any",
+          "description": "Any type"
+        },
+        "required": false,
+        "description": "Content to display to the user (optional)"
+      }
+    ],
+    "outputs": [
+      {
+        "id": "output",
+        "name": "Textarea 5",
+        "dataType": {
+          "name": "ANY"
+        },
+        "description": "Mapped from Textarea 5"
+      }
+    ],
+    "createdAt": "2025-11-12T06:39:20.081Z",
+    "updatedAt": "2025-11-12T06:39:20.165Z",
+    "uiConfig": {
+      "uiDefinitionId": "afef54ba-772e-4b6c-9ea8-6ebaf267a2eb",
+      "outputMapping": {
+        "fieldToPort": {
+          "textarea_4": "output"
+        },
+        "transformations": {},
+        "conditionalRules": [],
+        "filters": {}
+      },
+      "validateBeforeSubmit": true
+    },
+    "storageId": "interactive-1762929560151"
+  }
+}

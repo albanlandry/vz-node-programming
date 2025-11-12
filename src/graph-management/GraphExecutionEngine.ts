@@ -9,6 +9,7 @@ import { NodeRegistry } from '../registry/NodeRegistry';
 import { GraphSerializer } from '../serialization/GraphSerializer';
 import { logger } from '../utils/Logger';
 import { registerBuiltInNodes } from '../index';
+import { CustomNodeManager } from '../custom-nodes/CustomNodeManager';
 import type {
   GraphDefinition,
   ExecutionRequest,
@@ -27,6 +28,7 @@ import type { GraphNode, GraphConnection } from '../../store/graphStore';
 export class GraphExecutionEngine {
   private registry: NodeRegistry;
   private serializer: GraphSerializer;
+  private customNodesLoaded: Promise<void>;
 
   constructor() {
     this.registry = NodeRegistry.getInstance();
@@ -36,7 +38,25 @@ export class GraphExecutionEngine {
       registerBuiltInNodes();
     }
 
+    // Load custom nodes from storage (including interactive nodes)
+    // This ensures all custom nodes are available during execution
+    this.customNodesLoaded = this.loadCustomNodes();
+
     this.serializer = new GraphSerializer();
+  }
+
+  /**
+   * Load custom nodes from storage
+   * This ensures all custom nodes (including interactive nodes) are available
+   */
+  private async loadCustomNodes(): Promise<void> {
+    try {
+      await CustomNodeManager.loadAllFromStorage();
+      logger.debug('Custom nodes loaded successfully');
+    } catch (error) {
+      logger.warn('Failed to load custom nodes from storage:', error);
+      // Don't throw - execution can continue without custom nodes
+    }
   }
 
   /**
@@ -46,6 +66,9 @@ export class GraphExecutionEngine {
     graph: GraphDefinition,
     request: ExecutionRequest = {},
   ): Promise<ExecutionResponse> {
+    // Ensure custom nodes are loaded before execution
+    await this.customNodesLoaded;
+
     const startTime = Date.now();
     const logs: string[] = [];
     const errors: NodeError[] = [];
@@ -151,6 +174,9 @@ export class GraphExecutionEngine {
    * Build NodeExecutor from graph definition
    */
   public async buildExecutor(graph: GraphDefinition): Promise<NodeExecutor> {
+    // Ensure custom nodes are loaded before building executor
+    await this.customNodesLoaded;
+
     const executor = new NodeExecutor();
 
     // Create nodes from graph definition
