@@ -68,7 +68,8 @@ interface UIBuilderState {
   // Copy/paste
   copiedComponent: UIComponent | null;
   copyComponent: (definitionId: string, componentId: string) => void;
-  pasteComponent: (definitionId: string, afterComponentId?: string) => void;
+  pasteComponent: (definitionId: string, afterComponentId?: string, parentId?: string) => void;
+  duplicateComponent: (definitionId: string, componentId: string, parentId?: string) => void;
 }
 
 const STORAGE_KEY = 'vz-ui-builder-definitions';
@@ -499,8 +500,9 @@ export const useUIBuilderStore = create<UIBuilderState>()(
 
       /**
        * Paste a copied component (Phase 4)
+       * Enhanced to support parentId for pasting into containers
        */
-      pasteComponent: (definitionId: string, afterComponentId?: string) => {
+      pasteComponent: (definitionId: string, afterComponentId?: string, parentId?: string) => {
         const state = get();
         const copied = state.copiedComponent;
         if (!copied) return;
@@ -521,20 +523,60 @@ export const useUIBuilderStore = create<UIBuilderState>()(
           const definition = s.definitions.find((d) => d.id === definitionId);
           if (!definition) return s;
 
-          let newComponents: UIComponent[];
-          if (afterComponentId) {
-            const index = definition.components.findIndex((c) => c.id === afterComponentId);
-            if (index >= 0) {
-              newComponents = [
-                ...definition.components.slice(0, index + 1),
-                newComponent,
-                ...definition.components.slice(index + 1),
-              ];
-            } else {
-              newComponents = [...definition.components, newComponent];
+          // Add component to the components array
+          const updatedComponents = [...definition.components, newComponent];
+
+          // If parentId is provided, add component to parent's children array
+          if (parentId) {
+            const parent = updatedComponents.find((c) => c.id === parentId);
+            if (parent && (parent.type === 'container' || parent.type === 'row' || parent.type === 'column')) {
+              const parentWithChildren = parent as UIComponent & { children?: string[] };
+              if (!parentWithChildren.children) {
+                parentWithChildren.children = [];
+              }
+              // If afterComponentId is provided and it's a child of the parent, insert after it
+              if (afterComponentId) {
+                const afterIndex = parentWithChildren.children.indexOf(afterComponentId);
+                if (afterIndex >= 0) {
+                  parentWithChildren.children.splice(afterIndex + 1, 0, newComponent.id);
+                } else {
+                  parentWithChildren.children.push(newComponent.id);
+                }
+              } else {
+                parentWithChildren.children.push(newComponent.id);
+              }
             }
           } else {
-            newComponents = [...definition.components, newComponent];
+            // If no parentId, handle root-level pasting
+            let newComponents: UIComponent[];
+            if (afterComponentId) {
+              const index = updatedComponents.findIndex((c) => c.id === afterComponentId);
+              if (index >= 0) {
+                // Remove from end and insert at correct position
+                updatedComponents.pop(); // Remove the component we just added
+                newComponents = [
+                  ...updatedComponents.slice(0, index + 1),
+                  newComponent,
+                  ...updatedComponents.slice(index + 1),
+                ];
+              } else {
+                newComponents = updatedComponents;
+              }
+            } else {
+              newComponents = updatedComponents;
+            }
+
+            return {
+              definitions: s.definitions.map((def) =>
+                def.id === definitionId
+                  ? {
+                      ...def,
+                      components: newComponents,
+                      updatedAt: new Date().toISOString(),
+                    }
+                  : def
+              ),
+            };
           }
 
           return {
@@ -542,10 +584,73 @@ export const useUIBuilderStore = create<UIBuilderState>()(
               def.id === definitionId
                 ? {
                     ...def,
-                    components: newComponents,
+                    components: updatedComponents,
                     updatedAt: new Date().toISOString(),
                   }
                 : def
+            ),
+          };
+        });
+
+        // Save to history
+        get().saveToHistory(definitionId);
+      },
+
+      /**
+       * Duplicate a component (creates a copy with new ID)
+       */
+      duplicateComponent: (definitionId: string, componentId: string, parentId?: string) => {
+        const state = get();
+        const definition = state.definitions.find((d) => d.id === definitionId);
+        if (!definition) return;
+
+        const component = definition.components.find((c) => c.id === componentId);
+        if (!component) return;
+
+        // Deep clone component
+        const duplicated = JSON.parse(JSON.stringify(component));
+        duplicated.id = generateId();
+        duplicated.name = `${component.name}_copy`;
+
+        // Remove children for container types (will be empty)
+        if (duplicated.type === 'container' || duplicated.type === 'row' || duplicated.type === 'column') {
+          duplicated.children = [];
+        }
+
+        set((s) => {
+          const def = s.definitions.find((d) => d.id === definitionId);
+          if (!def) return s;
+
+          // Add component to the components array
+          const updatedComponents = [...def.components, duplicated];
+
+          // If parentId is provided, add component to parent's children array
+          if (parentId) {
+            const parent = updatedComponents.find((c) => c.id === parentId);
+            if (parent && (parent.type === 'container' || parent.type === 'row' || parent.type === 'column')) {
+              const parentWithChildren = parent as UIComponent & { children?: string[] };
+              if (!parentWithChildren.children) {
+                parentWithChildren.children = [];
+              }
+              // Find the original component's position in parent's children
+              const originalIndex = parentWithChildren.children.indexOf(componentId);
+              if (originalIndex >= 0) {
+                parentWithChildren.children.splice(originalIndex + 1, 0, duplicated.id);
+              } else {
+                parentWithChildren.children.push(duplicated.id);
+              }
+            }
+          }
+
+          return {
+            definitions: s.definitions.map((d) =>
+              d.id === definitionId
+                ? {
+                    ...d,
+                    components: updatedComponents,
+                    updatedAt: new Date().toISOString(),
+                  }
+                : d
             ),
           };
         });

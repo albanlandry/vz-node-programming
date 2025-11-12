@@ -19,6 +19,11 @@ interface PropertyPanelProps {
   definition?: UIDefinition;
   selectedComponentId?: string | null;
   onComponentSelect?: (componentId: string | null) => void;
+  onCopy?: (componentId: string) => void;
+  onPaste?: (afterComponentId?: string, parentId?: string) => void;
+  onDelete?: (componentId: string) => void;
+  onDuplicate?: (componentId: string, parentId?: string) => void;
+  hasCopiedComponent?: boolean;
 }
 
 export default function PropertyPanel({ 
@@ -26,7 +31,12 @@ export default function PropertyPanel({
   onUpdate, 
   definition,
   selectedComponentId,
-  onComponentSelect 
+  onComponentSelect,
+  onCopy,
+  onPaste,
+  onDelete,
+  onDuplicate,
+  hasCopiedComponent,
 }: PropertyPanelProps) {
   const [activeTab, setActiveTab] = useState<'properties' | 'hierarchy'>('properties');
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
@@ -107,6 +117,11 @@ export default function PropertyPanel({
           onComponentSelect={onComponentSelect}
           expandedNodes={expandedNodes}
           onToggleExpand={handleToggleExpand}
+          onCopy={onCopy}
+          onPaste={onPaste}
+          onDelete={onDelete}
+          onDuplicate={onDuplicate}
+          hasCopiedComponent={hasCopiedComponent}
         />
       ) : activeTab === 'properties' && component ? (
         <div className="flex-1 overflow-y-auto p-4 space-y-4">

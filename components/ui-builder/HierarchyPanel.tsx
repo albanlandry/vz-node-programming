@@ -7,7 +7,7 @@
  */
 
 import React, { useMemo, useCallback } from 'react';
-import { ChevronRight, ChevronDown, Box, Rows, Columns } from 'lucide-react';
+import { ChevronRight, ChevronDown, Box, Rows, Columns, Copy, Trash2, Files, Clipboard } from 'lucide-react';
 import type { UIComponent, UIDefinition } from '../../src/types/uiDefinition';
 
 interface HierarchyPanelProps {
@@ -16,6 +16,11 @@ interface HierarchyPanelProps {
   onComponentSelect: (componentId: string | null) => void;
   expandedNodes: Set<string>;
   onToggleExpand: (componentId: string) => void;
+  onCopy?: (componentId: string) => void;
+  onPaste?: (afterComponentId?: string, parentId?: string) => void;
+  onDelete?: (componentId: string) => void;
+  onDuplicate?: (componentId: string, parentId?: string) => void;
+  hasCopiedComponent?: boolean;
 }
 
 interface TreeNodeProps {
@@ -26,6 +31,12 @@ interface TreeNodeProps {
   expandedNodes: Set<string>;
   onToggleExpand: (componentId: string) => void;
   level: number;
+  parentId?: string;
+  onCopy?: (componentId: string) => void;
+  onPaste?: (afterComponentId?: string, parentId?: string) => void;
+  onDelete?: (componentId: string) => void;
+  onDuplicate?: (componentId: string, parentId?: string) => void;
+  hasCopiedComponent?: boolean;
 }
 
 /**
@@ -78,6 +89,12 @@ function TreeNode({
   expandedNodes,
   onToggleExpand,
   level,
+  parentId,
+  onCopy,
+  onPaste,
+  onDelete,
+  onDuplicate,
+  hasCopiedComponent,
 }: TreeNodeProps) {
   const isSelected = selectedComponentId === component.id;
   const hasChildren = isContainer(component);
@@ -97,11 +114,51 @@ function TreeNode({
     [component.id, onToggleExpand]
   );
 
+  const handleCopy = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (onCopy) {
+        onCopy(component.id);
+      }
+    },
+    [component.id, onCopy]
+  );
+
+  const handlePaste = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (onPaste) {
+        onPaste(component.id, hasChildren ? component.id : parentId);
+      }
+    },
+    [component.id, parentId, hasChildren, onPaste]
+  );
+
+  const handleDelete = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (onDelete && confirm(`Are you sure you want to delete "${component.label || component.name || component.type}"?`)) {
+        onDelete(component.id);
+      }
+    },
+    [component.id, component.label, component.name, component.type, onDelete]
+  );
+
+  const handleDuplicate = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (onDuplicate) {
+        onDuplicate(component.id, parentId);
+      }
+    },
+    [component.id, parentId, onDuplicate]
+  );
+
   return (
     <div>
       <div
         className={`
-          flex items-center gap-1 px-2 py-1.5 rounded cursor-pointer transition-colors
+          group flex items-center gap-1 px-2 py-1.5 rounded cursor-pointer transition-colors
           ${isSelected ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100 text-gray-700'}
         `}
         style={{ paddingLeft: `${8 + level * 16}px` }}
@@ -130,6 +187,46 @@ function TreeNode({
         <span className="text-xs text-gray-400 uppercase flex-shrink-0">
           {component.type}
         </span>
+        
+        {/* Action buttons - visible on hover */}
+        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          {onCopy && (
+            <button
+              onClick={handleCopy}
+              className="p-1 hover:bg-blue-100 rounded transition-colors"
+              title="Copy (Ctrl+C)"
+            >
+              <Copy className="w-3 h-3 text-blue-600" />
+            </button>
+          )}
+          {onPaste && hasCopiedComponent && (
+            <button
+              onClick={handlePaste}
+              className="p-1 hover:bg-green-100 rounded transition-colors"
+              title="Paste (Ctrl+V)"
+            >
+              <Clipboard className="w-3 h-3 text-green-600" />
+            </button>
+          )}
+          {onDuplicate && (
+            <button
+              onClick={handleDuplicate}
+              className="p-1 hover:bg-purple-100 rounded transition-colors"
+              title="Duplicate"
+            >
+              <Files className="w-3 h-3 text-purple-600" />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={handleDelete}
+              className="p-1 hover:bg-red-100 rounded transition-colors"
+              title="Delete (Del)"
+            >
+              <Trash2 className="w-3 h-3 text-red-600" />
+            </button>
+          )}
+        </div>
       </div>
       {hasChildren && isExpanded && (
         <div>
@@ -144,6 +241,12 @@ function TreeNode({
                 expandedNodes={expandedNodes}
                 onToggleExpand={onToggleExpand}
                 level={level + 1}
+                parentId={component.id}
+                onCopy={onCopy}
+                onPaste={onPaste}
+                onDelete={onDelete}
+                onDuplicate={onDuplicate}
+                hasCopiedComponent={hasCopiedComponent}
               />
             ))
           ) : (
@@ -166,6 +269,11 @@ export default function HierarchyPanel({
   onComponentSelect,
   expandedNodes,
   onToggleExpand,
+  onCopy,
+  onPaste,
+  onDelete,
+  onDuplicate,
+  hasCopiedComponent,
 }: HierarchyPanelProps) {
   // Get root components (not nested in containers)
   const rootComponents = useMemo(() => {
@@ -199,6 +307,11 @@ export default function HierarchyPanel({
               expandedNodes={expandedNodes}
               onToggleExpand={onToggleExpand}
               level={0}
+              onCopy={onCopy}
+              onPaste={onPaste}
+              onDelete={onDelete}
+              onDuplicate={onDuplicate}
+              hasCopiedComponent={hasCopiedComponent}
             />
           ))}
         </div>

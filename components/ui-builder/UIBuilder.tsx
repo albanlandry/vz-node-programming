@@ -36,6 +36,8 @@ export default function UIBuilder({ definitionId }: UIBuilderProps) {
     canRedo,
     copyComponent,
     pasteComponent,
+    duplicateComponent,
+    copiedComponent,
     updateDefinition,
   } = useUIBuilderStore();
   const [selectedComponentId, setSelectedComponentId] = useState<string | null>(null);
@@ -138,11 +140,19 @@ export default function UIBuilder({ definitionId }: UIBuilderProps) {
   );
 
   const handlePaste = useCallback(
-    (afterComponentId?: string) => {
-      pasteComponent(definitionId, afterComponentId);
+    (afterComponentId?: string, parentId?: string) => {
+      pasteComponent(definitionId, afterComponentId, parentId);
       saveToHistory(definitionId);
     },
     [definitionId, pasteComponent, saveToHistory]
+  );
+
+  const handleDuplicate = useCallback(
+    (componentId: string, parentId?: string) => {
+      duplicateComponent(definitionId, componentId, parentId);
+      saveToHistory(definitionId);
+    },
+    [definitionId, duplicateComponent, saveToHistory]
   );
 
   return (
@@ -236,6 +246,11 @@ export default function UIBuilder({ definitionId }: UIBuilderProps) {
         definition={definition}
         selectedComponentId={selectedComponentId}
         onComponentSelect={setSelectedComponentId}
+        onCopy={handleCopy}
+        onPaste={handlePaste}
+        onDelete={handleComponentDelete}
+        onDuplicate={handleDuplicate}
+        hasCopiedComponent={!!copiedComponent}
       />
       
       {/* Style Panel (Phase 7) */}
