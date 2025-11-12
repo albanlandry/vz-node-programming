@@ -7,7 +7,8 @@
  * Phase 2: List, manage, and edit UI definitions with visual builder
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useUIBuilderStore } from '../../store/uiBuilderStore';
 import { Plus, Trash2, Copy, Eye, FileText, Edit2, ArrowLeft, History, Download, Layers, X, Tag } from 'lucide-react';
 import UIRenderer from '../../components/ui-runtime/UIRenderer';
@@ -20,6 +21,8 @@ import { exportUIDefinition, downloadUIDefinition, readUIDefinitionFromFile } fr
 import type { UIDefinition, FormData } from '../../src/types/uiDefinition';
 
 export default function UIBuilderPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { definitions, createDefinition, deleteDefinition, duplicateDefinition, getDefinition, createVersion, importDefinition } =
     useUIBuilderStore();
   const [selectedDefinition, setSelectedDefinition] = useState<UIDefinition | null>(null);
@@ -30,6 +33,37 @@ export default function UIBuilderPage() {
   const [showTemplates, setShowTemplates] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
+  // Load definition from URL on mount or when URL changes
+  useEffect(() => {
+    const definitionId = searchParams.get('id');
+    if (definitionId) {
+      const definition = getDefinition(definitionId);
+      if (definition) {
+        setSelectedDefinition(definition);
+        const editParam = searchParams.get('edit');
+        if (editParam === 'true') {
+          setEditMode(true);
+        }
+      }
+    }
+  }, [searchParams, getDefinition]);
+
+  // Update URL when definition or edit mode changes
+  useEffect(() => {
+    if (selectedDefinition) {
+      const params = new URLSearchParams();
+      params.set('id', selectedDefinition.id);
+      if (editMode) {
+        params.set('edit', 'true');
+      }
+      const newUrl = `/ui-builder?${params.toString()}`;
+      router.replace(newUrl, { scroll: false });
+    } else {
+      // Clear URL params if no definition selected
+      router.replace('/ui-builder', { scroll: false });
+    }
+  }, [selectedDefinition, editMode, router]);
+
   const handleCreateNew = () => {
     setShowCreateModal(true);
   };
@@ -37,6 +71,7 @@ export default function UIBuilderPage() {
   const handleCreateSubmit = (name: string, description: string) => {
     const newDef = createDefinition(name, description);
     setSelectedDefinition(newDef);
+    setEditMode(true);
   };
 
   const handleDelete = (id: string) => {

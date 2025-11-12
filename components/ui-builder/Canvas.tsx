@@ -329,7 +329,7 @@ export default function Canvas({
           ${isResizing ? 'border-purple-500' : ''}
         `}
         style={{
-          width: component.width ? (typeof component.width === 'number' ? `${component.width}px` : component.width) : undefined,
+          width: component.width ? (typeof component.width === 'number' ? `${component.width}px` : component.width) : (parentId ? '100%' : undefined),
           height: component.height ? (typeof component.height === 'number' ? `${component.height}px` : component.height) : undefined,
           margin: component.margin,
           padding: component.padding,
@@ -341,6 +341,10 @@ export default function Canvas({
           flexDirection: component.type === 'row' ? 'row' : component.type === 'column' ? 'column' : undefined,
           gap: containerComponent && (component.type === 'row' || component.type === 'column') ? `${(component as any).gap || 8}px` : undefined,
           padding: containerComponent ? (component as any).padding || '8px' : undefined,
+          alignItems: isContainer && (component.type === 'row' || component.type === 'column') ? (component.type === 'row' ? 'baseline' : 'stretch') : undefined,
+          alignContent: isContainer && (component.type === 'row' || component.type === 'column') ? 'stretch' : undefined,
+          flex: parentId && !component.width ? (component.type === 'row' ? '1 1 0' : '1 1 auto') : undefined,
+          minWidth: parentId && component.type === 'row' ? 0 : undefined,
         }}
         onDrop={(e) => handleDrop(e, isContainer ? component.id : undefined)}
         onDragOver={handleDragOver}
@@ -392,13 +396,18 @@ export default function Canvas({
           {/* Container children */}
           {isContainer && (
             <div
-              className={`min-h-[60px] space-y-2 ${
+              className={`min-h-[60px] ${
                 childComponents.length === 0 ? 'border-2 border-dashed border-gray-300 rounded p-4' : ''
               }`}
               style={{
                 display: 'flex',
                 flexDirection: component.type === 'row' ? 'row' : 'column',
                 gap: `${(component as any).gap || 8}px`,
+                alignItems: component.type === 'row' ? 'baseline' : 'stretch',
+                alignContent: 'stretch',
+                minHeight: '100%',
+                width: '100%',
+                flex: '1 1 auto',
               }}
             >
               {childComponents.map((child, childIndex) => renderComponent(child, childIndex, component.id))}
