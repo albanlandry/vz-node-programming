@@ -1,3 +1,6 @@
+/* eslint-disable max-depth */
+/* eslint-disable complexity */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable max-lines-per-function */
 'use client';
 

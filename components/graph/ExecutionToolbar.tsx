@@ -339,53 +339,53 @@ export default function ExecutionToolbar() {
     const result = await graphExecutionService.executeGraph(
       graphDefinition,
       inputConfig,
-        { parallel: executionMode === 'parallel' },
-      );
+      { parallel: executionMode === 'parallel' },
+    );
 
-      // Update execution state with results
-      if (result.results) {
-        // Convert SerializedExecutionResult to ExecutionResult
-        const executionResults: Record<string, ExecutionResult> = {};
-        Object.entries(result.results).forEach(([nodeId, serializedResult]) => {
-          executionResults[nodeId] = deserializeResult(serializedResult);
-        });
-        setExecutionResults(executionResults);
+    // Update execution state with results
+    if (result.results) {
+      // Convert SerializedExecutionResult to ExecutionResult
+      const executionResults: Record<string, ExecutionResult> = {};
+      Object.entries(result.results).forEach(([nodeId, serializedResult]) => {
+        executionResults[nodeId] = deserializeResult(serializedResult);
+      });
+      setExecutionResults(executionResults);
         
-        // Update node states based on results
-        Object.entries(executionResults).forEach(([nodeId, execResult]) => {
-          if (execResult.success) {
-            updateNodeExecutionState(nodeId, {
-              status: 'completed',
-              endTime: Date.now(),
-              executionTime: execResult.executionTime,
-            });
-          } else {
-            updateNodeExecutionState(nodeId, {
-              status: 'failed',
-              endTime: Date.now(),
-              executionTime: execResult.executionTime,
-              error: execResult.error,
-            });
-          }
-        });
-      }
+      // Update node states based on results
+      Object.entries(executionResults).forEach(([nodeId, execResult]) => {
+        if (execResult.success) {
+          updateNodeExecutionState(nodeId, {
+            status: 'completed',
+            endTime: Date.now(),
+            executionTime: execResult.executionTime,
+          });
+        } else {
+          updateNodeExecutionState(nodeId, {
+            status: 'failed',
+            endTime: Date.now(),
+            executionTime: execResult.executionTime,
+            error: execResult.error,
+          });
+        }
+      });
+    }
 
-      // Set errors if any
-      if (result.errors && result.errors.length > 0) {
-        const errorsMap: Record<string, NodeError> = {};
-        result.errors.forEach((error) => {
-          if (error.nodeId) {
-            errorsMap[error.nodeId] = error;
-          }
-        });
-        setExecutionErrors(errorsMap);
-      }
+    // Set errors if any
+    if (result.errors && result.errors.length > 0) {
+      const errorsMap: Record<string, NodeError> = {};
+      result.errors.forEach((error) => {
+        if (error.nodeId) {
+          errorsMap[error.nodeId] = error;
+        }
+      });
+      setExecutionErrors(errorsMap);
+    }
 
-      // Set execution time
-      setExecutionTime(result.executionTime);
+    // Set execution time
+    setExecutionTime(result.executionTime);
 
-      // Stop execution
-      stopExecution();
+    // Stop execution
+    stopExecution();
   };
 
   /**

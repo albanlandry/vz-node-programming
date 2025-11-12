@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Node Execution Flow - VZ Programming Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .flow-diagram {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .flow-step {
+            background: white;
+            border: 2px solid #4a90e2;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .flow-step.frontend {
+            border-color: #28a745;
+            background: #f0fff4;
+        }
+        .flow-step.backend {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+        .flow-step::before {
+            content: attr(data-step);
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: #4a90e2;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .flow-step.frontend::before {
+            background: #28a745;
+        }
+        .flow-step.backend::before {
+            background: #dc3545;
+        }
+        .arrow {
+            text-align: center;
+            font-size: 24px;
+            color: #4a90e2;
+            margin: 5px 0;
+        }
+        .arrow.down::after {
+            content: "↓";
+        }
+        .arrow.bidirectional::after {
+            content: "⇄";
+        }
+        .sequence-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .sequence-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sequence-actor {
+            min-width: 120px;
+            font-weight: bold;
+            text-align: right;
+        }
+        .sequence-message {
+            flex: 1;
+            padding: 8px 15px;
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            border-radius: 4px;
+        }
+        .sequence-message.request {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+        .sequence-message.response {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+        }
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .code-block code {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .highlight-box {
+            background: #fff9c4;
+            border-left: 4px solid #fbc02d;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .warning-box {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .phase-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        .phase-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4a90e2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Documentation</h2>
+            <ul class="nav-menu">
+                <li class="nav-group">
+                    <div class="nav-group-header">Getting Started</div>
+                    <ul class="nav-submenu">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="node-library.html">Node Library</a></li>
+                    </ul>
+                </li>
+                <li class="nav-group">
+                    <div class="nav-group-header">Core Systems</div>
+                    <ul class="nav-submenu">
+                        <li><a href="NODE-REGISTRY.html">Node Registry</a></li>
+                        <li><a href="FEATURES-SUMMARY.html">Features Summary</a></li>
+                    </ul>
+                </li>
+                <li class="nav-group">
+                    <div class="nav-group-header">Custom Nodes</div>
+                    <ul class="nav-submenu">
+                        <li><a href="CUSTOM-NODE-SYSTEM-PROPOSAL.html">System Proposal</a></li>
+                        <li><a href="CUSTOM-NODES-DESIGN.html">Design</a></li>
+                        <li><a href="CUSTOM-NODES-IMPLEMENTATION.html">Implementation</a></li>
+                        <li><a href="CUSTOM-NODES-SUMMARY.html">Summary</a></li>
+                    </ul>
+                </li>
+                <li class="nav-group">
+                    <div class="nav-group-header">Graph Editor</div>
+                    <ul class="nav-submenu">
+                        <li><a href="GRAPH-EDITOR.html">Overview</a></li>
+                        <li><a href="GRAPH-EDITOR-IMPLEMENTATION.html">Implementation</a></li>
+                        <li><a href="GRAPH-EDITOR-REACT-FLOW.html">React Flow Migration</a></li>
+                        <li><a href="GRAPH-EDITOR-SUMMARY.html">Quick Start</a></li>
+                        <li><a href="GRAPH-EXECUTE-PAGE.html">Execute Page</a></li>
+                        <li><a href="GRAPH-MANAGEMENT-SYSTEM.html">Management System</a></li>
+                        <li><a href="GRAPHS-PAGE-IMPROVEMENTS.html">Improvements</a></li>
+                    </ul>
+                </li>
+                <li class="nav-group">
+                    <div class="nav-group-header">Interactive Nodes</div>
+                    <ul class="nav-submenu">
+                        <li><a href="INTERACTIVE-NODES-PROPOSAL.html">Proposal</a></li>
+                        <li><a href="implementations/interactive-node.html">Implementation</a></li>
+                        <li><a href="INTERACTIVE-NODE-EXECUTION-FLOW.html" class="active">Execution Flow</a></li>
+                    </ul>
+                </li>
+                <li class="nav-group">
+                    <div class="nav-group-header">Live Execution</div>
+                    <ul class="nav-submenu">
+                        <li><a href="LIVE-GRAPH-EXECUTION-PROPOSAL.html">Proposal</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE1-IMPLEMENTATION.html">Phase 1</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-DESIGN.html">Phase 2 - Design</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html">Phase 2 - Implementation</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-COMPLETE.html">Phase 2 - Complete</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-DESIGN.html">Phase 3 - Design</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-IMPLEMENTATION.html">Phase 3 - Implementation</a></li>
+                        <li><a href="LIVE-GRAPH-EXECUTION-PHASE3-COMPLETE.html">Phase 3 - Complete</a></li>
+                    </ul>
+                </li>
+                <li class="nav-group">
+                    <div class="nav-group-header">Error Handling & Logging</div>
+                    <ul class="nav-submenu">
+                        <li><a href="ERROR-HANDLING.html">Error Handling</a></li>
+                        <li><a href="ERROR-HANDLING-SUMMARY.html">Error Handling Summary</a></li>
+                        <li><a href="LOGGING.html">Logging</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="content-wrapper">
+            <div class="content">
+                <h1>Interactive Node Execution Flow</h1>
+                <p><strong>Last Updated:</strong> 2025-01-07</p>
+                <p>This document provides a comprehensive, detailed explanation of the interactive node execution process between the frontend and backend, including complete flow diagrams and implementation details.</p>
+
+                <div class="info-box">
+                    <strong>📋 Overview:</strong> Interactive nodes allow graph execution to pause and request user input, display images, or stream data in real-time. This document explains the complete end-to-end flow from execution initiation to completion.
+                </div>
+
+                <h2>Table of Contents</h2>
+                <ol>
+                    <li><a href="#phase1">Phase 1: Execution Initiation</a></li>
+                    <li><a href="#phase2">Phase 2: Backend Execution Setup</a></li>
+                    <li><a href="#phase3">Phase 3: Interactive Node Execution</a></li>
+                    <li><a href="#phase4">Phase 4: Frontend UI Display</a></li>
+                    <li><a href="#phase5">Phase 5: User Input Submission</a></li>
+                    <li><a href="#phase6">Phase 6: Execution Continuation</a></li>
+                    <li><a href="#critical-details">Critical Implementation Details</a></li>
+                    <li><a href="#sequence-diagram">Complete Sequence Diagram</a></li>
+                </ol>
+
+                <div id="phase1" class="phase-section">
+                    <h2 class="phase-title">Phase 1: Execution Initiation (Frontend → Backend)</h2>
+
+                    <div class="flow-step frontend" data-step="Step 1">
+                        <h3>1. User Triggers Execution</h3>
+                        <p>User clicks the "Execute" button in the <code>ExecutionToolbar</code> component.</p>
+                        <ul>
+                            <li>Component: <code>components/graph/ExecutionToolbar.tsx</code></li>
+                            <li>Function: <code>handleStreamingExecution()</code></li>
+                            <li>Action: Collects graph definition, inputs, and execution options</li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step frontend" data-step="Step 2">
+                        <h3>2. Frontend Establishes SSE Connection</h3>
+                        <p><code>StreamingExecutionService.executeStream()</code> is called:</p>
+                        <div class="code-block">
+                            <code>POST /api/graphs/execute-stream
+Content-Type: application/json
+
+{
+  "graph": { /* GraphDefinition */ },
+  "inputs": { /* Optional initial inputs */ },
+  "options": { /* Execution options */ }
+}</code>
+                        </div>
+                        <ul>
+                            <li>Service: <code>services/streamingExecutionService.ts</code></li>
+                            <li>Response: <code>ReadableStream</code> for Server-Sent Events (SSE)</li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step frontend" data-step="Step 3">
+                        <h3>3. Frontend Starts Reading SSE Stream</h3>
+                        <p>The frontend continuously reads from the stream:</p>
+                        <ul>
+                            <li>Uses <code>response.body.getReader()</code> to read chunks</li>
+                            <li>Decodes bytes using <code>TextDecoder</code></li>
+                            <li>Parses SSE format: <code>event: &lt;type&gt;\ndata: &lt;json&gt;\n\n</code></li>
+                            <li>Emits events to registered listeners via <code>streamingExecutionService.emit()</code></li>
+                        </ul>
+                        <div class="code-block">
+                            <code>// Example SSE event format
+event: execution:started
+data: {"executionId":"exec-1234567890-abc","timestamp":1234567890}
+
+event: node:executing
+data: {"nodeId":"node-1","executionId":"exec-1234567890-abc"}</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="phase2" class="phase-section">
+                    <h2 class="phase-title">Phase 2: Backend Execution Setup</h2>
+
+                    <div class="flow-step backend" data-step="Step 4">
+                        <h3>4. Backend Creates Execution Context</h3>
+                        <p>The <code>POST /api/graphs/execute-stream</code> handler starts:</p>
+                        <ul>
+                            <li>Generates unique <code>executionId</code>: <code>exec-${Date.now()}-${random}</code></li>
+                            <li>Creates <code>GraphExecutionEngine</code> instance</li>
+                            <li>Calls <code>engine.buildExecutor(graph)</code> to build the executor</li>
+                        </ul>
+                        <div class="code-block">
+                            <code>let executionId = `exec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+const engine = new GraphExecutionEngine();
+const executor = await engine.buildExecutor(graph);</code>
+                        </div>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 5">
+                        <h3>5. Executor Registration (Critical Timing)</h3>
+                        <div class="warning-box">
+                            <strong>⚠️ Critical:</strong> Executor must be registered BEFORE sending <code>execution:started</code> event to ensure it's available when client receives the <code>executionId</code>.
+                        </div>
+                        <p>Executor is registered in <code>activeExecutors</code> Map:</p>
+                        <ul>
+                            <li>Key: <code>executionId</code></li>
+                            <li>Value: <code>NodeExecutor</code> instance</li>
+                        </ul>
+                        <div class="code-block">
+                            <code>// Register executor BEFORE sending execution:started
+registerExecutor(executionId, executor);</code>
+                        </div>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 6">
+                        <h3>6. Backend Sends execution:started Event</h3>
+                        <p>SSE event sent to frontend:</p>
+                        <div class="code-block">
+                            <code>event: execution:started
+data: {
+  "executionId": "exec-1234567890-abc",
+  "timestamp": 1234567890
+}</code>
+                        </div>
+                        <p>Frontend receives this and stores the <code>executionId</code> for later use.</p>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 7">
+                        <h3>7. Backend Sets Up Event Listeners</h3>
+                        <p>Registers listeners on the executor for various event types:</p>
+                        <ul>
+                            <li><code>NodeEventType.EXECUTION_STARTED</code></li>
+                            <li><code>NodeEventType.EXECUTION_COMPLETED</code></li>
+                            <li><code>NodeEventType.EXECUTION_FAILED</code></li>
+                            <li><code>InteractiveNodeEventType.USER_INPUT_REQUESTED</code></li>
+                            <li><code>InteractiveNodeEventType.USER_INPUT_RECEIVED</code></li>
+                            <li><code>InteractiveNodeEventType.NODE_PAUSED</code></li>
+                            <li><code>InteractiveNodeEventType.NODE_RESUMED</code></li>
+                        </ul>
+                        <p>Each listener forwards events as SSE to the frontend.</p>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 8">
+                        <h3>8. Backend Begins Graph Execution</h3>
+                        <p>Calls either:</p>
+                        <ul>
+                            <li><code>executor.execute(initialInputs)</code> - Sequential execution</li>
+                            <li><code>executor.executeParallel(initialInputs)</code> - Parallel execution</li>
+                        </ul>
+                        <p>The executor processes nodes in topological order (sequential) or concurrently (parallel).</p>
+                    </div>
+                </div>
+
+                <div id="phase3" class="phase-section">
+                    <h2 class="phase-title">Phase 3: Interactive Node Execution (Backend)</h2>
+
+                    <div class="flow-step backend" data-step="Step 9">
+                        <h3>9. Executor Identifies Interactive Node</h3>
+                        <p>In <code>NodeExecutor.executeNode()</code>:</p>
+                        <ul>
+                            <li>Checks <code>isInteractiveNode(node)</code> - verifies node implements <code>IInteractiveNode</code></li>
+                            <li>If interactive, creates <code>InteractiveExecutionContext</code></li>
+                        </ul>
+                        <div class="code-block">
+                            <code>const isInteractive = this.isInteractiveNode(node);
+if (isInteractive) {
+  const interactiveContext = new InteractiveExecutionContext(
+    baseContext,
+    this, // EventEmitter
+    nodeId
+  );
+}</code>
+                        </div>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 10">
+                        <h3>10. Interactive Context Creation</h3>
+                        <p><code>InteractiveExecutionContext</code> wraps the base <code>ExecutionContext</code>:</p>
+                        <ul>
+                            <li>Stores <code>inputResolver</code>: Promise resolver for user input</li>
+                            <li>Stores <code>inputRejecter</code>: Promise rejecter for cancellation</li>
+                            <li>Stores <code>nodeId</code>: Node identifier</li>
+                        </ul>
+                        <p>Context is stored in <code>executor.interactiveContexts</code> Map for later retrieval.</p>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 11">
+                        <h3>11. Interactive Node Execution</h3>
+                        <p>Calls <code>node.executeInteractive(interactiveContext)</code> instead of regular <code>node.execute()</code>.</p>
+                        <p>For custom interactive nodes (<code>CustomNode</code> with <code>expression === 'ui'</code>):</p>
+                        <ul>
+                            <li>Retrieves <code>uiConfig</code> from node properties or constructor</li>
+                            <li>Retrieves <code>uiDefinition</code> from node properties or storage</li>
+                            <li>Builds <code>UserInputRequest</code> with:
+                                <ul>
+                                    <li><code>type: 'form'</code></li>
+                                    <li><code>formSchema</code>: Fields derived from UI definition components</li>
+                                    <li><code>uiDefinitionId</code>: ID for frontend to load custom UI</li>
+                                    <li><code>content</code>: Optional content to display</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 12">
+                        <h3>12. User Input Request</h3>
+                        <p>Node calls <code>context.requestUserInput(request)</code>:</p>
+                        <div class="code-block">
+                            <code>async requestUserInput(request: UserInputRequest): Promise&lt;unknown&gt; {
+  return new Promise((resolve, reject) =&gt; {
+    this.inputResolver = resolve;
+    this.inputRejecter = reject;
+    
+    // Emit event: Display input request in UI
+    this.eventEmitter.emit(
+      InteractiveNodeEventType.USER_INPUT_REQUESTED,
+      { nodeId, executionId, request }
+    );
+    
+    // Emit event: Pause node
+    this.eventEmitter.emit(
+      InteractiveNodeEventType.NODE_PAUSED,
+      { nodeId, executionId }
+    );
+  });
+}</code>
+                        </div>
+                        <p><strong>Execution pauses here</strong> - the Promise is returned and awaits resolution.</p>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 13">
+                        <h3>13. Backend Forwards Events to Frontend</h3>
+                        <p>Executor's event listener catches <code>USER_INPUT_REQUESTED</code>:</p>
+                        <ul>
+                            <li>Sends SSE event: <code>event: interactive:user-input-requested</code></li>
+                            <li>Data: <code>{ nodeId, executionId, request, timestamp }</code></li>
+                            <li>Also sends: <code>event: interactive:node-paused</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="phase4" class="phase-section">
+                    <h2 class="phase-title">Phase 4: Frontend UI Display</h2>
+
+                    <div class="flow-step frontend" data-step="Step 14">
+                        <h3>14. Frontend Receives User Input Request</h3>
+                        <p>Flow:</p>
+                        <ol>
+                            <li><code>StreamingExecutionService</code> receives SSE event</li>
+                            <li>Parses and emits to listeners</li>
+                            <li><code>InteractiveNodeManager</code> component listens for <code>interactive:user-input-requested</code></li>
+                        </ol>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step frontend" data-step="Step 15">
+                        <h3>15. Frontend Displays Input Dialog</h3>
+                        <p><code>InteractiveNodeManager.handleUserInputRequested()</code> is called:</p>
+                        <ul>
+                            <li>Sets <code>pendingInput</code> state: <code>{ nodeId, executionId, request }</code></li>
+                            <li>Component re-renders and shows dialog</li>
+                        </ul>
+                        <p><strong>Dialog Selection Logic:</strong></p>
+                        <ul>
+                            <li>If <code>request.uiDefinitionId</code> exists OR node has <code>uiConfig</code>: Uses <code>UIDialog</code></li>
+                            <li>Otherwise: Uses <code>UserInputDialog</code></li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step frontend" data-step="Step 16">
+                        <h3>16. UI Dialog Rendering</h3>
+                        <p><strong>UIDialog (Custom UI):</strong></p>
+                        <ul>
+                            <li>Loads UI definition from <code>uiBuilderStore</code> using <code>uiDefinitionId</code></li>
+                            <li>Renders form using <code>UIRenderer</code> component</li>
+                            <li>Displays custom UI components (inputs, textareas, selects, etc.)</li>
+                        </ul>
+                        <p><strong>UserInputDialog (Standard Form):</strong></p>
+                        <ul>
+                            <li>Renders standard form based on <code>request.formSchema</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="phase5" class="phase-section">
+                    <h2 class="phase-title">Phase 5: User Input Submission (Frontend → Backend)</h2>
+
+                    <div class="flow-step frontend" data-step="Step 17">
+                        <h3>17. User Fills Form and Submits</h3>
+                        <p>User interacts with form fields and clicks "Submit" button:</p>
+                        <ul>
+                            <li><code>UIDialog</code> or <code>UserInputDialog</code> calls <code>onSubmit(formData)</code></li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step frontend" data-step="Step 18">
+                        <h3>18. Frontend Sends Input to Backend</h3>
+                        <p><code>InteractiveNodeManager.handleSubmit()</code> is called:</p>
+                        <div class="code-block">
+                            <code>POST /api/graphs/interactive/input/${nodeId}
+Content-Type: application/json
+
+{
+  "executionId": "exec-1234567890-abc",
+  "value": { /* form data */ }
+}</code>
+                        </div>
+                        <p><code>value</code> contains the form data (object or single value).</p>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 19">
+                        <h3>19. Backend Receives User Input</h3>
+                        <p><code>POST /api/graphs/interactive/input/[nodeId]</code> handler:</p>
+                        <ol>
+                            <li>Extracts <code>executionId</code> and <code>value</code> from request body</li>
+                            <li>Looks up executor: <code>activeExecutors.get(executionId)</code></li>
+                            <li>If executor not found: Returns 404 "Execution not found or expired"</li>
+                            <li>If found: Calls <code>executor.provideUserInput(nodeId, value)</code></li>
+                        </ol>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 20">
+                        <h3>20. Backend Provides Input to Node</h3>
+                        <p><code>NodeExecutor.provideUserInput()</code>:</p>
+                        <ol>
+                            <li>Retrieves <code>InteractiveExecutionContext</code> from <code>interactiveContexts.get(nodeId)</code></li>
+                            <li>Calls <code>context.provideUserInput(value)</code></li>
+                        </ol>
+                        <p>Inside <code>InteractiveExecutionContext.provideUserInput()</code>:</p>
+                        <ul>
+                            <li>Calls stored <code>inputResolver(value)</code> → resolves the Promise</li>
+                            <li>Clears <code>inputResolver</code> and <code>inputRejecter</code></li>
+                            <li>Emits <code>USER_INPUT_RECEIVED</code> event</li>
+                            <li>Emits <code>NODE_RESUMED</code> event</li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 21">
+                        <h3>21. Node Execution Resumes</h3>
+                        <p>The Promise from <code>requestUserInput()</code> resolves with the user's input:</p>
+                        <ul>
+                            <li>Node continues execution</li>
+                            <li>Validates input (if <code>validateBeforeSubmit</code> is true)</li>
+                            <li>Maps form data to outputs using <code>outputMapping</code></li>
+                            <li>Returns <code>ExecutionResult</code> with outputs</li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 22">
+                        <h3>22. Backend Forwards Resume Events</h3>
+                        <p>Executor's listeners catch <code>USER_INPUT_RECEIVED</code> and <code>NODE_RESUMED</code>:</p>
+                        <ul>
+                            <li>Sends SSE events to frontend:
+                                <ul>
+                                    <li><code>event: interactive:user-input-received</code></li>
+                                    <li><code>event: interactive:node-resumed</code></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="phase6" class="phase-section">
+                    <h2 class="phase-title">Phase 6: Execution Continuation</h2>
+
+                    <div class="flow-step frontend" data-step="Step 23">
+                        <h3>23. Frontend Updates UI</h3>
+                        <p>Receives <code>interactive:user-input-received</code> event:</p>
+                        <ul>
+                            <li><code>InteractiveNodeManager</code> clears <code>pendingInput</code> state</li>
+                            <li>Dialog closes automatically</li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 24">
+                        <h3>24. Graph Execution Continues</h3>
+                        <p>Node execution completes:</p>
+                        <ul>
+                            <li>Outputs are propagated to connected nodes</li>
+                            <li>Next nodes in the graph execute</li>
+                            <li>Process repeats until all nodes complete</li>
+                        </ul>
+                    </div>
+
+                    <div class="arrow down"></div>
+
+                    <div class="flow-step backend" data-step="Step 25">
+                        <h3>25. Execution Completion</h3>
+                        <p>When all nodes finish:</p>
+                        <ul>
+                            <li>Backend sends <code>execution:completed</code> SSE event</li>
+                            <li>Unregisters executor: <code>unregisterExecutor(executionId)</code></li>
+                            <li>Closes SSE stream</li>
+                        </ul>
+                        <p>Frontend receives completion event and updates UI.</p>
+                    </div>
+                </div>
+
+                <div id="critical-details" class="phase-section">
+                    <h2 class="phase-title">Critical Implementation Details</h2>
+
+                    <div class="highlight-box">
+                        <h3>1. Executor Registration Timing</h3>
+                        <p><strong>Critical:</strong> Executor must be registered BEFORE <code>execution:started</code> is sent. This ensures the executor is available when the client receives the <code>executionId</code>.</p>
+                        <div class="code-block">
+                            <code>// ✅ CORRECT: Register before sending event
+registerExecutor(executionId, executor);
+sendEvent('execution:started', { executionId });
+
+// ❌ WRONG: Register after sending event
+sendEvent('execution:started', { executionId });
+registerExecutor(executionId, executor); // Too late!</code>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h3>2. Promise-Based Pausing</h3>
+                        <p><code>requestUserInput()</code> returns a Promise that resolves when <code>provideUserInput()</code> is called. This pauses execution without blocking the event loop.</p>
+                        <div class="code-block">
+                            <code>// Node execution pauses here
+const userInput = await context.requestUserInput(request);
+
+// Execution resumes when provideUserInput() is called
+// with the user's input value</code>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h3>3. Event-Driven Architecture</h3>
+                        <p>Uses EventEmitter pattern for loose coupling between components:</p>
+                        <ul>
+                            <li>Backend: <code>NodeExecutor</code> emits events</li>
+                            <li>Backend: <code>execute-stream</code> route forwards as SSE</li>
+                            <li>Frontend: <code>StreamingExecutionService</code> emits to listeners</li>
+                            <li>Frontend: <code>InteractiveNodeManager</code> handles events</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h3>4. State Management</h3>
+                        <p>Frontend uses React state (<code>pendingInput</code>) to track active input requests. Backend uses Maps to track active executors and interactive contexts.</p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h3>5. Error Handling</h3>
+                        <p>If executor is not found (404), the dialog stays open for retry. Cancellation is handled via <code>cancelUserInput()</code>.</p>
+                    </div>
+                </div>
+
+                <div id="sequence-diagram" class="phase-section">
+                    <h2 class="phase-title">Complete Sequence Diagram</h2>
+
+                    <div class="sequence-diagram">
+                        <div class="sequence-line">
+                            <div class="sequence-actor">User</div>
+                            <div class="sequence-message request">Clicks "Execute"</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Frontend</div>
+                            <div class="sequence-message request">POST /api/graphs/execute-stream</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Backend</div>
+                            <div class="sequence-message">Creates executor, registers it</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Backend</div>
+                            <div class="sequence-message response">SSE: execution:started</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Backend</div>
+                            <div class="sequence-message">Begins graph execution</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Backend</div>
+                            <div class="sequence-message">Identifies interactive node</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Backend</div>
+                            <div class="sequence-message">Creates InteractiveExecutionContext</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Backend</div>
+                            <div class="sequence-message">Calls node.executeInteractive()</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Node</div>
+                            <div class="sequence-message">Calls context.requestUserInput()</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Backend</div>
+                            <div class="sequence-message response">SSE: interactive:user-input-requested</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Backend</div>
+                            <div class="sequence-message response">SSE: interactive:node-paused</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Frontend</div>
+                            <div class="sequence-message">Receives events, displays dialog</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">User</div>
+                            <div class="sequence-message">Fills form, clicks Submit</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Frontend</div>
+                            <div class="sequence-message request">POST /api/graphs/interactive/input/{nodeId}</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Backend</div>
+                            <div class="sequence-message">Looks up executor, calls provideUserInput()</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Backend</div>
+                            <div class="sequence-message">Resolves Promise, node execution resumes</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Backend</div>
+                            <div class="sequence-message response">SSE: interactive:user-input-received</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Backend</div>
+                            <div class="sequence-message response">SSE: interactive:node-resumed</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Frontend</div>
+                            <div class="sequence-message">Closes dialog, execution continues</div>
+                        </div>
+                        <div class="sequence-line">
+                            <div class="sequence-actor">Backend</div>
+                            <div class="sequence-message response">SSE: execution:completed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Key Components Reference</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Location</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ExecutionToolbar</code></td>
+                            <td><code>components/graph/ExecutionToolbar.tsx</code></td>
+                            <td>UI component for triggering execution</td>
+                        </tr>
+                        <tr>
+                            <td><code>StreamingExecutionService</code></td>
+                            <td><code>services/streamingExecutionService.ts</code></td>
+                            <td>Manages SSE connection and event emission</td>
+                        </tr>
+                        <tr>
+                            <td><code>InteractiveNodeManager</code></td>
+                            <td><code>components/graph/InteractiveNodeManager.tsx</code></td>
+                            <td>Handles interactive events and displays dialogs</td>
+                        </tr>
+                        <tr>
+                            <td><code>UIDialog</code></td>
+                            <td><code>components/interactive-nodes/UIDialog.tsx</code></td>
+                            <td>Renders custom UI definitions as forms</td>
+                        </tr>
+                        <tr>
+                            <td><code>UserInputDialog</code></td>
+                            <td><code>components/graph/UserInputDialog.tsx</code></td>
+                            <td>Renders standard form dialogs</td>
+                        </tr>
+                        <tr>
+                            <td><code>execute-stream</code></td>
+                            <td><code>app/api/graphs/execute-stream/route.ts</code></td>
+                            <td>Backend API route for SSE execution</td>
+                        </tr>
+                        <tr>
+                            <td><code>interactive/input/[nodeId]</code></td>
+                            <td><code>app/api/graphs/interactive/input/[nodeId]/route.ts</code></td>
+                            <td>Backend API route for user input submission</td>
+                        </tr>
+                        <tr>
+                            <td><code>NodeExecutor</code></td>
+                            <td><code>src/core/NodeExecutor.ts</code></td>
+                            <td>Orchestrates node execution</td>
+                        </tr>
+                        <tr>
+                            <td><code>InteractiveExecutionContext</code></td>
+                            <td><code>src/core/InteractiveExecutionContext.ts</code></td>
+                            <td>Provides interactive capabilities to nodes</td>
+                        </tr>
+                        <tr>
+                            <td><code>CustomNode</code></td>
+                            <td><code>src/custom-nodes/CustomNode.ts</code></td>
+                            <td>Implements interactive node logic</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Related Documentation</h2>
+                <ul>
+                    <li><a href="INTERACTIVE-NODES-PROPOSAL.html">Interactive Nodes Proposal</a></li>
+                    <li><a href="implementations/interactive-node.html">Interactive Node Implementation</a></li>
+                    <li><a href="CUSTOM-NODES-IMPLEMENTATION.html">Custom Nodes Implementation</a></li>
+                    <li><a href="LIVE-GRAPH-EXECUTION-PHASE2-IMPLEMENTATION.html">Live Graph Execution Phase 2</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

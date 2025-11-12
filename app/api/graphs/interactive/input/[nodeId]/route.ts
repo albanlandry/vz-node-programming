@@ -49,6 +49,11 @@ export async function POST(
       value: unknown;
     };
 
+    console.log('active executors', activeExecutors);
+    console.log('executionId', executionId);
+    console.log('nodeId', nodeId);
+    console.log('value', value);
+
     if (!executionId) {
       return NextResponse.json(
         { error: 'executionId is required' },
