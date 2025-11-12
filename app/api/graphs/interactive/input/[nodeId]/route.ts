@@ -66,7 +66,10 @@ export async function POST(
     // Get the executor for this execution
     const executor = activeExecutors.get(executionId);
     if (!executor) {
-      logger.warn(`Executor not found for executionId: ${executionId}, available executors: ${Array.from(activeExecutors.keys()).join(', ')}`);
+      const availableIds = Array.from(activeExecutors.keys());
+      logger.warn(
+        `Executor not found for executionId: ${executionId}, available executors: ${availableIds.length > 0 ? availableIds.join(', ') : 'none'}`,
+      );
       return NextResponse.json(
         { error: 'Execution not found or expired' },
         { status: 404 },

@@ -39,6 +39,7 @@ export default function UIDialog({
   const { getDefinition } = useUIBuilderStore();
   const [formData, setFormData] = useState<FormData>({});
   const rendererRef = React.useRef<{ submit: () => void }>(null);
+  const prevOpenRef = React.useRef<boolean>(open);
 
   const node = nodes.find((n) => n.id === nodeId);
   const uiConfig = node?.properties?.uiConfig as UINodeConfig | undefined;
@@ -48,11 +49,12 @@ export default function UIDialog({
   const uiDefinitionId = uiConfig?.uiDefinitionId || request?.uiDefinitionId;
   const uiDefinition = uiDefinitionId ? getDefinition(uiDefinitionId) : null;
 
-  // Reset form when dialog opens
+  // Reset form when dialog opens (only when transitioning from closed to open)
   useEffect(() => {
-    if (open) {
+    if (open && !prevOpenRef.current) {
       setFormData({});
     }
+    prevOpenRef.current = open;
   }, [open]);
 
   // For custom interactive nodes, we can use request.uiDefinitionId even without uiConfig
@@ -76,9 +78,21 @@ export default function UIDialog({
     validateBeforeSubmit: true,
   } : null);
 
-  const handleFormChange = (data: FormData) => {
-    setFormData(data);
-  };
+  // Memoize handleFormChange to prevent unnecessary re-renders
+  // Don't include formData in dependencies to avoid recreating the callback
+  const handleFormChange = React.useCallback((data: FormData) => {
+    // Use functional update to avoid dependency on formData
+    setFormData((prev) => {
+      // Only update if data actually changed
+      const prevDataStr = JSON.stringify(prev);
+      const newDataStr = JSON.stringify(data);
+      
+      if (prevDataStr !== newDataStr) {
+        return data;
+      }
+      return prev;
+    });
+  }, []);
 
   const handleSubmit = (data: FormData) => {
     if (!activeUIConfig) return;

@@ -80,6 +80,10 @@ export async function POST(request: NextRequest) {
           const engine = new GraphExecutionEngine();
           const executor = await engine.buildExecutor(graph);
 
+          // Register executor BEFORE sending execution started event
+          // This ensures executor is available when client receives executionId
+          registerExecutor(executionId, executor);
+
           // Send execution started event
           sendEvent('execution:started', {
             executionId,
@@ -192,8 +196,7 @@ export async function POST(request: NextRequest) {
             });
           });
 
-          // Register executor for user input API
-          registerExecutor(executionId, executor);
+          // Executor is already registered above, before execution:started event
 
           // Prepare initial inputs
           const initialInputs = new Map<string, Map<string, unknown>>();

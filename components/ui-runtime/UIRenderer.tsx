@@ -30,17 +30,48 @@ const UIRenderer = forwardRef<{ submit: () => void }, UIRendererProps>(({
   });
   const [touched, setTouched] = useState<Set<string>>(new Set());
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const prevFormDataRef = useRef<FormData>(formData);
+  const isInitialMountRef = useRef(true);
+  const isUpdatingFromInitialDataRef = useRef(false);
 
-  // Update form data when initialData changes
+  // Update form data when initialData changes (only if it's actually different)
   useEffect(() => {
-    setFormData(initialData);
-    setTouched(new Set());
-    setSubmitAttempted(false);
-  }, [initialData]);
+    // Skip on initial mount to avoid unnecessary update
+    if (isInitialMountRef.current) {
+      isInitialMountRef.current = false;
+      prevFormDataRef.current = initialData;
+      return;
+    }
 
-  // Notify parent of changes
+    // Only update if initialData is different from current formData
+    // Use JSON.stringify for deep comparison to avoid unnecessary updates
+    const currentDataStr = JSON.stringify(formData);
+    const initialDataStr = JSON.stringify(initialData);
+    
+    if (currentDataStr !== initialDataStr) {
+      // Mark that we're updating from initialData to prevent onChange from firing
+      isUpdatingFromInitialDataRef.current = true;
+      setFormData(initialData);
+      setTouched(new Set());
+      setSubmitAttempted(false);
+      prevFormDataRef.current = initialData;
+    }
+  }, [initialData]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Notify parent of changes (but avoid calling if formData hasn't actually changed)
   useEffect(() => {
-    if (onChange) {
+    // Skip if we're updating from initialData
+    if (isUpdatingFromInitialDataRef.current) {
+      isUpdatingFromInitialDataRef.current = false;
+      return;
+    }
+
+    // Only call onChange if formData actually changed
+    const currentDataStr = JSON.stringify(formData);
+    const prevDataStr = JSON.stringify(prevFormDataRef.current);
+    
+    if (currentDataStr !== prevDataStr && onChange) {
+      prevFormDataRef.current = formData;
       onChange(formData);
     }
   }, [formData, onChange]);
