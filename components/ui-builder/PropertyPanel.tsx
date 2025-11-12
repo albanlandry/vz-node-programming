@@ -9,6 +9,7 @@
  */
 
 import React, { useState } from 'react';
+import { Settings, GitBranch } from 'lucide-react';
 import type { UIComponent, UIDefinition } from '../../src/types/uiDefinition';
 import ValidationPanel from './ValidationPanel';
 import HierarchyPanel from './HierarchyPanel';
@@ -64,7 +65,33 @@ export default function PropertyPanel({
     return (
       <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full">
         <div className="p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Properties</h2>
+          {/* Tabs */}
+          <div className="flex gap-1 border border-gray-300 rounded-md overflow-hidden">
+            <button
+              onClick={() => setActiveTab('properties')}
+              className={`flex-1 px-2 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
+                activeTab === 'properties'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-50'
+              }`}
+              title="Properties"
+            >
+              <Settings className="w-3 h-3" />
+            </button>
+            {definition && onComponentSelect && (
+              <button
+                onClick={() => setActiveTab('hierarchy')}
+                className={`flex-1 px-2 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
+                  activeTab === 'hierarchy'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+                title="Hierarchy"
+              >
+                <GitBranch className="w-3 h-3" />
+              </button>
+            )}
+          </div>
         </div>
         <div className="flex-1 flex items-center justify-center p-8">
           <p className="text-sm text-gray-500 text-center">
@@ -82,33 +109,34 @@ export default function PropertyPanel({
   return (
     <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full">
       <div className="p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">Properties</h2>
         {component && (
-          <p className="text-xs text-gray-500 mt-1 capitalize">{component.type}</p>
+          <p className="text-xs text-gray-500 mb-3 capitalize">{component.type}</p>
         )}
         
         {/* Tabs */}
-        <div className="flex gap-1 border border-gray-300 rounded-md overflow-hidden mt-3">
+        <div className="flex gap-1 border border-gray-300 rounded-md overflow-hidden">
           <button
             onClick={() => setActiveTab('properties')}
-            className={`flex-1 px-2 py-1.5 text-xs font-medium transition-colors ${
+            className={`flex-1 px-2 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
               activeTab === 'properties'
                 ? 'bg-blue-600 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
+            title="Properties"
           >
-            Properties
+            <Settings className="w-3 h-3" />
           </button>
           {definition && onComponentSelect && (
             <button
               onClick={() => setActiveTab('hierarchy')}
-              className={`flex-1 px-2 py-1.5 text-xs font-medium transition-colors ${
+              className={`flex-1 px-2 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
                 activeTab === 'hierarchy'
                   ? 'bg-blue-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-50'
               }`}
+              title="Hierarchy"
             >
-              Hierarchy
+              <GitBranch className="w-3 h-3" />
             </button>
           )}
         </div>
