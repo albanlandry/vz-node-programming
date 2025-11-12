@@ -6,7 +6,7 @@
  * Displays the tree hierarchy of UI components and allows selection
  */
 
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { ChevronRight, ChevronDown, Box, Rows, Columns, Copy, Trash2, Files, Clipboard } from 'lucide-react';
 import type { UIComponent, UIDefinition } from '../../src/types/uiDefinition';
 
@@ -21,6 +21,8 @@ interface HierarchyPanelProps {
   onDelete?: (componentId: string) => void;
   onDuplicate?: (componentId: string, parentId?: string) => void;
   hasCopiedComponent?: boolean;
+  onReorder?: (componentIds: string[], parentId?: string) => void;
+  onMoveToContainer?: (componentId: string, containerId: string) => void;
 }
 
 interface TreeNodeProps {
@@ -37,6 +39,12 @@ interface TreeNodeProps {
   onDelete?: (componentId: string) => void;
   onDuplicate?: (componentId: string, parentId?: string) => void;
   hasCopiedComponent?: boolean;
+  onReorder?: (componentIds: string[], parentId?: string) => void;
+  onMoveToContainer?: (componentId: string, containerId: string) => void;
+  dragOverComponentId?: string | null;
+  dragOverParentId?: string | null;
+  onDragOver?: (componentId: string | null, parentId?: string | null) => void;
+  draggingComponentId?: string | null;
 }
 
 /**
@@ -95,12 +103,21 @@ function TreeNode({
   onDelete,
   onDuplicate,
   hasCopiedComponent,
+  onReorder,
+  onMoveToContainer,
+  dragOverComponentId,
+  dragOverParentId,
+  onDragOver,
+  draggingComponentId,
 }: TreeNodeProps) {
   const isSelected = selectedComponentId === component.id;
   const hasChildren = isContainer(component);
   const childComponents = hasChildren ? getChildComponents(component, allComponents) : [];
   const isExpanded = expandedNodes.has(component.id);
   const Icon = getComponentIcon(component.type);
+  const isDragging = draggingComponentId === component.id;
+  const isDragOver = dragOverComponentId === component.id;
+  const isDragOverAsParent = dragOverParentId === component.id && hasChildren;
 
   const handleClick = useCallback(() => {
     onSelect(component.id);
@@ -154,12 +171,179 @@ function TreeNode({
     [component.id, parentId, onDuplicate]
   );
 
+  // Drag and drop handlers
+  const handleDragStart = useCallback(
+    (e: React.DragEvent) => {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('application/ui-component-id', component.id);
+      e.dataTransfer.setData('application/ui-component-parent', parentId || '');
+      if (onDragOver) {
+        onDragOver(null, null);
+      }
+    },
+    [component.id, parentId, onDragOver]
+  );
+
+  const handleDragOver = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.dataTransfer.dropEffect = 'move';
+      
+      if (onDragOver) {
+        // If dragging over a container, allow nesting
+        if (hasChildren) {
+          onDragOver(null, component.id);
+        } else {
+          // Otherwise, allow reordering
+          onDragOver(component.id, parentId);
+        }
+      }
+    },
+    [component.id, parentId, hasChildren, onDragOver]
+  );
+
+  const handleDragLeave = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // Only clear if leaving the component itself (not a child)
+      if (e.currentTarget === e.target && onDragOver) {
+        onDragOver(null, null);
+      }
+    },
+    [onDragOver]
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const draggedComponentId = e.dataTransfer.getData('application/ui-component-id');
+      const draggedParentId = e.dataTransfer.getData('application/ui-component-parent');
+      
+      if (!draggedComponentId || draggedComponentId === component.id) {
+        if (onDragOver) {
+          onDragOver(null, null);
+        }
+        return;
+      }
+
+      // Prevent dropping into itself or its descendants
+      const isDescendant = (compId: string, ancestorId: string, allComps: UIComponent[]): boolean => {
+        const comp = allComps.find((c) => c.id === compId);
+        if (!comp || comp.id === ancestorId) return false;
+        if (isContainer(comp)) {
+          const containerComp = comp as UIComponent & { children?: string[] };
+          if (containerComp.children?.includes(ancestorId)) return true;
+          return containerComp.children?.some((childId) => isDescendant(childId, ancestorId, allComps)) || false;
+        }
+        return false;
+      };
+
+      if (isDescendant(component.id, draggedComponentId, allComponents)) {
+        if (onDragOver) {
+          onDragOver(null, null);
+        }
+        return;
+      }
+
+      // If dropping on a container, move into it
+      if (hasChildren && onMoveToContainer) {
+        onMoveToContainer(draggedComponentId, component.id);
+      } else if (onReorder && parentId !== undefined) {
+        // Reorder within the same parent
+        const siblings = parentId
+          ? getChildComponents(
+              allComponents.find((c) => c.id === parentId)!,
+              allComponents
+            )
+          : allComponents.filter((c) => {
+              const allChildIds = new Set<string>();
+              allComponents.forEach((comp) => {
+                if (isContainer(comp)) {
+                  const containerComp = comp as UIComponent & { children?: string[] };
+                  containerComp.children?.forEach((id) => allChildIds.add(id));
+                }
+              });
+              return !allChildIds.has(c.id);
+            });
+
+        const draggedIndex = siblings.findIndex((c) => c.id === draggedComponentId);
+        const targetIndex = siblings.findIndex((c) => c.id === component.id);
+
+        if (draggedIndex !== -1 && targetIndex !== -1 && draggedIndex !== targetIndex) {
+          const newOrder = [...siblings];
+          const [removed] = newOrder.splice(draggedIndex, 1);
+          newOrder.splice(targetIndex, 0, removed);
+          onReorder(newOrder.map((c) => c.id), parentId);
+        } else if (draggedParentId !== parentId && onMoveToContainer) {
+          // Moving from one parent to another
+          if (parentId) {
+            onMoveToContainer(draggedComponentId, parentId);
+          } else {
+            // Moving to root level - need to remove from parent
+            const oldParent = allComponents.find((c) => c.id === draggedParentId);
+            if (oldParent && isContainer(oldParent)) {
+              const oldParentWithChildren = oldParent as UIComponent & { children?: string[] };
+              if (oldParentWithChildren.children) {
+                const newChildren = oldParentWithChildren.children.filter((id) => id !== draggedComponentId);
+                // This requires updating the parent, which should be handled by onMoveToContainer
+                // For now, just move to root by calling reorder with root components
+                const rootComponents = allComponents.filter((c) => {
+                  const allChildIds = new Set<string>();
+                  allComponents.forEach((comp) => {
+                    if (isContainer(comp)) {
+                      const containerComp = comp as UIComponent & { children?: string[] };
+                      containerComp.children?.forEach((id) => allChildIds.add(id));
+                    }
+                  });
+                  return !allChildIds.has(c.id);
+                });
+                const targetRootIndex = rootComponents.findIndex((c) => c.id === component.id);
+                const newRootOrder = [...rootComponents];
+                const draggedRootIndex = newRootOrder.findIndex((c) => c.id === draggedComponentId);
+                if (draggedRootIndex === -1) {
+                  // Component is not in root, need to add it
+                  if (targetRootIndex >= 0) {
+                    newRootOrder.splice(targetRootIndex, 0, allComponents.find((c) => c.id === draggedComponentId)!);
+                  } else {
+                    newRootOrder.push(allComponents.find((c) => c.id === draggedComponentId)!);
+                  }
+                } else {
+                  const [removed] = newRootOrder.splice(draggedRootIndex, 1);
+                  newRootOrder.splice(targetRootIndex >= 0 ? targetRootIndex : newRootOrder.length, 0, removed);
+                }
+                onReorder(newRootOrder.map((c) => c.id));
+              }
+            }
+          }
+        }
+      }
+
+      if (onDragOver) {
+        onDragOver(null, null);
+      }
+    },
+    [component.id, parentId, hasChildren, allComponents, onReorder, onMoveToContainer, onDragOver]
+  );
+
   return (
     <div>
       <div
+        draggable={!!onReorder || !!onMoveToContainer}
+        data-component-id={component.id}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
         className={`
-          group flex items-center gap-1 px-2 py-1.5 rounded cursor-pointer transition-colors
+          group flex items-center gap-1 px-2 py-1.5 rounded cursor-move transition-colors
           ${isSelected ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100 text-gray-700'}
+          ${isDragging ? 'opacity-50' : ''}
+          ${isDragOver ? 'bg-green-100 border-2 border-green-400' : ''}
+          ${isDragOverAsParent ? 'bg-green-50 border-2 border-dashed border-green-400' : ''}
         `}
         style={{ paddingLeft: `${8 + level * 16}px` }}
         onClick={handleClick}
@@ -247,12 +431,38 @@ function TreeNode({
                 onDelete={onDelete}
                 onDuplicate={onDuplicate}
                 hasCopiedComponent={hasCopiedComponent}
+                onReorder={onReorder}
+                onMoveToContainer={onMoveToContainer}
+                dragOverComponentId={dragOverComponentId}
+                dragOverParentId={dragOverParentId}
+                onDragOver={onDragOver}
+                draggingComponentId={draggingComponentId}
               />
             ))
           ) : (
             <div
-              className="text-xs text-gray-400 italic px-2 py-1"
+              className={`text-xs text-gray-400 italic px-2 py-1 ${
+                isDragOverAsParent ? 'bg-green-50 border border-dashed border-green-400 rounded' : ''
+              }`}
               style={{ paddingLeft: `${8 + (level + 1) * 16}px` }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (onDragOver) {
+                  onDragOver(null, component.id);
+                }
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const draggedComponentId = e.dataTransfer.getData('application/ui-component-id');
+                if (draggedComponentId && onMoveToContainer) {
+                  onMoveToContainer(draggedComponentId, component.id);
+                }
+                if (onDragOver) {
+                  onDragOver(null, null);
+                }
+              }}
             >
               (empty)
             </div>
@@ -274,7 +484,42 @@ export default function HierarchyPanel({
   onDelete,
   onDuplicate,
   hasCopiedComponent,
+  onReorder,
+  onMoveToContainer,
 }: HierarchyPanelProps) {
+  const [dragOverComponentId, setDragOverComponentId] = useState<string | null>(null);
+  const [dragOverParentId, setDragOverParentId] = useState<string | null>(null);
+  const [draggingComponentId, setDraggingComponentId] = useState<string | null>(null);
+
+  const handleDragOver = useCallback((componentId: string | null, parentId: string | null) => {
+    setDragOverComponentId(componentId);
+    setDragOverParentId(parentId);
+  }, []);
+
+  // Track dragging component
+  React.useEffect(() => {
+    const handleDragStart = (e: DragEvent) => {
+      const componentId = (e.target as HTMLElement)?.closest('[draggable="true"]')?.getAttribute('data-component-id');
+      if (componentId) {
+        setDraggingComponentId(componentId);
+      }
+    };
+
+    const handleDragEnd = () => {
+      setDraggingComponentId(null);
+      setDragOverComponentId(null);
+      setDragOverParentId(null);
+    };
+
+    document.addEventListener('dragstart', handleDragStart);
+    document.addEventListener('dragend', handleDragEnd);
+
+    return () => {
+      document.removeEventListener('dragstart', handleDragStart);
+      document.removeEventListener('dragend', handleDragEnd);
+    };
+  }, []);
+
   // Get root components (not nested in containers)
   const rootComponents = useMemo(() => {
     const allChildIds = new Set<string>();
@@ -312,6 +557,12 @@ export default function HierarchyPanel({
               onDelete={onDelete}
               onDuplicate={onDuplicate}
               hasCopiedComponent={hasCopiedComponent}
+              onReorder={onReorder}
+              onMoveToContainer={onMoveToContainer}
+              dragOverComponentId={dragOverComponentId}
+              dragOverParentId={dragOverParentId}
+              onDragOver={handleDragOver}
+              draggingComponentId={draggingComponentId}
             />
           ))}
         </div>

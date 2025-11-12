@@ -24,6 +24,8 @@ interface PropertyPanelProps {
   onDelete?: (componentId: string) => void;
   onDuplicate?: (componentId: string, parentId?: string) => void;
   hasCopiedComponent?: boolean;
+  onReorder?: (componentIds: string[], parentId?: string) => void;
+  onMoveToContainer?: (componentId: string, containerId: string) => void;
 }
 
 export default function PropertyPanel({ 
@@ -37,6 +39,8 @@ export default function PropertyPanel({
   onDelete,
   onDuplicate,
   hasCopiedComponent,
+  onReorder,
+  onMoveToContainer,
 }: PropertyPanelProps) {
   const [activeTab, setActiveTab] = useState<'properties' | 'hierarchy'>('properties');
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
@@ -122,6 +126,8 @@ export default function PropertyPanel({
           onDelete={onDelete}
           onDuplicate={onDuplicate}
           hasCopiedComponent={hasCopiedComponent}
+          onReorder={onReorder}
+          onMoveToContainer={onMoveToContainer}
         />
       ) : activeTab === 'properties' && component ? (
         <div className="flex-1 overflow-y-auto p-4 space-y-4">

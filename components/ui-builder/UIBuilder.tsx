@@ -251,6 +251,8 @@ export default function UIBuilder({ definitionId }: UIBuilderProps) {
         onDelete={handleComponentDelete}
         onDuplicate={handleDuplicate}
         hasCopiedComponent={!!copiedComponent}
+        onReorder={handleComponentReorder}
+        onMoveToContainer={handleMoveToContainer}
       />
       
       {/* Style Panel (Phase 7) */}
