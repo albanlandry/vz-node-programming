@@ -854,6 +854,15 @@ export const useGraphStore = create<GraphState>((set, get) => ({
       },
     }));
   },
+
+  setExecutionId: (executionId: string) => {
+    set((state) => ({
+      execution: {
+        ...state.execution,
+        executionId,
+      },
+    }));
+  },
   
   clearExecutionState: () => {
     set({

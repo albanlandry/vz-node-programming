@@ -304,7 +304,17 @@ export default function ExecutionToolbar() {
       clearExecutionState();
     };
 
+    const handleExecutionStarted = (event: any) => {
+      const { executionId } = event.data;
+      if (executionId) {
+        // Update executionId in store with the one from backend
+        useGraphStore.getState().setExecutionId(executionId);
+        console.log('Execution started with executionId from backend:', executionId);
+      }
+    };
+
     // Register event listeners
+    streamingExecutionService.on('execution:started', handleExecutionStarted);
     streamingExecutionService.on('node:executing', handleNodeExecuting);
     streamingExecutionService.on('node:completed', handleNodeCompleted);
     streamingExecutionService.on('node:failed', handleNodeFailed);
@@ -324,6 +334,7 @@ export default function ExecutionToolbar() {
       );
     } finally {
       // Clean up event listeners
+      streamingExecutionService.off('execution:started', handleExecutionStarted);
       streamingExecutionService.off('node:executing', handleNodeExecuting);
       streamingExecutionService.off('node:completed', handleNodeCompleted);
       streamingExecutionService.off('node:failed', handleNodeFailed);

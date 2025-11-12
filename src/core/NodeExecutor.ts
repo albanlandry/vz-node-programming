@@ -99,7 +99,8 @@ export class NodeExecutor extends EventEmitter {
     initialInputs: Map<NodeId, Map<PortId, unknown>> = new Map(),
     options: ExecutionOptions = {},
   ): Promise<Map<NodeId, ExecutionResult>> {
-    const executionId = uuidv4();
+    // Use provided executionId or generate a new one
+    const executionId = options.executionId || uuidv4();
     this.executionResults.clear();
     this.executingNodes.clear();
 
@@ -173,7 +174,8 @@ export class NodeExecutor extends EventEmitter {
     initialInputs: Map<NodeId, Map<PortId, unknown>> = new Map(),
     options: ExecutionOptions = {},
   ): Promise<Map<NodeId, ExecutionResult>> {
-    const executionId = uuidv4();
+    // Use provided executionId or generate a new one
+    const executionId = options.executionId || uuidv4();
     this.executionResults.clear();
     this.executingNodes.clear();
 

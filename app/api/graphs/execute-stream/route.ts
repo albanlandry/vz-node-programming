@@ -75,8 +75,8 @@ export async function POST(request: NextRequest) {
           }
         };
 
-        let executionId = `exec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        
+        const executionId = `exec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
         try {
           const engine = new GraphExecutionEngine();
           const executor = await engine.buildExecutor(graph);
@@ -223,10 +223,17 @@ export async function POST(request: NextRequest) {
           const parallel = options?.parallel ?? false;
           let results: Map<string, any>;
 
+          // Pass the executionId to the executor so it uses the same ID throughout
+          const executionOptions = {
+            timeout: options?.timeout,
+            nodeTimeout: options?.timeout,
+            executionId, // Pass the executionId from backend
+          };
+
           if (parallel) {
-            results = await executor.executeParallel(initialInputs);
+            results = await executor.executeParallel(initialInputs, executionOptions);
           } else {
-            results = await executor.execute(initialInputs);
+            results = await executor.execute(initialInputs, executionOptions);
           }
 
           // Convert results to serializable format

@@ -49,6 +49,8 @@ export interface ExecutionOptions {
   abortSignal?: AbortSignal;
   /** Per-node timeout in milliseconds */
   nodeTimeout?: number;
+  /** Execution ID (if not provided, will be generated) */
+  executionId?: string;
 }
 
 /**
