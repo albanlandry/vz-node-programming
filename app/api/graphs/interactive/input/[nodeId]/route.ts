@@ -1,37 +1,13 @@
 /**
  * API Route Handler for User Input Submission
- * 
+ *
  * Handles user input submission for interactive nodes during execution
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+
 import { logger } from '../../../../../../src/utils/Logger';
-
-// Store active executors by executionId
-// In production, this should be stored in Redis or a similar service
-const activeExecutors = new Map<string, any>();
-
-/**
- * Register an executor for an execution
- * Called by execute-stream route
- */
-export function registerExecutor(executionId: string, executor: any): void {
-  activeExecutors.set(executionId, executor);
-}
-
-/**
- * Unregister an executor
- */
-export function unregisterExecutor(executionId: string): void {
-  activeExecutors.delete(executionId);
-}
-
-/**
- * Get active executors map (for use in other routes)
- */
-export function getActiveExecutors(): Map<string, any> {
-  return activeExecutors;
-}
+import { getActiveExecutors, getExecutor } from '../../../shared/executorStore';
 
 /**
  * POST /api/graphs/interactive/input/[nodeId]
@@ -49,11 +25,6 @@ export async function POST(
       value: unknown;
     };
 
-    console.log('active executors', activeExecutors);
-    console.log('executionId', executionId);
-    console.log('nodeId', nodeId);
-    console.log('value', value);
-
     if (!executionId) {
       return NextResponse.json(
         { error: 'executionId is required' },
@@ -68,10 +39,18 @@ export async function POST(
       );
     }
 
-    // Get the executor for this execution
-    const executor = activeExecutors.get(executionId);
+    // Debug: Log store state
+    const activeExecutorsMap = getActiveExecutors();
+    logger.info(
+      `[INPUT] Request received - executionId: ${executionId}, nodeId: ${nodeId}, active executors count: ${activeExecutorsMap.size}`,
+    );
+    logger.debug(`[INPUT] All executionIds in store: ${Array.from(activeExecutorsMap.keys()).join(', ')}`);
+
+    // Get the executor for this execution from global store
+    const executor = getExecutor(executionId);
     if (!executor) {
-      const availableIds = Array.from(activeExecutors.keys());
+      const { getAllExecutionIds } = await import('../../../shared/executorStore');
+      const availableIds = getAllExecutionIds();
       logger.warn(
         `Executor not found for executionId: ${executionId}, available executors: ${availableIds.length > 0 ? availableIds.join(', ') : 'none'}`,
       );

@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '../../../../../../../src/utils/Logger';
-import { getActiveExecutors } from '../route';
+import { getExecutor } from '../../../../shared/executorStore';
 
 /**
  * POST /api/graphs/interactive/input/[nodeId]/cancel
@@ -37,9 +37,8 @@ export async function POST(
       );
     }
 
-    // Get the executor for this execution
-    const activeExecutors = getActiveExecutors();
-    const executor = activeExecutors.get(executionId);
+    // Get the executor for this execution from global store
+    const executor = getExecutor(executionId);
     if (!executor) {
       return NextResponse.json(
         { error: 'Execution not found or expired' },

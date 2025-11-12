@@ -1,15 +1,16 @@
 /**
  * API Route Handler for Streaming Graph Execution
- * 
+ *
  * Executes a graph definition with Server-Sent Events (SSE) for real-time updates
  */
 
 import { NextRequest } from 'next/server';
+
 import { GraphExecutionEngine } from '../../../../src/graph-management';
-import type { GraphDefinition, ExecutionRequest } from '../../../../src/graph-management/types';
-import { logger } from '../../../../src/utils/Logger';
+import type { GraphDefinition } from '../../../../src/graph-management/types';
 import { NodeEventType, InteractiveNodeEventType } from '../../../../src/types';
-import { registerExecutor, unregisterExecutor } from '../interactive/input/[nodeId]/route';
+import { logger } from '../../../../src/utils/Logger';
+import { getExecutor, registerExecutor, unregisterExecutor } from '../shared/executorStore';
 
 /**
  * POST /api/graphs/execute-stream
@@ -83,6 +84,14 @@ export async function POST(request: NextRequest) {
           // Register executor BEFORE sending execution started event
           // This ensures executor is available when client receives executionId
           registerExecutor(executionId, executor);
+
+          // Verify registration
+          const registeredExecutor = getExecutor(executionId);
+          if (!registeredExecutor) {
+            logger.error(`Failed to register executor for ${executionId}`);
+          } else {
+            logger.info(`Successfully registered executor for ${executionId}, verified: ${registeredExecutor !== null}`);
+          }
 
           // Send execution started event
           sendEvent('execution:started', {
