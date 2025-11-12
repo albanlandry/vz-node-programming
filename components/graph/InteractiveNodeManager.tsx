@@ -98,6 +98,8 @@ export default function InteractiveNodeManager() {
     if (!pendingInput) return;
 
     try {
+      console.log('Submitting user input:', { nodeId: pendingInput.nodeId, executionId: pendingInput.executionId, value });
+      
       // Send user input to backend
       const response = await fetch(
         `/api/graphs/interactive/input/${pendingInput.nodeId}`,
@@ -113,15 +115,22 @@ export default function InteractiveNodeManager() {
         },
       );
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to submit user input');
+        console.error('Failed to submit user input:', data);
+        throw new Error(data.error || 'Failed to submit user input');
       }
+
+      console.log('User input submitted successfully:', data);
 
       // Clear pending input
       setPendingInput(null);
     } catch (error) {
       console.error('Error submitting user input:', error);
-      // Keep dialog open on error
+      // eslint-disable-next-line no-alert
+      window.alert(`Failed to submit user input: ${error instanceof Error ? error.message : String(error)}`);
+      // Keep dialog open on error so user can retry
     }
   }, [pendingInput]);
 
@@ -169,18 +178,23 @@ export default function InteractiveNodeManager() {
   }, []);
 
   // Check if pending input node has UI config
+  // First check if request has uiDefinitionId (for custom interactive nodes)
+  // Then check node properties for UI config
+  const hasUIConfigFromRequest = pendingInput?.request?.uiDefinitionId != null;
   const pendingNodeUIConfig = pendingInput ? getNodeUIConfig(pendingInput.nodeId) : null;
+  const shouldUseUIDialog = hasUIConfigFromRequest || pendingNodeUIConfig != null;
 
   return (
     <>
       {pendingInput && (
         <>
-          {pendingNodeUIConfig ? (
+          {shouldUseUIDialog ? (
             // Use UI Definition if configured
             <UIDialog
               open={true}
               nodeId={pendingInput.nodeId}
               executionId={pendingInput.executionId}
+              request={pendingInput.request}
               onSubmit={handleSubmit}
               onCancel={handleCancel}
             />

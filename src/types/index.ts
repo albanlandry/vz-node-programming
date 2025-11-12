@@ -212,6 +212,7 @@ export interface UserInputRequest {
   defaultValue?: unknown;
   validation?: ValidationRule[];
   content?: unknown; // Content to display (for confirm type or display purposes)
+  uiDefinitionId?: string; // UI definition ID for custom interactive nodes
 }
 
 /**

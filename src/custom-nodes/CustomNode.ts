@@ -194,6 +194,7 @@ export class CustomNode extends BaseNode implements IInteractiveNode {
       const content = context.inputs.get('content');
 
       // Build user input request with UI definition
+      // Include UI definition ID in the request so the frontend can load it
       const request: UserInputRequest = {
         type: 'form',
         formSchema: {
@@ -210,6 +211,8 @@ export class CustomNode extends BaseNode implements IInteractiveNode {
             })),
         },
         content,
+        // Add UI definition ID to request so frontend can identify custom UI nodes
+        uiDefinitionId: activeUIConfig.uiDefinitionId,
       };
 
       // Request user input (execution will pause here)

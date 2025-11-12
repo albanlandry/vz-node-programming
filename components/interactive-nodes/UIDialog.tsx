@@ -16,6 +16,7 @@ import { mapFormDataToOutputs } from '../../services/uiDataService';
 import { validateForm } from '../../services/validationService';
 import type { UINodeConfig } from '../../src/types/uiNodeConfig';
 import type { FormData } from '../../src/types/uiDefinition';
+import type { UserInputRequest } from '../../src/types';
 
 interface UIDialogProps {
   open: boolean;
@@ -23,6 +24,7 @@ interface UIDialogProps {
   executionId: string;
   onSubmit: (value: unknown) => void;
   onCancel: () => void;
+  request?: UserInputRequest; // Optional request for getting uiDefinitionId
 }
 
 export default function UIDialog({
@@ -31,6 +33,7 @@ export default function UIDialog({
   executionId,
   onSubmit,
   onCancel,
+  request,
 }: UIDialogProps) {
   const { nodes } = useGraphStore();
   const { getDefinition } = useUIBuilderStore();
@@ -39,7 +42,11 @@ export default function UIDialog({
 
   const node = nodes.find((n) => n.id === nodeId);
   const uiConfig = node?.properties?.uiConfig as UINodeConfig | undefined;
-  const uiDefinition = uiConfig ? getDefinition(uiConfig.uiDefinitionId) : null;
+  
+  // Get UI definition ID from node config or from request (for custom interactive nodes)
+  // The request might have uiDefinitionId if it came from a custom interactive node
+  const uiDefinitionId = uiConfig?.uiDefinitionId || request?.uiDefinitionId;
+  const uiDefinition = uiDefinitionId ? getDefinition(uiDefinitionId) : null;
 
   // Reset form when dialog opens
   useEffect(() => {
@@ -48,17 +55,36 @@ export default function UIDialog({
     }
   }, [open]);
 
-  if (!open || !uiConfig || !uiDefinition) {
+  // For custom interactive nodes, we can use request.uiDefinitionId even without uiConfig
+  // For regular interactive nodes, we need uiConfig
+  const hasUIConfig = uiConfig != null;
+  const hasUIDefinitionFromRequest = request?.uiDefinitionId != null && uiDefinition != null;
+  
+  if (!open || (!hasUIConfig && !hasUIDefinitionFromRequest) || !uiDefinition) {
     return null;
   }
+
+  // Use uiConfig if available, otherwise create a minimal config from request
+  const activeUIConfig = uiConfig || (hasUIDefinitionFromRequest ? {
+    uiDefinitionId: request.uiDefinitionId!,
+    outputMapping: {
+      fieldToPort: {},
+      transformations: {},
+      conditionalRules: [],
+      filters: {},
+    },
+    validateBeforeSubmit: true,
+  } : null);
 
   const handleFormChange = (data: FormData) => {
     setFormData(data);
   };
 
   const handleSubmit = (data: FormData) => {
+    if (!activeUIConfig) return;
+
     // Validate if required (Phase 5: Use new validation service)
-    if (uiConfig.validateBeforeSubmit) {
+    if (activeUIConfig.validateBeforeSubmit) {
       const validation = validateForm(uiDefinition.components, data);
       if (!validation.isValid) {
         // Validation errors are shown by UIRenderer
@@ -67,7 +93,7 @@ export default function UIDialog({
     }
 
     // Map form data to outputs
-    const outputs = mapFormDataToOutputs(data, uiConfig.outputMapping);
+    const outputs = mapFormDataToOutputs(data, activeUIConfig.outputMapping);
 
     // Submit the mapped outputs
     // If only one output, send it directly; otherwise send the object

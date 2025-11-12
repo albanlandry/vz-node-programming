@@ -66,14 +66,23 @@ export async function POST(
     // Get the executor for this execution
     const executor = activeExecutors.get(executionId);
     if (!executor) {
+      logger.warn(`Executor not found for executionId: ${executionId}, available executors: ${Array.from(activeExecutors.keys()).join(', ')}`);
       return NextResponse.json(
         { error: 'Execution not found or expired' },
         { status: 404 },
       );
     }
 
+    logger.info(`Providing user input to node ${nodeId} in execution ${executionId}`);
+
     // Provide user input to the node
-    executor.provideUserInput(nodeId, value);
+    try {
+      executor.provideUserInput(nodeId, value);
+      logger.info(`User input provided successfully to node ${nodeId}`);
+    } catch (error) {
+      logger.error(`Error providing user input to node ${nodeId}:`, error);
+      throw error;
+    }
 
     return NextResponse.json({
       success: true,
