@@ -43,8 +43,8 @@ export class CustomNodeManager {
     // Store config for factory creation
     this.customNodeConfigs.set(metadata.type, { config, metadata });
 
-    // Create node instance
-    const node = new CustomNode(config);
+    // Create node instance with metadata (for interactive nodes)
+    const node = new CustomNode(config, metadata as CustomNodeMetadata & { uiConfig?: any });
 
     // Register with registry - create a factory class
     const registryMetadata: NodeMetadata = {
@@ -71,10 +71,10 @@ export class CustomNodeManager {
           super({
             ...stored.config,
             ...factoryConfig,
-          } as CustomNodeConfig);
+          } as CustomNodeConfig, stored.metadata as CustomNodeMetadata & { uiConfig?: any });
         } else {
           // Fallback - should not happen
-          super(config);
+          super(config, metadata as CustomNodeMetadata & { uiConfig?: any });
         }
       }
     };

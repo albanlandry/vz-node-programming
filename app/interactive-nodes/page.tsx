@@ -23,6 +23,7 @@ interface InteractiveNode {
   updatedAt: string;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export default function InteractiveNodesPage() {
   const router = useRouter();
   const [nodes, setNodes] = useState<InteractiveNode[]>([]);

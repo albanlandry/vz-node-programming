@@ -16,47 +16,60 @@ import {
   NodeConfig,
   NodeError,
   PortId,
+  IInteractiveNode,
+  InteractiveExecutionContext,
+  InteractiveNodeType,
+  ExecutionResult,
+  UserInputRequest,
 } from '../types';
 
 import { BaseNode } from '../core/BaseNode';
 import { ExpressionValidator } from './ExpressionValidator';
 import { TemplateRegistry, NodeTemplate } from './NodeTemplate';
-import { CustomNodeConfig, TemplateType } from './types';
+import { CustomNodeConfig, TemplateType, CustomNodeMetadata } from './types';
 import { logger } from '../utils/Logger';
+import type { UINodeConfig } from '../types/uiNodeConfig';
+import { mapFormDataToOutputs } from '../../services/uiDataService';
+import { validateForm } from '../../services/validationService';
+import type { UIDefinition } from '../types/uiDefinition';
 
 /**
  * Custom Node class
  * Extends BaseNode to provide dynamic node creation via templates and expressions
+ * Also supports interactive nodes when expression is 'ui'
  */
-export class CustomNode extends BaseNode {
+export class CustomNode extends BaseNode implements IInteractiveNode {
   /** Template used by this node */
-  private readonly template: NodeTemplate;
+  private readonly template: NodeTemplate | null;
   /** Expression to execute */
   private readonly expression: string;
   /** Pre-compiled expression function (cached for performance) */
   private compiledExpression: ((inputs: Record<string, unknown>) => unknown) | undefined;
   /** Storage ID if persisted */
   public readonly storageId?: string;
+  /** Whether this is an interactive node */
+  public readonly isInteractive: boolean;
+  /** Interactive node type */
+  public readonly interactiveType?: InteractiveNodeType;
+  /** UI config for interactive nodes */
+  private readonly uiConfig?: UINodeConfig;
+  /** UI definition for interactive nodes (cached) */
+  private readonly uiDefinition?: UIDefinition;
 
   /**
    * Creates a new CustomNode instance
    * 
    * @param config - Custom node configuration
+   * @param metadata - Optional metadata (for interactive nodes with UI config)
+   * @param uiDefinition - Optional UI definition (for interactive nodes)
    */
-  constructor(config: CustomNodeConfig) {
-    // Validate template
-    const template = TemplateRegistry.getTemplate(config.template);
-    if (!template) {
-      throw new Error(`Invalid template type: ${config.template}`);
-    }
-
-    // Validate expression
-    const validation = ExpressionValidator.validate(config.expression, config.template);
-    if (!validation.valid) {
-      throw new Error(
-        `Invalid expression: ${validation.errors.join(', ')}`,
-      );
-    }
+  constructor(
+    config: CustomNodeConfig,
+    metadata?: CustomNodeMetadata & { uiConfig?: UINodeConfig },
+    uiDefinition?: UIDefinition,
+  ) {
+    // Check if this is an interactive node (expression is 'ui')
+    const isInteractive = config.expression === 'ui';
 
     // Create base node config
     const baseConfig: NodeConfig = {
@@ -69,20 +82,187 @@ export class CustomNode extends BaseNode {
 
     super(baseConfig);
 
-    this.template = template;
-    this.expression = config.expression;
+    this.isInteractive = isInteractive;
     this.storageId = config.storageId;
 
-    // Pre-compile expression for better performance
-    const compiled = ExpressionValidator.compileExpression(
-      this.expression,
-      this.inputs.map(input => input.id),
-    );
+    if (isInteractive) {
+      // Interactive node - no template execution
+      this.template = null;
+      this.expression = 'ui';
+      this.interactiveType = InteractiveNodeType.CUSTOM_UI;
+      this.uiConfig = metadata?.uiConfig;
+      this.uiDefinition = uiDefinition;
+      
+      if (!this.uiConfig) {
+        logger.warn(`Interactive node ${this.id} created without UI config`);
+      }
+      if (!this.uiDefinition && this.uiConfig) {
+        logger.warn(`Interactive node ${this.id} created without UI definition`);
+      }
+    } else {
+      // Regular custom node - validate template and expression
+      const template = TemplateRegistry.getTemplate(config.template);
+      if (!template) {
+        throw new Error(`Invalid template type: ${config.template}`);
+      }
 
-    this.compiledExpression = compiled ?? undefined;
+      // Validate expression (skip for interactive nodes)
+      if (config.expression !== 'ui') {
+        const validation = ExpressionValidator.validate(config.expression, config.template);
+        if (!validation.valid) {
+          throw new Error(
+            `Invalid expression: ${validation.errors.join(', ')}`,
+          );
+        }
+      }
 
-    if (this.compiledExpression === undefined) {
-      logger.warn(`Failed to pre-compile expression for node ${this.id}`);
+      this.template = template;
+      this.expression = config.expression;
+
+      // Pre-compile expression for better performance (skip for interactive nodes)
+      if (config.expression !== 'ui') {
+        const compiled = ExpressionValidator.compileExpression(
+          this.expression,
+          this.inputs.map(input => input.id),
+        );
+
+        this.compiledExpression = compiled ?? undefined;
+
+        if (this.compiledExpression === undefined) {
+          logger.warn(`Failed to pre-compile expression for node ${this.id}`);
+        }
+      }
+    }
+  }
+
+  /**
+   * Execute interactive node with UI
+   * This method is called for interactive nodes
+   * 
+   * @param context - Interactive execution context
+   * @returns Execution result
+   */
+  async executeInteractive(
+    context: InteractiveExecutionContext,
+  ): Promise<ExecutionResult> {
+    const startTime = Date.now();
+
+    // Get UI config from node properties (set during graph execution) or from constructor
+    const uiConfigFromProperties = this.getProperty<UINodeConfig>('uiConfig');
+    const activeUIConfig = uiConfigFromProperties || this.uiConfig;
+
+    if (!activeUIConfig) {
+      throw new NodeError(
+        'Interactive node missing UI configuration',
+        this.id,
+        undefined,
+      );
+    }
+
+    try {
+      // Get UI definition from properties or use cached one
+      let uiDefinition = this.getProperty<UIDefinition>('uiDefinition') || this.uiDefinition;
+
+      // If not found, try to load from API (for server-side execution)
+      if (!uiDefinition && activeUIConfig.uiDefinitionId) {
+        try {
+          // In server context, we can't access localStorage, so we need the UI definition
+          // to be passed via properties or loaded from an API
+          // For now, we'll construct a minimal UI definition from the request
+          // The actual UI definition should be loaded client-side and passed via properties
+          logger.warn(`UI definition ${activeUIConfig.uiDefinitionId} not found in properties. Interactive node may not work correctly.`);
+        } catch (error) {
+          logger.error('Failed to load UI definition:', error);
+        }
+      }
+
+      if (!uiDefinition) {
+        // Create a minimal fallback UI definition from the request
+        // This allows the node to still request user input, but the UI will be basic
+        logger.warn(`Using fallback UI definition for ${activeUIConfig.uiDefinitionId}`);
+        uiDefinition = {
+          id: activeUIConfig.uiDefinitionId,
+          name: 'Interactive Form',
+          version: '1.0.0',
+          components: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      }
+
+      // Get content from input if provided
+      const content = context.inputs.get('content');
+
+      // Build user input request with UI definition
+      const request: UserInputRequest = {
+        type: 'form',
+        formSchema: {
+          fields: uiDefinition.components
+            .filter((comp) => comp.type !== 'button' && comp.type !== 'label' && comp.name)
+            .map((comp) => ({
+              id: comp.name || comp.id,
+              label: comp.label || comp.name || '',
+              type: comp.type === 'textarea' ? 'textarea' : comp.type === 'number' ? 'number' : 'text',
+              required: comp.required || false,
+              placeholder: comp.placeholder,
+              defaultValue: comp.defaultValue,
+              options: comp.options,
+            })),
+        },
+        content,
+      };
+
+      // Request user input (execution will pause here)
+      const userInput = await context.requestUserInput(request);
+
+      // Validate if required
+      if (activeUIConfig.validateBeforeSubmit) {
+        const validation = validateForm(uiDefinition.components, userInput as Record<string, unknown>);
+        if (!validation.isValid) {
+          throw new NodeError(
+            `Form validation failed: ${validation.errors.join(', ')}`,
+            this.id,
+            undefined,
+          );
+        }
+      }
+
+      // Map form data to outputs
+      const mappedOutputs = mapFormDataToOutputs(
+        userInput as Record<string, unknown>,
+        activeUIConfig.outputMapping,
+      );
+
+      // Create outputs map
+      const outputs = new Map<PortId, unknown>();
+      this.outputs.forEach((output) => {
+        const value = mappedOutputs[output.id] ?? null;
+        outputs.set(output.id, value);
+      });
+
+      const executionTime = Date.now() - startTime;
+
+      return {
+        success: true,
+        outputs,
+        executionTime,
+      };
+    } catch (error) {
+      const executionTime = Date.now() - startTime;
+
+      if (error instanceof NodeError) {
+        return {
+          success: false,
+          error: error.message,
+          executionTime,
+        };
+      }
+
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+        executionTime,
+      };
     }
   }
 
@@ -96,6 +276,23 @@ export class CustomNode extends BaseNode {
   protected async executeInternal(
     context: ExecutionContext,
   ): Promise<Map<PortId, unknown>> {
+    // Interactive nodes should use executeInteractive instead
+    if (this.isInteractive) {
+      throw new NodeError(
+        'Interactive nodes must use executeInteractive method',
+        this.id,
+        undefined,
+      );
+    }
+
+    if (!this.template) {
+      throw new NodeError(
+        'Node template not available',
+        this.id,
+        undefined,
+      );
+    }
+
     const outputs = new Map<PortId, unknown>();
 
     try {

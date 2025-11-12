@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 'use client';
 
 /**
@@ -7,8 +8,8 @@
  * Uses full screen height
  */
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import ReactFlowCanvas from '../../components/graph/ReactFlowCanvas';
 import GraphToolbar from '../../components/graph/GraphToolbar';
 import ExecutionToolbar from '../../components/graph/ExecutionToolbar';
@@ -17,6 +18,7 @@ import NodeDetailsPanel from '../../components/graph/NodeDetailsPanel';
 import ExecutionResultsPanel from '../../components/graph/ExecutionResultsPanel';
 import InteractiveNodeManager from '../../components/graph/InteractiveNodeManager';
 import { useGraphStore } from '../../store/graphStore';
+import type { Port } from '../../src/types';
 
 /**
  * Graph Editor Content Component
@@ -24,11 +26,24 @@ import { useGraphStore } from '../../store/graphStore';
  */
 function GraphEditorContent() {
   const searchParams = useSearchParams();
-  const { selectedNodeId, loadGraph, clearGraph, clearExecutionState, setCurrentGraph } = useGraphStore();
+  const router = useRouter();
+  const { 
+    selectedNodeId, 
+    loadGraph, 
+    clearGraph, 
+    clearExecutionState, 
+    setCurrentGraph,
+    addNode,
+    selectNode,
+    viewport,
+    setViewport,
+    nodes,
+  } = useGraphStore();
   const [showDetailsPanel, setShowDetailsPanel] = useState(false);
   const [detailsPanelNodeId, setDetailsPanelNodeId] = useState<string | null>(null);
   const [isLoadingGraph, setIsLoadingGraph] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const hasAddedNodeRef = useRef<string | null>(null);
 
   /**
    * Load graph from backend by ID
@@ -119,6 +134,195 @@ function GraphEditorContent() {
       void loadGraphFromId(graphId);
     }
   }, [searchParams, isLoadingGraph, hasLoaded, loadGraphFromId]);
+
+  /**
+   * Add node from query parameter
+   */
+  // eslint-disable-next-line max-lines-per-function
+  const addNodeFromQuery = useCallback(async (nodeType: string) => {
+    try {
+      // Try to fetch from regular nodes API first
+      let nodeMetadata: {
+        name: string;
+        type: string;
+        inputs: Port[];
+        outputs: Port[];
+      } | null = null;
+
+      try {
+        const response = await fetch(`/api/nodes/${encodeURIComponent(nodeType)}`);
+        if (response.ok) {
+          const data = await response.json();
+          const node = data.node;
+          if (node) {
+            nodeMetadata = {
+              name: node.displayName || node.name || nodeType,
+              type: node.type,
+              inputs: node.inputs || [],
+              outputs: node.outputs || [],
+            };
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to fetch from nodes API:', error);
+      }
+
+      // If not found, try custom nodes API
+      if (!nodeMetadata) {
+        try {
+          const customResponse = await fetch('/api/custom-nodes');
+          if (customResponse.ok) {
+            const customData = await customResponse.json();
+            const customNode = customData.nodes?.find(
+              (n: { metadata: { type: string } }) => n.metadata.type === nodeType,
+            );
+            if (customNode) {
+              nodeMetadata = {
+                name: customNode.metadata.displayName || customNode.metadata.name || nodeType,
+                type: customNode.metadata.type,
+                inputs: customNode.config.inputs || [],
+                outputs: customNode.config.outputs || [],
+              };
+            }
+          }
+        } catch (error) {
+          console.warn('Failed to fetch from custom nodes API:', error);
+        }
+      }
+
+      // If still not found, try interactive nodes API
+      if (!nodeMetadata) {
+        try {
+          const interactiveResponse = await fetch('/api/interactive-nodes');
+          if (interactiveResponse.ok) {
+            const interactiveData = await interactiveResponse.json();
+            const interactiveNode = interactiveData.nodes?.find(
+              (n: { type: string }) => n.type === nodeType,
+            );
+            if (interactiveNode) {
+              // Fetch full node details
+              const nodeResponse = await fetch(`/api/interactive-nodes/${interactiveNode.id}`);
+              if (nodeResponse.ok) {
+                const nodeData = await nodeResponse.json();
+                const storedNode = nodeData.node;
+                if (storedNode) {
+                  nodeMetadata = {
+                    name: storedNode.metadata.displayName || nodeType,
+                    type: storedNode.metadata.type,
+                    inputs: storedNode.metadata.inputs || [],
+                    outputs: storedNode.metadata.outputs || [],
+                  };
+                }
+              }
+            }
+          }
+        } catch (error) {
+          console.warn('Failed to fetch from interactive nodes API:', error);
+        }
+      }
+
+      if (!nodeMetadata) {
+        console.error(`Node type ${nodeType} not found`);
+        hasAddedNodeRef.current = null; // Reset on error so it can be retried
+        return;
+      }
+
+      // Check if a node of this type was already added recently (within last 2 seconds)
+      // This prevents duplicate additions from React strict mode or rapid re-renders
+      const existingNode = nodes.find((n) => n.type === nodeType);
+      if (existingNode && hasAddedNodeRef.current === nodeType) {
+        // Node already exists and we've already processed this nodeType
+        console.log(`Node ${nodeType} already exists, skipping duplicate addition`);
+        // Still select and center on the existing node
+        selectNode(existingNode.id);
+        setViewport({
+          x: existingNode.position.x - 200,
+          y: existingNode.position.y - 150,
+        });
+        // Remove query parameter
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete('addNode');
+        const newSearch = params.toString();
+        router.replace(newSearch ? `/graph-editor?${newSearch}` : '/graph-editor', { scroll: false });
+        return;
+      }
+
+      // Calculate position at viewport center
+      // Default position if viewport is at origin
+      const centerX = viewport.x === 0 && viewport.y === 0 ? 400 : viewport.x;
+      const centerY = viewport.y === 0 ? 300 : viewport.y;
+
+      // Mark as processing before adding
+      hasAddedNodeRef.current = nodeType;
+
+      // For interactive nodes, try to get UI config from stored node metadata
+      let initialProperties: Record<string, unknown> = {};
+      if (nodeType.startsWith('interactive.')) {
+        try {
+          const interactiveResponse = await fetch('/api/interactive-nodes');
+          if (interactiveResponse.ok) {
+            const interactiveData = await interactiveResponse.json();
+            const interactiveNode = interactiveData.nodes?.find(
+              (n: { type: string }) => n.type === nodeType,
+            );
+            if (interactiveNode) {
+              // Fetch full node details to get UI config
+              const nodeResponse = await fetch(`/api/interactive-nodes/${interactiveNode.id}`);
+              if (nodeResponse.ok) {
+                const nodeData = await nodeResponse.json();
+                const storedNode = nodeData.node;
+                if (storedNode?.metadata?.uiConfig) {
+                  initialProperties = {
+                    uiConfig: storedNode.metadata.uiConfig,
+                  };
+                }
+              }
+            }
+          }
+        } catch (error) {
+          console.warn('Failed to load UI config for interactive node:', error);
+        }
+      }
+
+      // Add node to graph
+      const nodeId = addNode({
+        name: nodeMetadata.name,
+        type: nodeMetadata.type,
+        position: { x: centerX, y: centerY },
+        inputs: nodeMetadata.inputs,
+        outputs: nodeMetadata.outputs,
+        properties: initialProperties,
+      });
+
+      // Select the newly added node
+      selectNode(nodeId);
+
+      // Center viewport on the new node
+      setViewport({
+        x: centerX - 200,
+        y: centerY - 150,
+      });
+
+      // Remove query parameter from URL
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('addNode');
+      const newSearch = params.toString();
+      router.replace(newSearch ? `/graph-editor?${newSearch}` : '/graph-editor', { scroll: false });
+    } catch (error) {
+      console.error('Failed to add node from query parameter:', error);
+      hasAddedNodeRef.current = null; // Reset on error so it can be retried
+    }
+  }, [searchParams, router, addNode, selectNode, viewport, setViewport, nodes]);
+
+  /**
+   * Handle addNode query parameter
+   */
+  useEffect(() => {
+    const nodeType = searchParams.get('addNode');
+    if (nodeType && hasAddedNodeRef.current !== nodeType) {
+      void addNodeFromQuery(nodeType);
+    }
+  }, [searchParams, addNodeFromQuery]);
 
   /**
    * Clear graph and execution state when leaving the editor
