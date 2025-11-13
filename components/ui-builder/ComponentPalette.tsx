@@ -20,7 +20,9 @@ import {
   Circle,
   Box,
   Rows,
-  Columns
+  Columns,
+  MousePointer2,
+  Image
 } from 'lucide-react';
 import type { UIComponentType } from '../../src/types/uiDefinition';
 
@@ -74,6 +76,12 @@ const COMPONENTS: ComponentItem[] = [
     icon: Circle,
     description: 'Radio button',
   },
+  {
+    type: 'image',
+    label: 'Image',
+    icon: Image,
+    description: 'Image display',
+  },
   // Layout components (Phase 4)
   {
     type: 'container',
@@ -92,6 +100,12 @@ const COMPONENTS: ComponentItem[] = [
     label: 'Column',
     icon: Columns,
     description: 'Vertical layout container',
+  },
+  {
+    type: 'clickable-container',
+    label: 'Clickable Container',
+    icon: MousePointer2,
+    description: 'Clickable container with flexbox support',
   },
 ];
 

@@ -485,6 +485,98 @@ export default function PropertyPanel({
           </div>
         )}
 
+        {component.type === 'image' && (
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">Image Settings</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Image URL (src)
+                </label>
+                <input
+                  type="text"
+                  value={(component as UIComponent & { src?: string }).src || ''}
+                  onChange={(e) => handleChange('src', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Alt Text
+                </label>
+                <input
+                  type="text"
+                  value={(component as UIComponent & { alt?: string }).alt || ''}
+                  onChange={(e) => handleChange('alt', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Image description"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Width
+                  </label>
+                  <input
+                    type="text"
+                    value={(component as UIComponent & { width?: number | string }).width ? String((component as UIComponent & { width?: number | string }).width) : ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value.endsWith('px') || value.endsWith('%')) {
+                        handleChange('width', value);
+                      } else if (value) {
+                        handleChange('width', parseInt(value) || value);
+                      } else {
+                        handleChange('width', undefined);
+                      }
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="300 or 300px"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Height
+                  </label>
+                  <input
+                    type="text"
+                    value={(component as UIComponent & { height?: number | string }).height ? String((component as UIComponent & { height?: number | string }).height) : ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value.endsWith('px') || value.endsWith('%')) {
+                        handleChange('height', value);
+                      } else if (value) {
+                        handleChange('height', parseInt(value) || value);
+                      } else {
+                        handleChange('height', undefined);
+                      }
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="200 or 200px"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Object Fit
+                </label>
+                <select
+                  value={(component as UIComponent & { objectFit?: string }).objectFit || 'contain'}
+                  onChange={(e) => handleChange('objectFit', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="contain">Contain</option>
+                  <option value="cover">Cover</option>
+                  <option value="fill">Fill</option>
+                  <option value="none">None</option>
+                  <option value="scale-down">Scale Down</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Container/Row/Column Settings (Phase 4) */}
         {(component.type === 'container' || component.type === 'row' || component.type === 'column') && (
           <div>

@@ -8,7 +8,7 @@
 /**
  * Supported UI component types
  */
-export type UIComponentType = 'input' | 'button' | 'label' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'container' | 'row' | 'column';
+export type UIComponentType = 'input' | 'button' | 'label' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'container' | 'row' | 'column' | 'clickable-container' | 'image';
 
 /**
  * Base properties for all UI components
@@ -98,6 +98,18 @@ export interface RadioComponent extends UIComponentBase {
 }
 
 /**
+ * Image component
+ */
+export interface ImageComponent extends UIComponentBase {
+  type: 'image';
+  src: string; // Image source URL
+  alt?: string; // Alternative text
+  width?: number | string; // Image width
+  height?: number | string; // Image height
+  objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down'; // CSS object-fit
+}
+
+/**
  * Container component (Phase 4)
  * Generic container for grouping components
  */
@@ -137,6 +149,26 @@ export interface ColumnComponent extends UIComponentBase {
 }
 
 /**
+ * Clickable Container component
+ * Container that can be clicked to fire an event or act as a button
+ * Configurable as a flexbox container
+ */
+export interface ClickableContainerComponent extends UIComponentBase {
+  type: 'clickable-container';
+  children: string[]; // IDs of child components
+  onClick?: string; // Event identifier or action
+  gap?: number; // Spacing between children
+  alignItems?: 'start' | 'end' | 'center' | 'stretch' | 'baseline';
+  justifyContent?: 'start' | 'end' | 'center' | 'space-between' | 'space-around' | 'space-evenly';
+  flexDirection?: 'row' | 'column'; // Flexbox direction
+  backgroundColor?: string;
+  padding?: string;
+  border?: string;
+  borderRadius?: string;
+  cursor?: 'pointer' | 'default';
+}
+
+/**
  * Union type for all UI components
  */
 export type UIComponent =
@@ -147,9 +179,11 @@ export type UIComponent =
   | SelectComponent
   | CheckboxComponent
   | RadioComponent
+  | ImageComponent
   | ContainerComponent
   | RowComponent
-  | ColumnComponent;
+  | ColumnComponent
+  | ClickableContainerComponent;
 
 /**
  * Layout configuration (Phase 4: Enhanced)

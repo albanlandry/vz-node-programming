@@ -304,7 +304,8 @@ export default function Canvas({
     const isSelected = selectedComponentId === component.id;
     const isDragging = draggingState?.componentId === component.id;
     const isResizing = resizingComponentId === component.id;
-    const isContainer = component.type === 'container' || component.type === 'row' || component.type === 'column';
+    const isContainer = component.type === 'container' || component.type === 'row' || component.type === 'column' || component.type === 'clickable-container';
+    const isClickableContainer = component.type === 'clickable-container';
     const containerComponent = isContainer ? component as UIComponent & { children?: string[] } : null;
     const childComponents = isContainer ? getChildComponents(component, definition.components) : [];
     const isDragOverContainer = dragOverContainerId === component.id;
@@ -318,6 +319,12 @@ export default function Canvas({
         data-container-id={isContainer ? component.id : undefined}
         onClick={(e) => {
           e.stopPropagation();
+          // For clickable containers, handle click event if configured
+          if (isClickableContainer && (component as any).onClick) {
+            console.log('Clickable container clicked:', (component as any).onClick);
+            // Fire custom event or action
+            // This can be extended to trigger actual events
+          }
           onComponentSelect(component.id);
         }}
         className={`
@@ -337,12 +344,14 @@ export default function Canvas({
           backgroundColor: isContainer ? (component as any).backgroundColor : undefined,
           border: isContainer ? (component as any).border : undefined,
           borderRadius: isContainer ? (component as any).borderRadius : undefined,
-          display: isContainer ? (component.type === 'row' ? 'flex' : component.type === 'column' ? 'flex' : 'block') : undefined,
-          flexDirection: component.type === 'row' ? 'row' : component.type === 'column' ? 'column' : undefined,
-          gap: containerComponent && (component.type === 'row' || component.type === 'column') ? `${(component as any).gap || 8}px` : undefined,
+          display: isContainer ? (component.type === 'row' || component.type === 'column' || component.type === 'clickable-container' ? 'flex' : 'block') : undefined,
+          flexDirection: component.type === 'row' ? 'row' : component.type === 'column' ? 'column' : (isClickableContainer ? ((component as any).flexDirection || 'row') : undefined),
+          gap: containerComponent && (component.type === 'row' || component.type === 'column' || component.type === 'clickable-container') ? `${(component as any).gap || 8}px` : undefined,
           padding: containerComponent ? (component as any).padding || '8px' : undefined,
-          alignItems: isContainer && (component.type === 'row' || component.type === 'column') ? (component.type === 'row' ? 'baseline' : 'stretch') : undefined,
-          alignContent: isContainer && (component.type === 'row' || component.type === 'column') ? 'stretch' : undefined,
+          alignItems: isContainer && (component.type === 'row' || component.type === 'column' || component.type === 'clickable-container') ? ((component as any).alignItems || (component.type === 'row' ? 'baseline' : 'stretch')) : undefined,
+          justifyContent: isContainer && (component.type === 'row' || component.type === 'clickable-container') ? ((component as any).justifyContent || 'start') : undefined,
+          alignContent: isContainer && (component.type === 'row' || component.type === 'column' || component.type === 'clickable-container') ? 'stretch' : undefined,
+          cursor: isClickableContainer ? ((component as any).cursor || 'pointer') : undefined,
           flex: parentId && !component.width ? (component.type === 'row' ? '1 1 0' : '1 1 auto') : undefined,
           minWidth: parentId && component.type === 'row' ? 0 : undefined,
         }}
@@ -401,9 +410,10 @@ export default function Canvas({
               }`}
               style={{
                 display: 'flex',
-                flexDirection: component.type === 'row' ? 'row' : 'column',
+                flexDirection: component.type === 'row' ? 'row' : component.type === 'clickable-container' ? ((component as any).flexDirection || 'row') : 'column',
                 gap: `${(component as any).gap || 8}px`,
-                alignItems: component.type === 'row' ? 'baseline' : 'stretch',
+                alignItems: (component as any).alignItems || (component.type === 'row' ? 'baseline' : 'stretch'),
+                justifyContent: (component as any).justifyContent || (component.type === 'row' || component.type === 'clickable-container' ? 'start' : undefined),
                 alignContent: 'stretch',
                 minHeight: '100%',
                 width: '100%',
@@ -458,6 +468,27 @@ export default function Canvas({
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border border-gray-300 rounded-full"></div>
                   <span>{component.label || 'Radio'}</span>
+                </div>
+              )}
+              {component.type === 'image' && (
+                <div className="w-full">
+                  {component.label && <div className="font-medium mb-1">{component.label}</div>}
+                  <div className="border border-gray-300 rounded overflow-hidden bg-gray-100 flex items-center justify-center" style={{
+                    width: (component as any).width ? (typeof (component as any).width === 'number' ? `${(component as any).width}px` : (component as any).width) : '300px',
+                    height: (component as any).height ? (typeof (component as any).height === 'number' ? `${(component as any).height}px` : (component as any).height) : '200px',
+                  }}>
+                    <img
+                      src={(component as any).src || 'https://via.placeholder.com/300x200'}
+                      alt={(component as any).alt || 'Image'}
+                      className="max-w-full max-h-full"
+                      style={{
+                        objectFit: (component as any).objectFit || 'contain',
+                      }}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                      }}
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -678,6 +709,18 @@ function createComponentFromType(type: UIComponent['type'], index: number): UICo
         checked: false,
         required: false,
       };
+    case 'image':
+      return {
+        id: baseId,
+        type: 'image',
+        name: `image_${index}`,
+        label: `Image ${index + 1}`,
+        src: 'https://via.placeholder.com/300x200',
+        alt: 'Image',
+        width: 300,
+        height: 200,
+        objectFit: 'contain',
+      };
     case 'container':
       return {
         id: baseId,
@@ -711,6 +754,24 @@ function createComponentFromType(type: UIComponent['type'], index: number): UICo
         gap: 8,
         alignItems: 'stretch',
         padding: '8px',
+      };
+    case 'clickable-container':
+      return {
+        id: baseId,
+        type: 'clickable-container',
+        name: `clickable_container_${index}`,
+        label: `Clickable Container ${index + 1}`,
+        children: [],
+        onClick: '',
+        gap: 8,
+        flexDirection: 'row',
+        alignItems: 'start',
+        justifyContent: 'start',
+        backgroundColor: '#f3f4f6',
+        padding: '8px',
+        border: '1px solid #d1d5db',
+        borderRadius: '8px',
+        cursor: 'pointer',
       };
     default:
       throw new Error(`Unknown component type: ${type}`);
