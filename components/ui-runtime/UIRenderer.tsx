@@ -497,7 +497,7 @@ const UIRenderer = forwardRef<{ submit: () => void }, UIRendererProps>(({
               }}
             >
               <img
-                src={imageComponent.src || 'https://via.placeholder.com/300x200'}
+                src={imageComponent.src || 'https://picsum.photos/300/200'}
                 alt={imageComponent.alt || 'Image'}
                 className="max-w-full max-h-full w-auto h-auto"
                 style={{
@@ -505,7 +505,7 @@ const UIRenderer = forwardRef<{ submit: () => void }, UIRendererProps>(({
                   display: 'block',
                 }}
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                  (e.target as HTMLImageElement).src = 'https://picsum.photos/300/200';
                 }}
               />
             </div>

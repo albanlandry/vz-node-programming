@@ -511,7 +511,7 @@ export default function Canvas({
                       }}
                     >
                       <img
-                        src={imageComponent.src || 'https://via.placeholder.com/300x200'}
+                        src={imageComponent.src || 'https://picsum.photos/300/200'}
                         alt={imageComponent.alt || 'Image'}
                         className="max-w-full max-h-full w-auto h-auto"
                         style={{
@@ -519,7 +519,7 @@ export default function Canvas({
                           display: 'block',
                         }}
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                          (e.target as HTMLImageElement).src = 'https://picsum.photos/300/200';
                         }}
                       />
                     </div>
@@ -567,7 +567,7 @@ export default function Canvas({
   const rootComponents = getRootComponents(definition.components);
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-50 relative">
+    <div className="flex-1 flex flex-col bg-gray-50 relative h-full overflow-hidden">
       {/* Canvas Header */}
       <div className="p-4 border-b border-gray-200 bg-white">
         <div className="flex items-center justify-between">
@@ -750,7 +750,7 @@ function createComponentFromType(type: UIComponent['type'], index: number): UICo
         type: 'image',
         name: `image_${index}`,
         label: `Image ${index + 1}`,
-        src: 'https://via.placeholder.com/300x200',
+        src: 'https://picsum.photos/300/200',
         alt: 'Image',
         width: 300,
         height: 200,
