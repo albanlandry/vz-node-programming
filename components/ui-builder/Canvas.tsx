@@ -54,6 +54,7 @@ export default function Canvas({
   const [draggingState, setDraggingState] = useState<DragState | null>(null);
   const [dragOverContainerId, setDragOverContainerId] = useState<string | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [dragOverParentId, setDragOverParentId] = useState<string | undefined>(undefined);
   const [resizingComponentId, setResizingComponentId] = useState<string | null>(null);
   const [resizeStart, setResizeStart] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const dragPreviewRef = useRef<HTMLDivElement | null>(null);
@@ -135,8 +136,10 @@ export default function Canvas({
 
         if (componentElement && componentElement !== draggingState.element) {
           const componentId = componentElement.getAttribute('data-component-id');
-          const index = parseInt(componentElement.getAttribute('data-index') || '0');
+          const index = parseInt(componentElement.getAttribute('data-index') || '0', 10);
+          const parentId = componentElement.getAttribute('data-parent-id') || undefined;
           setDragOverIndex(index);
+          setDragOverParentId(parentId);
         }
       }
     };
@@ -146,21 +149,40 @@ export default function Canvas({
         // Move component to container
         onMoveToContainer(draggingState.componentId, dragOverContainerId);
       } else if (draggingState && dragOverIndex !== null) {
-        // Reorder components
-        const rootComponents = getRootComponents(definition.components);
-        const dragIndex = rootComponents.findIndex((c) => c.id === draggingState.componentId);
-        
-        if (dragIndex !== -1 && dragIndex !== dragOverIndex) {
-          const newOrder = [...rootComponents];
-          const [removed] = newOrder.splice(dragIndex, 1);
-          newOrder.splice(dragOverIndex, 0, removed);
-          onComponentReorder(newOrder.map((c) => c.id));
+        // Reorder components (either root level or within a container)
+        if (dragOverParentId) {
+          // Reorder within a container
+          const parentComponent = definition.components.find((c) => c.id === dragOverParentId);
+          if (parentComponent && (parentComponent.type === 'container' || parentComponent.type === 'row' || parentComponent.type === 'column' || parentComponent.type === 'clickable-container')) {
+            const containerWithChildren = parentComponent as UIComponent & { children?: string[] };
+            const children = containerWithChildren.children || [];
+            const dragIndex = children.findIndex((id) => id === draggingState.componentId);
+            
+            if (dragIndex !== -1 && dragIndex !== dragOverIndex) {
+              const newOrder = [...children];
+              const [removed] = newOrder.splice(dragIndex, 1);
+              newOrder.splice(dragOverIndex, 0, removed);
+              onComponentReorder(newOrder, dragOverParentId);
+            }
+          }
+        } else {
+          // Reorder root components
+          const rootComponents = getRootComponents(definition.components);
+          const dragIndex = rootComponents.findIndex((c) => c.id === draggingState.componentId);
+          
+          if (dragIndex !== -1 && dragIndex !== dragOverIndex) {
+            const newOrder = [...rootComponents];
+            const [removed] = newOrder.splice(dragIndex, 1);
+            newOrder.splice(dragOverIndex, 0, removed);
+            onComponentReorder(newOrder.map((c) => c.id));
+          }
         }
       }
 
       setDraggingState(null);
       setDragOverContainerId(null);
       setDragOverIndex(null);
+      setDragOverParentId(undefined);
       if (dragPreviewRef.current) {
         dragPreviewRef.current.style.display = 'none';
       }
@@ -173,7 +195,7 @@ export default function Canvas({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [draggingState, dragOverContainerId, dragOverIndex, definition, onComponentReorder, onMoveToContainer]);
+  }, [draggingState, dragOverContainerId, dragOverIndex, dragOverParentId, definition, onComponentReorder, onMoveToContainer]);
 
   /**
    * Get root-level components (not nested in containers)
@@ -326,13 +348,14 @@ export default function Canvas({
     const containerComponent = isContainer ? component as UIComponent & { children?: string[] } : null;
     const childComponents = isContainer ? getChildComponents(component, definition.components) : [];
     const isDragOverContainer = dragOverContainerId === component.id;
-    const isDragOverIndex = dragOverIndex === index && !parentId;
+    const isDragOverIndex = dragOverIndex === index && dragOverParentId === parentId;
 
     return (
       <div
         key={component.id}
         data-component-id={component.id}
         data-index={index}
+        data-parent-id={parentId}
         data-container-id={isContainer ? component.id : undefined}
         onClick={(e) => {
           e.stopPropagation();
@@ -744,18 +767,21 @@ function createComponentFromType(type: UIComponent['type'], index: number): UICo
         checked: false,
         required: false,
       };
-    case 'image':
+    case 'image': {
+      // Use component ID as seed to ensure each image has a unique source
+      const imageSeed = baseId.replace(/-/g, '').substring(0, 8);
       return {
         id: baseId,
         type: 'image',
         name: `image_${index}`,
         label: `Image ${index + 1}`,
-        src: 'https://picsum.photos/300/200',
+        src: `https://picsum.photos/seed/${imageSeed}/300/200`,
         alt: 'Image',
         width: 300,
         height: 200,
         objectFit: 'contain',
       };
+    }
     case 'container':
       return {
         id: baseId,
