@@ -203,7 +203,7 @@ export default function Canvas({
   const getRootComponents = useCallback((components: UIComponent[]): UIComponent[] => {
     const allChildIds = new Set<string>();
     components.forEach((comp) => {
-      if (comp.type === 'container' || comp.type === 'row' || comp.type === 'column') {
+      if (comp.type === 'container' || comp.type === 'row' || comp.type === 'column' || comp.type === 'clickable-container') {
         const containerComp = comp as UIComponent & { children?: string[] };
         containerComp.children?.forEach((id) => allChildIds.add(id));
       }
@@ -215,7 +215,7 @@ export default function Canvas({
    * Get child components of a container
    */
   const getChildComponents = useCallback((container: UIComponent, allComponents: UIComponent[]): UIComponent[] => {
-    if (container.type !== 'container' && container.type !== 'row' && container.type !== 'column') {
+    if (container.type !== 'container' && container.type !== 'row' && container.type !== 'column' && container.type !== 'clickable-container') {
       return [];
     }
     const containerWithChildren = container as UIComponent & { children?: string[] };
@@ -266,7 +266,11 @@ export default function Canvas({
       setDragOverContainerId(null);
 
       const data = e.dataTransfer.getData('application/ui-component');
-      if (!data) return;
+      if (!data) {
+        // If no data, it might be a drag from within canvas (not from palette)
+        // In that case, handleDrop should not do anything as it's handled by handleMouseUp
+        return;
+      }
 
       try {
         const { type } = JSON.parse(data);
@@ -457,6 +461,16 @@ export default function Canvas({
                 minHeight: '100%',
                 width: '100%',
                 flex: '1 1 auto',
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleDrop(e, component.id);
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleDragOver(e);
               }}
             >
               {childComponents.map((child, childIndex) => renderComponent(child, childIndex, component.id))}
