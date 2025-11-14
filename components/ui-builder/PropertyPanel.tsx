@@ -8,11 +8,12 @@
  * Enhanced with Hierarchy tab
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Settings, GitBranch } from 'lucide-react';
 import type { UIComponent, UIDefinition } from '../../src/types/uiDefinition';
 import ValidationPanel from './ValidationPanel';
 import HierarchyPanel from './HierarchyPanel';
+import FileUpload from './FileUpload';
 
 interface PropertyPanelProps {
   component: UIComponent | null;
@@ -63,7 +64,7 @@ export default function PropertyPanel({
     // Allow showing hierarchy tab even without selected component
   } else if (!component) {
     return (
-      <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full">
+      <div data-property-panel className="w-80 bg-white border-l border-gray-200 flex flex-col h-full">
         <div className="p-4 border-b border-gray-200">
           {/* Tabs */}
           <div className="flex gap-1 border border-gray-300 rounded-md overflow-hidden">
@@ -102,12 +103,22 @@ export default function PropertyPanel({
     );
   }
 
-  const handleChange = (field: string, value: unknown) => {
+  const handleChange = useCallback((field: string, value: unknown) => {
     onUpdate({ [field]: value });
-  };
+  }, [onUpdate]);
+
+  const handleImageUpload = useCallback(async (file: File) => {
+    // Create a data URL from the file
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      handleChange('src', dataUrl);
+    };
+    reader.readAsDataURL(file);
+  }, [handleChange]);
 
   return (
-    <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full">
+    <div data-property-panel className="w-80 bg-white border-l border-gray-200 flex flex-col h-full">
       <div className="p-4 border-b border-gray-200">
         {component && (
           <p className="text-xs text-gray-500 mb-3 capitalize">{component.type}</p>
@@ -491,6 +502,20 @@ export default function PropertyPanel({
             <div className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Upload Image
+                </label>
+                <FileUpload
+                  accept="image/*"
+                  maxSize={10 * 1024 * 1024} // 10MB
+                  onFileSelect={handleImageUpload}
+                  onError={(error) => {
+                    console.error('Image upload error:', error);
+                  }}
+                  className="mb-2"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Image URL (src)
                 </label>
                 <input
@@ -498,8 +523,11 @@ export default function PropertyPanel({
                   value={(component as UIComponent & { src?: string }).src || ''}
                   onChange={(e) => handleChange('src', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/image.jpg"
+                  placeholder="https://example.com/image.jpg or data:image/..."
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Enter a URL or upload an image above
+                </p>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">

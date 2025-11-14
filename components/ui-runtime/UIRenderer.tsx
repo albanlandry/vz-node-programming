@@ -466,6 +466,53 @@ const UIRenderer = forwardRef<{ submit: () => void }, UIRendererProps>(({
         );
       }
 
+      case 'image': {
+        const imageComponent = component as UIComponent & { src?: string; alt?: string; width?: number | string; height?: number | string; objectFit?: string };
+        const width = imageComponent.width
+          ? typeof imageComponent.width === 'number'
+            ? `${imageComponent.width}px`
+            : imageComponent.width
+          : undefined;
+        const height = imageComponent.height
+          ? typeof imageComponent.height === 'number'
+            ? `${imageComponent.height}px`
+            : imageComponent.height
+          : undefined;
+        
+        return (
+          <div key={component.id} className="mb-4">
+            {component.label && (
+              <label htmlFor={component.id} className="block text-sm font-medium text-gray-700 mb-1">
+                {component.label}
+                {component.required && <span className="text-red-500 ml-1">*</span>}
+              </label>
+            )}
+            <div
+              className="border border-gray-300 rounded overflow-hidden bg-gray-100 flex items-center justify-center"
+              style={{
+                width: width || '100%',
+                height: height || 'auto',
+                minHeight: height ? undefined : '200px',
+                minWidth: '100px',
+              }}
+            >
+              <img
+                src={imageComponent.src || 'https://via.placeholder.com/300x200'}
+                alt={imageComponent.alt || 'Image'}
+                className="max-w-full max-h-full w-auto h-auto"
+                style={{
+                  objectFit: (imageComponent.objectFit as 'contain' | 'cover' | 'fill' | 'none' | 'scale-down') || 'contain',
+                  display: 'block',
+                }}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                }}
+              />
+            </div>
+          </div>
+        );
+      }
+
       default:
         return null;
     }

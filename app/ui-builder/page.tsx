@@ -7,10 +7,10 @@
  * Phase 2: List, manage, and edit UI definitions with visual builder
  */
 
-import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUIBuilderStore } from '../../store/uiBuilderStore';
 import { Plus, Trash2, Copy, Eye, FileText, Edit2, ArrowLeft, History, Download, Layers, X, Tag } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import UIRenderer from '../../components/ui-runtime/UIRenderer';
 import UIBuilder from '../../components/ui-builder/UIBuilder';
 import VersionHistoryPanel from '../../components/ui-builder/VersionHistoryPanel';
@@ -158,7 +158,7 @@ export default function UIBuilderPage() {
    */
   const handleCreateFromTemplate = async (templateId: string) => {
     const name = prompt('Enter UI name:');
-    if (!name) return;
+    if (!name) {return;}
     
     const definition = await createFromTemplate(templateId, name);
     if (definition) {

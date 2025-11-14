@@ -9,7 +9,7 @@
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Trash2, GripVertical, Copy, Grid3x3 } from 'lucide-react';
-import type { UIComponent, UIDefinition } from '../../src/types/uiDefinition';
+import type { UIComponent, UIDefinition, ImageComponent } from '../../src/types/uiDefinition';
 
 interface CanvasProps {
   definition: UIDefinition;
@@ -61,6 +61,23 @@ export default function Canvas({
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't handle keyboard events if focus is on an input element (PropertyPanel)
+      const activeElement = document.activeElement;
+      if (
+        activeElement &&
+        (activeElement.tagName === 'INPUT' ||
+          activeElement.tagName === 'TEXTAREA' ||
+          activeElement.tagName === 'SELECT' ||
+          activeElement.isContentEditable ||
+          activeElement.closest('[role="textbox"]'))
+      ) {
+        // Check if the active element is inside PropertyPanel
+        const propertyPanel = activeElement.closest('[data-property-panel]');
+        if (propertyPanel) {
+          return; // Don't handle keyboard events when PropertyPanel has focus
+        }
+      }
+
       if ((e.ctrlKey || e.metaKey) && e.key === 'c' && selectedComponentId) {
         e.preventDefault();
         if (onComponentCopy) {
@@ -336,10 +353,10 @@ export default function Canvas({
           ${isResizing ? 'border-purple-500' : ''}
         `}
         style={{
-          width: component.width ? (typeof component.width === 'number' ? `${component.width}px` : component.width) : (parentId ? '100%' : undefined),
-          height: component.height ? (typeof component.height === 'number' ? `${component.height}px` : component.height) : undefined,
+          width: component.type === 'image' ? 'max-content' : (component.width ? (typeof component.width === 'number' ? `${component.width}px` : component.width) : (parentId ? '100%' : undefined)),
+          height: component.type === 'image' ? 'max-content' : (component.height ? (typeof component.height === 'number' ? `${component.height}px` : component.height) : undefined),
           margin: component.margin,
-          padding: component.padding,
+          padding: isContainer && containerComponent ? ((component as any).padding || '8px') : component.padding,
           alignSelf: component.alignSelf,
           backgroundColor: isContainer ? (component as any).backgroundColor : undefined,
           border: isContainer ? (component as any).border : undefined,
@@ -347,7 +364,6 @@ export default function Canvas({
           display: isContainer ? (component.type === 'row' || component.type === 'column' || component.type === 'clickable-container' ? 'flex' : 'block') : undefined,
           flexDirection: component.type === 'row' ? 'row' : component.type === 'column' ? 'column' : (isClickableContainer ? ((component as any).flexDirection || 'row') : undefined),
           gap: containerComponent && (component.type === 'row' || component.type === 'column' || component.type === 'clickable-container') ? `${(component as any).gap || 8}px` : undefined,
-          padding: containerComponent ? (component as any).padding || '8px' : undefined,
           alignItems: isContainer && (component.type === 'row' || component.type === 'column' || component.type === 'clickable-container') ? ((component as any).alignItems || (component.type === 'row' ? 'baseline' : 'stretch')) : undefined,
           justifyContent: isContainer && (component.type === 'row' || component.type === 'clickable-container') ? ((component as any).justifyContent || 'start') : undefined,
           alignContent: isContainer && (component.type === 'row' || component.type === 'column' || component.type === 'clickable-container') ? 'stretch' : undefined,
@@ -470,27 +486,46 @@ export default function Canvas({
                   <span>{component.label || 'Radio'}</span>
                 </div>
               )}
-              {component.type === 'image' && (
-                <div className="w-full">
-                  {component.label && <div className="font-medium mb-1">{component.label}</div>}
-                  <div className="border border-gray-300 rounded overflow-hidden bg-gray-100 flex items-center justify-center" style={{
-                    width: (component as any).width ? (typeof (component as any).width === 'number' ? `${(component as any).width}px` : (component as any).width) : '300px',
-                    height: (component as any).height ? (typeof (component as any).height === 'number' ? `${(component as any).height}px` : (component as any).height) : '200px',
-                  }}>
-                    <img
-                      src={(component as any).src || 'https://via.placeholder.com/300x200'}
-                      alt={(component as any).alt || 'Image'}
-                      className="max-w-full max-h-full"
+              {component.type === 'image' && (() => {
+                const imageComponent = component as ImageComponent;
+                const width = imageComponent.width
+                  ? typeof imageComponent.width === 'number'
+                    ? `${imageComponent.width}px`
+                    : imageComponent.width
+                  : '300px';
+                const height = imageComponent.height
+                  ? typeof imageComponent.height === 'number'
+                    ? `${imageComponent.height}px`
+                    : imageComponent.height
+                  : '200px';
+                return (
+                  <div className="w-full">
+                    { /* component.label && <div className="font-medium mb-1">{component.label}</div> */}
+                    <div
+                      className="border border-gray-300 rounded overflow-hidden bg-gray-100 flex items-center justify-center"
                       style={{
-                        objectFit: (component as any).objectFit || 'contain',
+                        width,
+                        height,
+                        minWidth: '100px',
+                        minHeight: '100px',
                       }}
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
-                      }}
-                    />
+                    >
+                      <img
+                        src={imageComponent.src || 'https://via.placeholder.com/300x200'}
+                        alt={imageComponent.alt || 'Image'}
+                        className="max-w-full max-h-full w-auto h-auto"
+                        style={{
+                          objectFit: imageComponent.objectFit || 'contain',
+                          display: 'block',
+                        }}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           )}
         </div>
